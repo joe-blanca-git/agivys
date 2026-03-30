@@ -1,0 +1,350 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AgiVysSystem</name>
+    </assembly>
+    <members>
+        <member name="T:AgiVysSystem.Api.Controllers.Auth.AuthController">
+            <summary>
+            Controlador responsável pela autenticação e gestão de acessos do ecossistema AgiVysSystem.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.Login(AgiVysSystem.Api.DTOs.LoginDto)">
+            <summary>
+            Autentica um usuário e retorna o Token JWT junto com os dados do perfil e permissões.
+            </summary>
+            <remarks>
+            O token gerado tem validade de 4 horas e deve ser enviado no Header de todas as requisições protegidas.
+            </remarks>
+            <param name="model">Credenciais de acesso (Email e Senha).</param>
+            <response code="200">Login realizado com sucesso.</response>
+            <response code="401">E-mail ou senha incorretos.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.Register(AgiVysSystem.Api.DTOs.RegisterDto)">
+            <summary>
+            Realiza o cadastro de um novo usuário do tipo Proprietário no sistema.
+            </summary>
+            <param name="model">A Senha deve conter letras, números e ao menos um caractere especial.</param>
+            <returns>Retorna uma mensagem de sucesso ou uma lista de erros de validação.</returns>
+            <response code="200">Usuário Cadastrado com Sucesso!</response>
+            <response code="400">Dados inválidos.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.UpdatePerson(AgiVysSystem.Api.DTOs.UpdatePersonDto)">
+            <summary>
+            Atualiza os dados pessoais do usuário autenticado.
+            </summary>
+            <response code="200">Dados atualizados com sucesso.</response>
+            <response code="403">Tentativa de editar dados de outro usuário.</response>
+            <response code="404">Dados pessoais não encontrados.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.CheckEmail(System.String)">
+            <summary>
+            Verifica se um e-mail já está em uso no sistema AgiVysSystem.
+            </summary>
+            <param name="email">O e-mail completo a ser consultado.</param>
+            <response code="200">Retorna true se o e-mail já existir, false caso contrário.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.CheckCpf(System.String)">
+            <summary>
+            Verifica se um CPF já está vinculado a alguma conta no sistema.
+            </summary>
+            <param name="document">O CPF a ser consultado (apenas números).</param>
+            <response code="200">Retorna true se o CPF já existir, false caso contrário.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.ForgotPassword(ForgotPasswordDto)">
+            <summary>
+            Envia um e-mail para recuperação de senha..
+            </summary>
+            <param name="model">Informe um e-mail válido para receber a recuperação de senha.</param>
+            <returns>Retorna uma mensagem de E-mail enviado com sucesso.</returns>
+            <response code="200">Link de recuperação enviado com sucesso.</response>
+            <response code="400">Dados inválidos.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.ResetPassword(ResetPasswordDto)">
+            <summary>
+            Altera a senha.
+            </summary>
+            <param name="model">Altera a senha do usuário</param>
+            <returns>Retorna uma mensagem de senha alterada com sucesso</returns>
+            <response code="200">Senha alterada com sucesso.</response>
+            <response code="400">Dados inválidos.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.Create(AgiVysSystem.Api.Dtos.CreateCompanyDto)">
+            <summary>
+            Cadastra uma nova empresa vinculada a um usuário proprietário.
+            </summary>
+            <response code="200">Empresa cadastrada com sucesso!</response>
+            <response code="400">Este CNPJ já está cadastrado.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="500">Erro ao cadastrar empresa.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.GetByOwner(System.Int32)">
+            <summary>
+            Lista todas as empresas de um determinado proprietário.
+            </summary>
+            <response code="200">Retornas a Empresas do usuário</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="500">Erro ao obter empresas.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.Update(System.Int32,AgiVysSystem.Api.Dtos.UpdateCompanyDto)">
+            <summary>
+            Atualiza dados básicos da empresa.
+            </summary>
+            <response code="200">Empresa atualzizada com sucesso!</response>
+            <response code="404">Empresa não encontrada.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="500">Erro ao atualizar empresa.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.Delete(System.Int32)">
+            <summary>
+            Remove o registro da empresa.
+            </summary>
+            <response code="200">Empresa removida com sucesso!</response>
+            <response code="404">Empresa não encontrada.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="500">Erro ao remover empresa.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.AddAddress(System.Int32,AgiVysSystem.Api.Dtos.CompanyAddressDto)">
+            <summary>
+            Adiciona um novo endereço para uma empresa específica.
+            </summary>
+            <response code="201">Endereço cadastrado com sucesso.</response>
+            <response code="403">Você não tem permissão para esta empresa.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.GetAddresses(System.Int32)">
+            <summary>
+            Lista todos os endereços de uma empresa.
+            </summary>
+            <response code="200"></response>
+            <response code="404">Nenhum endereço encontrado.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="500">Erro ao remover empresa.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.UpdateAddress(System.Int32,AgiVysSystem.Api.Dtos.CompanyAddressDto)">
+            <summary>
+            Atualiza um endereço existente (Apenas o proprietário).
+            </summary>
+            <response code="200">Endereço atualizado com sucesso!</response>
+            <response code="404">Endereço não encontrada.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="500">Erro ao atualizar endereço.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.DeleteAddress(System.Int32)">
+            <summary>
+            Remove um endereço específico.
+            </summary>
+            <response code="200">Endereço removida com sucesso!</response>
+            <response code="404">Endereço não encontrada.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="500">Erro ao remover endereço.</response>
+        </member>
+        <member name="T:AgiVysSystem.Api.Controllers.Configuration.AppSystemController">
+            <summary>
+            Controlador responsável por gerenciar o ecossistema AgiVysSystem: Sistemas, Menus, Submenus e Planos.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.Create(AgiVysSystem.Api.Dtos.CreateAppSystemDto)">
+            <summary>
+            Cadastra um novo sistema.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.GetAll">
+            <summary>
+            Lista todos os sistemas cadastrados no ecossistema.
+            </summary>
+            <response code="200">Retorna a lista de sistemas.</response>
+            <response code="500">Erro interno no servidor.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.Delete(System.Int32)">
+            <summary>
+            Exclui um sistema e seus vínculos em cascata.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.CreateMenuHierarchy(AgiVysSystem.Api.Dtos.CreateMenuDto)">
+            <summary>
+            Cadastra um menu e seus respectivos submenus de forma hierárquica.
+            </summary>
+            <remarks>
+            Permite criar o agrupador (Menu) e suas funcionalidades filhas (Submenus) em uma única transação.
+            </remarks>
+            <response code="200">Hierarquia criada com sucesso.</response>
+            <response code="400">Dados inválidos ou IDs inexistentes.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.GetSystemMenus(System.Int32)">
+            <summary>
+            Retorna a árvore de menus e submenus de um sistema específico.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.UpdateMenu(System.Int32,AgiVysSystem.Api.Dtos.UpdateMenuDto)">
+            <summary>
+            Atualiza os dados de um Menu (Pai).
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.DeleteMenu(System.Int32)">
+            <summary>
+            Remove um menu (e todos os seus submenus em cascata).
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.CreatePlan(AgiVysSystem.Api.Dtos.CreatePlanDto)">
+            <summary>
+            Cria um plano vinculando-o a um sistema e selecionando Menus e Submenus específicos.
+            </summary>
+            <remarks>
+            Permite granularidade total: você pode liberar um Menu e apenas alguns de seus Submenus.
+            </remarks>
+            <response code="200">Plano criado e permissões vinculadas.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.GetPlansBySystem(System.Int32)">
+            <summary>
+            Lista todos os planos de um sistema, detalhando os menus e submenus liberados.
+            </summary>
+            <param name="systemId">ID do sistema para filtrar os planos.</param>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.UpdatePlan(System.Int32,AgiVysSystem.Api.Dtos.CreatePlanDto)">
+            <summary>
+            Atualiza um plano existente e suas permissões de menus/submenus.
+            </summary>
+            <param name="id">ID do plano a ser editado.</param>
+            <param name="dto">Novos dados do plano e lista de permissões.</param>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.DeletePlan(System.Int32)">
+            <summary>
+            Remove um plano e todos os seus vínculos de permissão.
+            </summary>
+            <param name="id">ID do plano a ser removido.</param>
+        </member>
+        <member name="T:AgiVysSystem.Migrations.InitialIdentity">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.InitialIdentity.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.InitialIdentity.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.InitialIdentity.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.AddPeopleAndIdentity">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddPeopleAndIdentity.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddPeopleAndIdentity.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddPeopleAndIdentity.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.AddSystemsAndPlans">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddSystemsAndPlans.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddSystemsAndPlans.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddSystemsAndPlans.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.AddFunctionalitiesTable">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddFunctionalitiesTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddFunctionalitiesTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddFunctionalitiesTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.CriarTabelaFunctionalities">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.CriarTabelaFunctionalities.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.CriarTabelaFunctionalities.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.CriarTabelaFunctionalities.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.AddAppSystemIdToPlan">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddAppSystemIdToPlan.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddAppSystemIdToPlan.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddAppSystemIdToPlan.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.SeparatingMenusAndSubmenus">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.SeparatingMenusAndSubmenus.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.SeparatingMenusAndSubmenus.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.SeparatingMenusAndSubmenus.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.RemoveFunctionalityAndCreateMenuStructure">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.RemoveFunctionalityAndCreateMenuStructure.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.RemoveFunctionalityAndCreateMenuStructure.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.RemoveFunctionalityAndCreateMenuStructure.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.AddCompanyTable">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddCompanyTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddCompanyTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddCompanyTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.AddCompanyAddressTable">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddCompanyAddressTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddCompanyAddressTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddCompanyAddressTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.AddBirthDateToPerson">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddBirthDateToPerson.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddBirthDateToPerson.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddBirthDateToPerson.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

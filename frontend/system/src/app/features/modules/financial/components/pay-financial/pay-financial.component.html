@@ -1,0 +1,114 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="title"
+  [nzFooter]="footer"
+  [nzWidth]="900"
+  (nzOnCancel)="handleCancel()"
+>
+  <ng-container *nzModalContent>
+    <div class="row" *ngIf="financialPay">
+      <div class="col-12 d-flex flex-column mb-2">
+        <span class="fw-bold">Descrição</span>
+        <span class="text-secondary">{{ financialPay.description }}</span>
+      </div>
+      <div class="col-4 d-flex flex-column mb-2">
+        <span class="fw-bold">Pessoa</span>
+        <span class="text-secondary">{{ financialPay.personName }}</span>
+      </div>
+      <div class="col-4 d-flex flex-column mb-2">
+        <span class="fw-bold">Categoria</span>
+        <span class="text-secondary">{{ financialPay.categoryName }}</span>
+      </div>
+      <div class="col-4 d-flex flex-column mb-2">
+        <span class="fw-bold">Status</span>
+        <nz-tag [nzColor]="getStatusColor(financialPay.status, financialPay.isOverdue)">
+          {{ financialPay.isOverdue ? "VENCIDO" : (financialPay.status | uppercase) }}
+        </nz-tag>
+      </div>
+      <div class="col-12">
+        <hr />
+      </div>
+      <div class="col-12">
+        <form
+          nz-form
+          [formGroup]="installmentsForm"
+          nzLayout="vertical"
+          *ngIf="!isLoadingData; else loadTemplate"
+        >
+          <div class="row">
+            <div class="col-12 d-flex flex-column mb-4">
+              <span class="fw-bold">Parcela</span>
+              <span class="text-secondary">{{ financialPay.number }}/{{ financialPay.totalInstallments }}</span>
+            </div>
+            <div class="col-4">
+              <nz-form-item>
+                <nz-form-label nzRequired>Conta</nz-form-label>
+                <nz-form-control>
+                  <nz-select formControlName="accountId" nzShowSearch>
+                    <nz-option
+                      *ngFor="let item of listAccount; trackBy: trackByItem"
+                      [nzLabel]="item.name"
+                      [nzValue]="item.id"
+                    ></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div class="col-4">
+              <nz-form-item>
+                <nz-form-label nzRequired>Data Pagamento</nz-form-label>
+                <nz-form-control>
+                  <nz-date-picker
+                    style="width: 100%"
+                    formControlName="paymentDate"
+                    nzFormat="dd/MM/yyyy"
+                  ></nz-date-picker>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div class="col-4">
+              <nz-form-item>
+                <nz-form-label nzRequired>Forma de Pagamento</nz-form-label>
+                <nz-form-control>
+                  <nz-select formControlName="paymentMethod" nzPlaceHolder="Selecione...">
+                    <nz-option nzValue="CASH" nzLabel="Dinheiro"></nz-option>
+                    <nz-option nzValue="PIX" nzLabel="PIX"></nz-option>
+                    <nz-option nzValue="CREDIT_CARD" nzLabel="Cartão de Crédito"></nz-option>
+                    <nz-option nzValue="DEBIT_CARD" nzLabel="Cartão de Débito"></nz-option>
+                    <nz-option nzValue="BANK_TRANSFER" nzLabel="Transferência"></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div class="col-12 mt-3 d-flex flex-column align-items-end">
+              <span class="fw-bold">Valor a Liquidar</span>
+              <span class="text-primary h2">{{ financialPay.value | format: "currency" }}</span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #footer>
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-outline-secondary btn-sm" [disabled]="isLoadingData" (click)="handleCancel()">
+        Cancelar
+      </button>
+      <button
+        class="btn btn-primary btn-sm"
+        [disabled]="isLoadingData || installmentsForm.invalid"
+        (click)="handleOk()"
+      >
+        <i class="fa" [ngClass]="isLoadingData ? 'fa-refresh fa-spin' : 'fa-check-double'"></i>
+        Confirmar
+      </button>
+    </div>
+  </ng-template>
+
+  <ng-template #loadTemplate>
+    <div class="d-flex w-100 justify-content-center align-items-center" style="min-height: 20vh">
+      <nz-spin nzTip="Processando..."></nz-spin>
+    </div>
+  </ng-template>
+</nz-modal>

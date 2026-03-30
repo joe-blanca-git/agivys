@@ -1,0 +1,63 @@
+/* BOTÃO */
+.solution-btn {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+/* LOGO */
+.logo-button {
+  height: 75px;
+  transition: all 0.3s ease;
+  filter: grayscale(100%) brightness(0.7);
+  opacity: 0.7;
+}
+
+/* HOVER + ACTIVE */
+.solution-btn:hover .logo-button,
+.solution-btn.active .logo-button {
+  filter: grayscale(0%) brightness(1.5);
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.solution-btn:hover,
+.solution-btn.active {
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+  border-color: #3b82f6;
+}
+
+/* CARD BONITO (LIGHT + MODERNO) */
+.solution-card {
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+/* HOVER CARD */
+.solution-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px rgba(59, 130, 246, 0.15);
+}
+
+/* TÍTULO */
+.solution-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #22c55e, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* LISTA */
+.solution-card ul {
+  padding-left: 18px;
+}
+
+.solution-card li {
+  margin-bottom: 6px;
+  color: #374151;
+}

@@ -1,0 +1,73 @@
+<div class="container-fluid p-4 p-md-5">
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header d-flex flex-column justify-content-center align-items-center">
+      <div class="d-flex align-items-center">
+        <img class="img-logo-header cursor-pointer" [routerLink]="['/auth/login']" src="/images/logo/logo.png" />
+        <span class="title h1 m-0 text-agivys">CRIE SUA CONTA AGI <span class="text-agivys-secondary">VYS</span>
+        </span>
+      </div>
+      <span class="text-secondary">Preencha as informações ou crie sua conta pelo WhatsApp de forma rápida e prática respondendo algumas perguntas. <a href="" class="fw-bold text-success">
+          <i class="fa-brands fa-whatsapp text-success fa-xl"></i> Cadastrar pelo WhatsApp </a>
+      </span>
+    </div>
+    <div class="card-body p-4 p-md-5">
+      <div class="d-flex justify-content-between align-items-center mb-5 position-relative">
+        <div class="progress position-absolute w-100" style="height: 4px; z-index: 0; top: 20px">
+          <div class="progress-bar bg-primary" [style.width.%]="(currentStep / (steps.length - 1)) * 100" style="transition: width 0.4s ease"></div>
+        </div>
+        <div *ngFor="let step of steps" class="d-flex flex-column align-items-center" style="z-index: 1; cursor: pointer" (click)="setStep(step.index)">
+          <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 shadow-sm" [ngClass]="
+              currentStep >= step.index
+                ? 'bg-primary text-white'
+                : 'bg-light text-secondary border'
+            " style="width: 45px; height: 45px; transition: all 0.3s ease">
+            <i class="fa {{ step.icon }}"></i>
+          </div>
+          <span class="small fw-semibold d-none d-sm-block" [ngClass]="
+              currentStep >= step.index ? 'text-primary' : 'text-secondary'
+            ">
+            {{ step.name }}
+          </span>
+        </div>
+      </div>
+      <div class="steper-body py-1 min-vh-50">
+        <div *ngIf="currentStep === 9">
+          <app-register-form *ngIf="!isPersonalDataComplete"></app-register-form>
+          <div *ngIf="isPersonalDataComplete" class="alert alert-success text-start">
+            <h5 class="alert-heading">
+              <i class="fa fa-check-circle"></i> Dados Pessoais Salvos
+            </h5>
+            <hr>
+            <p class="mb-1">
+              <strong>Nome:</strong> {{ savedPersonalData.name }}
+            </p>
+            <p class="mb-1">
+              <strong>E-mail:</strong> {{ savedPersonalData.email }}
+            </p>
+            <p class="mb-1">
+              <strong>CPF:</strong> {{ savedPersonalData.document }}
+            </p>
+            <p class="mb-0 mt-3 text-muted small"> * Estes dados já foram registrados. Para alterar seus Dados Pessoais <a class="fw-bold text-agivys" [href]="urlAccesAgiVys">ACESSE SUA CONTA</a> na plataforma AGIVYS ou finalize seu cadastro clicando no botão Próximo!. </p>
+          </div>
+        </div>
+        <div *ngIf="currentStep === 0">
+          <app-register-company-form></app-register-company-form>
+        </div>
+        <div *ngIf="currentStep === 2">
+          <h5 class="mb-3 text-secondary">Escolha seu Plano</h5>
+        </div>
+        <div *ngIf="currentStep === 3">
+          <h5 class="mb-3 text-secondary">Confirme os Dados</h5>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between mt-4 pt-4 border-top">
+        <button class="btn btn-outline-secondary px-4 rounded-pill" (click)="prevStep()" [disabled]="currentStep === 0">
+          <i class="fa fa-arrow-left me-2"></i> Voltar </button>
+        <button class="btn btn-primary px-4 rounded-pill" (click)="nextStep()" *ngIf="currentStep < steps.length - 1"> Próximo <i class="fa fa-arrow-right ms-2"></i>
+        </button>
+        <button class="btn btn-success px-4 rounded-pill" *ngIf="currentStep === steps.length - 1"> Finalizar Cadastro <i class="fa fa-check ms-2"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

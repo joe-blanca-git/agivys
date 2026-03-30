@@ -1,0 +1,87 @@
+  <form
+            [formGroup]="formLogin"
+            (ngSubmit)="onSubmit()"
+            novalidate
+          >
+
+            <!-- EMAIL -->
+            <div class="mb-4">
+              <label for="email" class="form-label">E-mail</label>
+              <input
+                [disabled]="isLoading"
+                type="email"
+                id="email"
+                formControlName="email"
+                class="form-control"
+                [ngClass]="{
+                  'is-invalid': (f['email'].touched || submitted) && f['email'].invalid,
+                  'is-valid': (f['email'].touched || submitted) && f['email'].valid
+                }"
+                required
+              />
+
+              <div class="valid-feedback">E-mail válido!</div>
+              <div class="invalid-feedback d-block"
+                *ngIf="(f['email'].touched || submitted) && f['email'].invalid">
+                Informe o e-mail para entrar!
+              </div>
+            </div>
+
+            <!-- SENHA -->
+            <div class="mb-2">
+              <label for="password" class="form-label">Senha</label>
+
+              <div class="input-group">
+                <input
+                  [disabled]="isLoading"
+                  [type]="hidePassword ? 'password' : 'text'"
+                  id="password"
+                  formControlName="password"
+                  class="form-control"
+                  [ngClass]="{
+                    'is-invalid': (f['password'].touched || submitted) && f['password'].invalid,
+                    'is-valid': (f['password'].touched || submitted) && f['password'].valid
+                  }"
+                  required
+                />
+
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="hidePassword = !hidePassword"
+                  [disabled]="isLoading"
+                >
+                  <i
+                    class="fa-solid"
+                    [ngClass]="hidePassword ? 'fa-eye-slash' : 'fa-eye'"
+                  ></i>
+                </button>
+              </div>
+
+              <!-- FEEDBACK FORA -->
+              <div class="invalid-feedback d-block"
+                *ngIf="(f['password'].touched || submitted) && f['password'].invalid">
+                A senha é obrigatória!
+              </div>
+
+              <div class="w-100 text-end mt-1">
+                <a href="" class="cursor-pointer text-agivys-secondary">Recuperar Senha</a>
+              </div>
+               <div class="w-100 text-end mt-3">
+                <a class="cursor-pointer text-agivys-secondary" [routerLink]="['/auth/register']" routerLinkActive="router-link-active" >Criar Nova Conta</a>
+              </div>
+            </div>
+
+            <!-- BOTÃO -->
+            <div class="mt-4 text-center">
+              <button
+                [disabled]="isLoading"
+                type="submit"
+                class="btn btn-agivys-secondary px-4 rounded-pill w-75"
+              >
+                <span *ngIf="isLoading">Verificando dados...</span>
+                <span *ngIf="!isLoading">Entrar</span>
+              </button>
+            </div>
+
+          </form>
