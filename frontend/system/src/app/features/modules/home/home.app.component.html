@@ -1,0 +1,93 @@
+<div class="home">
+  <div class="header">
+    <div class="breadcrumb">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item active">
+            <span>Home</span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+    <div class="title">{{ title }}</div>
+    <div class="description">{{ description }}</div>
+  </div>
+  <div class="content">
+    <div class="cards-most-accessed">
+        <div class="row flex-nowrap overflow-auto">
+            <div
+                class="col-5 col-md-4 col-lg-2 mb-2 flex-shrink-0"
+                *ngFor="let item of mostAccessed"
+            >
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                        <div class="col-auto">
+                            <i class="fa-xl" [ngClass]="item.icon"></i>
+                        </div>
+                        <div class="col">
+                            <span class="card-title">
+                            {{ item.title }}
+                            </span>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="news mt-1">
+        <div class="row">
+            <div class="col-12">
+                <hr>
+            </div>
+            <div class="col-12">
+                <div class="news-title">Notícias</div>
+            </div>
+            <div class="col-12">
+                <div class="row ps-0 pe-0">
+                    <div class="col-12 col-sm-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>

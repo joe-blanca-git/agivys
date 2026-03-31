@@ -1,0 +1,382 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="title"
+  [nzFooter]="footer"
+  [nzWidth]="900"
+  (nzOnCancel)="handleCancel()"
+>
+  <ng-container *nzModalContent>
+    <form
+      nz-form
+      [formGroup]="financialForm"
+      nzLayout="vertical"
+      *ngIf="!isLoadingData; else loadTemplate"
+    >
+      <div class="row">
+        <div class="col-12 mb-4">
+          <div class="card bg-light">
+            <div
+              class="card-title bg-secondary ps-2 pe-1 rounded-end position-absolute me-2 mt-2 text-light"
+              style="top: -20px"
+            >
+              Movimento
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <nz-form-item>
+                    <nz-form-label nzRequired>Pessoa/Cliente</nz-form-label>
+                    <nz-form-control>
+                      <nz-select
+                        formControlName="personId"
+                        nzPlaceHolder="Pesquisar..."
+                        nzShowSearch
+                        [nzShowArrow]="false"
+                        [nzDropdownRender]="newPersonTpl"
+                      >
+                        <nz-option
+                          *ngFor="let item of listPerson; trackBy: trackByItem"
+                          [nzLabel]="item.name"
+                          [nzValue]="item.id"
+                        ></nz-option>
+                      </nz-select>
+                      <ng-template #newPersonTpl>
+                        <nz-divider style="margin: 4px 0"></nz-divider>
+                        <div
+                          style="padding: 8px; cursor: pointer; color: #1890ff"
+                          (click)="onOpenNewModal('newPerson')"
+                        >
+                          <i class="fa fa-square-plus"></i> Novo(a)
+                        </div>
+                      </ng-template>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <nz-form-item>
+                    <nz-form-label nzRequired>Origem</nz-form-label>
+                    <nz-form-control>
+                      <nz-select
+                        formControlName="originId"
+                        nzPlaceHolder="Pesquisar..."
+                        nzShowSearch
+                        [nzShowArrow]="false"
+                        [nzDropdownRender]="newOriginTpl"
+                      >
+                        <nz-option
+                          *ngFor="let item of listOrigin; trackBy: trackByItem"
+                          [nzLabel]="item.description"
+                          [nzValue]="item.id"
+                        ></nz-option>
+                      </nz-select>
+                      <ng-template #newOriginTpl>
+                        <nz-divider style="margin: 4px 0"></nz-divider>
+                        <div
+                          style="padding: 8px; cursor: pointer; color: #1890ff"
+                          (click)="onOpenNewModal('newOrigin')"
+                        >
+                          <i class="fa fa-square-plus"></i> Nova
+                        </div>
+                      </ng-template>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+
+                <div class="col-6 col-md-6">
+                  <nz-form-item>
+                    <nz-form-label>Categoria</nz-form-label>
+                    <nz-form-control>
+                      <nz-select
+                        formControlName="categoryId"
+                        nzPlaceHolder="Pesquisar..."
+                        nzShowSearch
+                        [nzShowArrow]="false"
+                        [nzDropdownRender]="newCategoryTpl"
+                      >
+                        <nz-option
+                          *ngFor="
+                            let item of listCategory;
+                            trackBy: trackByItem
+                          "
+                          [nzLabel]="item.name"
+                          [nzValue]="item.id"
+                        ></nz-option>
+                      </nz-select>
+                      <ng-template #newCategoryTpl>
+                        <nz-divider style="margin: 4px 0"></nz-divider>
+                        <div
+                          style="padding: 8px; cursor: pointer; color: #1890ff"
+                          (click)="onOpenNewModal('newCategory')"
+                        >
+                          <i class="fa fa-square-plus"></i> Nova
+                        </div>
+                      </ng-template>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <nz-form-item
+                    ><nz-form-label nzRequired>Data Movimento</nz-form-label
+                    ><nz-form-control
+                      ><nz-date-picker
+                        style="width: 100%"
+                        formControlName="documentDate"
+                        nzFormat="dd/MM/yyyy"
+                      ></nz-date-picker></nz-form-control
+                  ></nz-form-item>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 mb-4">
+          <div class="card bg-light">
+            <div
+              class="card-title bg-secondary ps-2 pe-1 rounded-end position-absolute me-2 mt-2 text-light"
+              style="top: -20px"
+            >
+              Pagamento
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-12 d-flex gap-3">
+                  <nz-form-item
+                    ><nz-form-label>&nbsp;</nz-form-label
+                    ><nz-form-control
+                      ><nz-switch
+                        formControlName="isPaid"
+                        nzCheckedChildren="Pago"
+                        nzUnCheckedChildren="Pendente"
+                      ></nz-switch></nz-form-control
+                  ></nz-form-item>
+                  <nz-form-item
+                    ><nz-form-label>&nbsp;</nz-form-label
+                    ><nz-form-control
+                      ><nz-switch
+                        formControlName="isInstallment"
+                        nzCheckedChildren="À Vista"
+                        nzUnCheckedChildren="A Prazo"
+                      ></nz-switch></nz-form-control
+                  ></nz-form-item>
+                </div>
+
+                <div class="col-12 col-md-3" *ngIf="financialForm.get('isPaid')?.value">
+                    <nz-form-item
+                      ><nz-form-label nzRequired>Data Pagamento</nz-form-label
+                      ><nz-form-control
+                        ><nz-date-picker
+                          style="width: 100%"
+                          formControlName="paymentDate"
+                          nzFormat="dd/MM/yyyy"
+                        ></nz-date-picker></nz-form-control
+                    ></nz-form-item>
+                </div>
+
+                <div
+                  class="col-12 col-md-3"
+                  *ngIf="financialForm.get('isPaid')?.value"
+                >
+                  <nz-form-item>
+                    <nz-form-label nzRequired>Forma de Pagamento</nz-form-label>
+                    <nz-form-control>
+                      <nz-select
+                        formControlName="paymentMethod"
+                        nzPlaceHolder="Selecione..."
+                      >
+                        <nz-option
+                          nzValue="CASH"
+                          nzLabel="Dinheiro"
+                        ></nz-option>
+                        <nz-option nzValue="PIX" nzLabel="PIX"></nz-option>
+                        <nz-option
+                          nzValue="CREDIT_CARD"
+                          nzLabel="Cartão de Crédito"
+                        ></nz-option>
+                        <nz-option
+                          nzValue="DEBIT_CARD"
+                          nzLabel="Cartão de Débito"
+                        ></nz-option>
+                        <nz-option
+                          nzValue="BANK_TRANSFER"
+                          nzLabel="Transferência"
+                        ></nz-option>
+                      </nz-select>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+
+                <div
+                  class="col-12 col-md-3"
+                  *ngIf="financialForm.get('isPaid')?.value"
+                >
+                  <nz-form-item>
+                    <nz-form-label>Conta</nz-form-label>
+                    <nz-form-control>
+                      <nz-select
+                        formControlName="accountId"
+                        nzShowSearch
+                        [nzShowArrow]="false"
+                      >
+                        <nz-option
+                          *ngFor="let item of listAccount; trackBy: trackByItem"
+                          [nzLabel]="item.name"
+                          [nzValue]="item.id"
+                        ></nz-option>
+                      </nz-select>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <div class="col-12 d-flex justify-content-end">
+                    <nz-form-item>
+                      <nz-form-label nzRequired>Valor Total</nz-form-label>
+                      <nz-form-control
+                        ><nz-input-number
+                          style="width: 100%"
+                          formControlName="totalAmount"
+                          [nzMin]="0.01"
+                          [nzPrecision]="2"
+                          [nzFormatter]="formatterReal"
+                          [nzParser]="parserReal"
+                        ></nz-input-number
+                      ></nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12" *ngIf="!financialForm.get('isInstallment')?.value">
+          <div class="card bg-light">
+            <div
+              class="card-title bg-secondary ps-2 pe-1 rounded-end position-absolute me-2 mt-2 text-light"
+              style="top: -20px"
+            >
+              Parcelas
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <ng-container>
+                  <div class="col-6 col-md-3">
+                    <nz-form-item
+                      ><nz-form-label nzRequired>Nº Parcelas</nz-form-label
+                      ><nz-form-control
+                        ><nz-input-number
+                          style="width: 100%"
+                          formControlName="installmentsCount"
+                          [nzMin]="1"
+                        ></nz-input-number></nz-form-control
+                    ></nz-form-item>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <nz-form-item
+                      ><nz-form-label nzRequired>Vencimento (1ª)</nz-form-label
+                      ><nz-form-control
+                        ><nz-date-picker
+                          style="width: 100%"
+                          formControlName="firstDueDate"
+                          nzFormat="dd/MM/yyyy"
+                        ></nz-date-picker></nz-form-control
+                    ></nz-form-item>
+                  </div>
+                  <div class="col-12 mt-4">
+                    <nz-table
+                      #tplTable
+                      [nzData]="installments"
+                      [nzFrontPagination]="false"
+                      nzSize="small"
+                      [nzScroll]="{ y: '200px' }"
+                    >
+                      <thead>
+                        <tr>
+                          <th>Nº</th>
+                          <th>Vencimento</th>
+                          <th>Valor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let d of tplTable.data">
+                          <td>{{ d.number }}</td>
+                          <td>{{ d.dueDate | format: "date" }}</td>
+                          <td>{{ d.value | format: "currency" }}</td>
+                        </tr>
+                      </tbody>
+                    </nz-table>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <nz-form-item>
+            <nz-form-label>Descrição</nz-form-label>
+            <nz-form-control
+              ><nz-textarea-count [nzMaxCharacterCount]="100">
+                <textarea
+                  rows="2"
+                  formControlName="description"
+                  nz-input
+                ></textarea></nz-textarea-count
+            ></nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+
+  <ng-template #footer>
+    <div class="d-flex justify-content-end gap-2">
+      <button
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="isLoadingData"
+        (click)="handleCancel()"
+      >
+        <i class="fa fa-xmark"></i> Cancelar
+      </button>
+      <button
+        class="btn btn-primary btn-sm"
+        [disabled]="isLoadingData || financialForm?.invalid"
+        (click)="handleOk()"
+      >
+        <i
+          class="fa"
+          [ngClass]="isLoadingData ? 'fa-refresh fa-spin' : 'fa-check-double'"
+        ></i>
+        Confirmar
+      </button>
+    </div>
+  </ng-template>
+
+  <ng-template #loadTemplate>
+    <div
+      class="d-flex w-100 justify-content-center align-items-center flex-column"
+      style="min-height: 20vh"
+    >
+      <nz-spin nzTip="Carregando..." class="w-100"> </nz-spin>
+    </div>
+  </ng-template>
+</nz-modal>
+
+<app-new-person-full
+  [isVisible]="isPersonModalVisible"
+  (saved)="onPersonCreated($event)"
+  (close)="onCloseNewModal('newPerson')"
+></app-new-person-full>
+<app-new-financial-origin
+  [isVisible]="isOriginModalVisible"
+  (saved)="onOriginCreated($event)"
+  (close)="onCloseNewModal('newOrigin')"
+></app-new-financial-origin>
+<app-new-financial-category
+  [isVisible]="isCategoryVisible"
+  (saved)="onCategoryCreated($event)"
+  (close)="onCloseNewModal('newCategory')"
+></app-new-financial-category>

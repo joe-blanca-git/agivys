@@ -1,0 +1,123 @@
+:host {
+  text-align: center;
+}
+
+.home {
+  // background-image: url('../../../../../public/images/logo/logo-bit.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 25%;
+  min-height: 85vh;
+  // opacity: 0.2;
+  padding: 3vh 2vw;
+}
+
+.setup {
+  // background-image: url('../../../../../public/images/logo/logo-bit.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 25%;
+  min-height: 85vh;
+  // opacity: 0.2;
+  padding: 3vh 2vw;
+
+  .account {
+    .avatar {
+      height: 70px;
+
+      :host-context(.screen-large) & {
+        height: 100px;
+      }
+    }
+  }
+}
+
+.income, .expense, .account-receive {
+  // background-image: url('../../../../../public/images/logo/logo-bit.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 25%;
+  min-height: 80vh;
+  // opacity: 0.2;
+  padding: 3vh 2vw;
+}
+
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  text-align: left;
+
+  .title {
+    font-size: x-large;
+    color: rgb(3, 3, 91);
+  }
+
+  .description {
+    font-size: medium;
+    color: gray;
+  }
+}
+
+.content {
+  .cards-most-accessed {
+    font-size: x-large;
+
+    :host-context(.screen-x-small) & {
+      font-size: x-small;
+    }
+
+    :host-context(.screen-small) & {
+      font-size: small;
+    }
+
+    :host-context(.screen-medium) & {
+      font-size: medium;
+    }
+
+    :host-context(.screen-large) & {
+      font-size: large;
+    }
+  }
+
+  .news {
+    text-align: left;
+
+    .news-title {
+      font-size: x-large;
+      color: rgb(3, 3, 91);
+    }
+  }
+
+  .cards-dash {
+    font-size: x-large;
+
+    :host-context(.screen-x-small) & {
+      font-size: x-small;
+    }
+
+    :host-context(.screen-small) & {
+      font-size: small;
+    }
+
+    :host-context(.screen-medium) & {
+      font-size: medium;
+    }
+
+    :host-context(.screen-large) & {
+      font-size: large;
+    }
+  }
+
+  .cards-mobile {
+    .card-label {
+      font-weight: 700;
+    }
+  }
+}
+
+@media (max-width: 991px) {
+}
+

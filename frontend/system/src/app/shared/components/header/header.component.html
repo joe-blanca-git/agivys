@@ -1,0 +1,28 @@
+<div class="row mt-3 ms-3 ms-md-0">
+  <div class="col-1 d-flex justify-content-start align-items-center">
+    <button
+      class="btn btn-sm btn-none d-none d-md-block"
+      (click)="onChangeColapsed()"
+    >
+      <i
+        class="fa-solid"
+        [ngClass]="{
+          'fa-chevron-right': collapsed,
+          'fa-chevron-left': !collapsed,
+        }"
+      ></i>
+    </button>
+    <button
+      class="btn btn-sm btn-none d-md-none d-block"
+      (click)="onChangeColapsed()"
+    >
+      <i
+        class="fa-solid fa-bars fa-xl"
+      ></i>
+    </button>
+  </div>
+  <div class="col-11 d-flex justify-content-end align-items-center gap-2 pe-4">
+    <app-notification></app-notification>
+    <app-user-pannel  class="d-none d-md-block"></app-user-pannel>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+<div class="dropdown">
+  <button
+    class="btn btn-sm btn-outline-primary dropdown-toggle"
+    type="button"
+    id="dropdownMenuButton1"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    {{ user.email }}
+  </button>
+  <ul class="dropdown-menu p-2" aria-labelledby="dropdownMenuButton1">
+    <ul class="list-group">
+      <li
+        class="list-group-item border-0 mb-3 d-flex align-items-center justify-content-start gap-2"
+        *ngFor="let option of options"
+        [routerLink]="[option.route]"
+        routerLinkActive="router-link-active"
+        [title]="option.description"
+      >
+        <button
+          class="btn btn-sm w-100 btn-outline-primary border-0 d-flex align-items-center justify-content-start gap-2"
+        >
+          <i [class]="option.icon"></i>
+          <span>{{ option.name }}</span>
+        </button>
+      </li>
+      <li
+        class="list-group-item border-0 d-flex align-items-center justify-content-start gap-2"
+      >
+        <button
+          (click)="onLogOut()"
+          class="btn btn-sm w-100 btn-outline-primary border-0 d-flex align-items-center justify-content-start gap-2"
+        >
+          <i class="fa-solid fa-door-open"></i>
+          <span>Sair</span>
+        </button>
+      </li>
+    </ul>
+  </ul>
+</div>

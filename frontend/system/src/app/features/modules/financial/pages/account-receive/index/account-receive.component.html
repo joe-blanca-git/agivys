@@ -1,0 +1,135 @@
+<div class="account-receive">
+  <div class="header mb-4">
+    <div class="row w-100">
+      <div class="col-6">
+        <div class="breadcrumb d-none d-sm-block">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <span>FINANCEIRO</span>
+              </li>
+              <li class="breadcrumb-item active">
+                <span>RECEITAS</span>
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+      <div class="col-6 d-lg-flex justify-content-end gap-2 d-none">
+        <!-- <button class="btn btn-outline-primary" (click)="newFinancialMovStatusChange()"><i class="fa fa-plus"></i>&nbsp;<span>Nova Receita</span></button> -->
+        <button class="btn btn-outline-primary">
+          <i class="fa fa-file-pdf"></i>&nbsp; <span>Exportar</span>
+        </button>
+      </div>
+    </div>
+    <div class="title text-success">
+      <i class="fa-solid fa-circle-down text-sucess"></i>
+      {{ title }}
+    </div>
+    <div class="description">{{ description }}</div>
+  </div>
+  <div class="content">
+    <div class="cards-dash">
+      <div class="row">
+        <div class="col-6 col-md-4 col-lg-3 pb-2 flex-shrink-0" *ngFor="let item of dashboardCards">
+          <div class="card" [ngClass]="item.bg">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-9 d-flex flex-column align-items-start">
+                  <span class="h6">{{ item.title }}</span>
+                  <span *ngIf="item.value > 0 else notFoundSpan">{{ item.value | format: "currency" }}</span>
+                </div>
+                <div class="col-3">
+                  <i class="fa-xl" [ngClass]="item.icon"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-12 mb-2 col-md-4 col-lg-4 d-flex align-items-start justify-content-end flex-column">
+          <label class="text-secondary text-smaller">Pesquisar</label>
+          <nz-input-group [nzPrefix]="prefixIconSearch">
+            <input type="text" nz-input [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Pesquisar..." />
+          </nz-input-group>
+          <ng-template #prefixIconSearch>
+            <i class="fa-solid fa-magnifying-glass text-muted"></i>
+          </ng-template>
+        </div>
+        <div class="col-12 mb-2 col-md-2 d-flex align-items-start justify-content-end flex-column">
+          <label class="form-label text-secondary small">Período de Lançamento</label>
+          <nz-range-picker class="w-100" [nzAllowClear]="false" [(ngModel)]="dateRangeApi" [nzRanges]="ranges" nzFormat="dd/MM/yyyy" (ngModelChange)="loadData()"></nz-range-picker>
+        </div>
+        <div class="col-12 mb-2 col-md-2 d-flex align-items-start justify-content-end flex-column">
+          <label class="form-label text-secondary small">Período de Vencimento</label>
+          <nz-range-picker class="w-100" [(ngModel)]="dateRangeFilter" [nzRanges]="ranges" nzFormat="dd/MM/yyyy" (ngModelChange)="applyFilters()"></nz-range-picker>
+        </div>
+      </div>
+      <div class="row d-none d-lg-flex">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <nz-table #sortTable [nzData]="filteredInstallments" [nzLoading]="isLoadingData" nzSize="small">
+                <thead>
+                  <tr>
+                    <th *ngFor="let col of listOfColumn" [nzSortFn]="col.compare" class="text-center">
+                      {{ col.title }}
+                    </th>
+                    <th class="text-center"> Detalhes </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let data of sortTable.data">
+
+                    <td class="text-center">
+                      <span class="badge bg-secondary-subtle text-secondary">
+                        {{ data.number }}/{{ data.totalInstallments }}
+                      </span>
+                    </td>
+
+                    <td [class.text-danger]="data.isOverdue" class="text-center">
+                      <i *ngIf="data.isOverdue" class="fa-solid fa-circle-exclamation ms-1" nz-tooltip nzTooltipTitle="Vencido"></i>
+                      <i *ngIf="!data.isOverdue" class="fa-solid fa-clock text-secondary ms-1" nz-tooltip nzTooltipTitle="Vencido"></i>
+                      {{ data.dueDate | format: "date" }}
+                    </td>
+
+                    <td class="text-center">{{ data.description }}</td>
+                    <td class="text-center">
+                      <i class="fa-solid fa-user-circle me-2 text-muted"></i>{{ data.personName }}
+                    </td>
+                    <td class="text-center">
+                      <span class="text-muted">{{ data.categoryName }}</span>
+                    </td>
+                    <td class="text-center">
+                      <nz-tag [nzColor]="getStatusColor(data.status, data.isOverdue)">
+                        {{ data.isOverdue ? "VENCIDO" : "PENDENTE" }}
+                      </nz-tag>
+                    </td>
+                    <td class="text-center">
+                      {{ data.value | format: "currency" }}
+                    </td>
+                    <td class="text-center">
+
+                      <button class="btn btn-sm btn-outline-primary shadow-sm" nz-tooltip nzTooltipTitle="Ver detalhes" (click)="onPayFinancial(data)">
+                        <i class="fa-solid fa-list-check"></i>
+                      </button>
+
+                    </td>
+                  </tr>
+                </tbody>
+              </nz-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #notFoundSpan>
+  <span>---</span>
+</ng-template>
+
+<app-pay-financial [isVisible]="isVisiblePayFinancial" (close)="onPayFinancialStatusChange()"></app-pay-financial>

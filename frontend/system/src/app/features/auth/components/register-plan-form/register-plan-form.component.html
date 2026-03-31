@@ -1,0 +1,49 @@
+<div class="row">
+    <div class="col-12 col-md-6 text-start mb-4">
+             <div class="col-12">
+        <div class="row mt-2">
+          <div class="col-auto">
+            <button type="button" class="btn btn-sm solution-btn" [class.active]="selectedApp === 'agrovys'" (click)="selectOption('agrovys')">
+              <img class="logo-button" src="images/logo/logo-agrovys-brand.png" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 mt-4" *ngIf="selected">
+        <div *ngIf="selected === 'vystra'" class="solution-card">
+          <div class="d-flex align-items-center">
+            <img src="images/logo/logo-vystran.png" height="100" alt="">
+            <h5 class="solution-title">Vystra ERP</h5>
+          </div>
+          <p>Gestão completa da sua empresa com controle financeiro, vendas, compras e estoque integrados em um único sistema.</p>
+          <ul>
+            <li>Controle financeiro completo</li>
+            <li>Gestão de vendas e pedidos</li>
+            <li>Controle de compras</li>
+            <li>Gestão de estoque inteligente</li>
+            <li>Integração com e-commerce</li>
+          </ul>
+        </div>
+
+        <div *ngIf="selected === 'agrovys'" class="solution-card">
+          <div class="d-flex align-items-center">
+            <img src="images/logo/logo-agrovys.png" height="100" alt="">
+            <h5 class="solution-title">AgroVys</h5>
+          </div>
+          <p>Plataforma que integra dados agrícolas com máquinas, operações e sistemas como o Operations Center, entregando controle total da sua operação.</p>
+          <ul>
+            <li>Integração com máquinas agrícolas</li>
+            <li>Gestão de fazendas e talhões</li>
+            <li>Monitoramento em tempo real</li>
+            <li>Gestão de ordens de serviço</li>
+            <li>Controle de combustível</li>
+            <li>Alertas inteligentes de falhas</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 text-start mb-4">
+
+    </div>
+</div>

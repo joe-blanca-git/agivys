@@ -1,0 +1,39 @@
+.plan-card {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  border-radius: 16px;
+  border: 2px solid transparent !important;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,0.1) !important;
+  }
+
+  &.selected {
+    border-color: #007bff !important;
+    background-color: #f8fbff;
+    transform: scale(1.03);
+    box-shadow: 0 1rem 3rem rgba(0, 123, 255, 0.15) !important;
+    z-index: 10;
+  }
+}
+
+.text-overline {
+  font-size: 0.4rem;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  color: #6c757d;
+  text-transform: uppercase;
+}
+
+.price-tag {
+  .currency { font-size: 1rem; font-weight: 600; vertical-align: top; margin-top: 5px; display: inline-block; }
+  .amount { font-size: 1.5rem; font-weight: 800; color: #212529; }
+  .period { font-size: 0.9rem; color: #6c757d; }
+}
+
+.text-small { font-size: 0.6rem; font-weight: 500; }
+.text-extra-small { font-size: 0.8rem; }
+.text-strike { text-decoration: line-through; opacity: 0.6; }
+
+.bi-check-circle-fill { font-size: 1rem; }

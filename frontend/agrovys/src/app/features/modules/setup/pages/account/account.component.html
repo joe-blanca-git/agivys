@@ -1,0 +1,260 @@
+<div class="setup">
+  <div class="header">
+    <div class="title">{{ title }}</div>
+    <div class="description">{{ description }}</div>
+  </div>
+  <div class="content account">
+    <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="user-tab" data-bs-toggle="tab" data-bs-target="#user" type="button" role="tab" aria-controls="user" aria-selected="true">
+          <i class="fa fa-user"></i> Usuário </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="company-tab" data-bs-toggle="tab" data-bs-target="#company" type="button" role="tab" aria-controls="company" aria-selected="false">
+          <i class="fa fa-building"></i> Empresa </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="planns-tab" data-bs-toggle="tab" data-bs-target="#planns" type="button" role="tab" aria-controls="planns" aria-selected="false">
+          <i class="fa fa-money-check-dollar"></i> Plano </button>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+
+      <div class="tab-pane fade show active" id="user" role="tabpanel" aria-labelledby="user-tab">
+        <div class="row mt-3">
+          <div class="col-3 col-lg-2 d-flex justify-content-center align-items-center border pb-2 pt-2 rounded">
+            <div class="img">
+              <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/219/219983.png" alt="user.png" />
+            </div>
+          </div>
+          <div class="col-9 col-lg-10">
+            <div class="row text-start">
+              <div class="col-12 col-lg-6">
+                <label for="name" class="form-label mb-0">Nome</label>
+                <input type="text" class="form-control mb-2" id="name" />
+              </div>
+              <div class="col-12 col-lg-2">
+                <label for="document" class="form-label mb-0">CPF</label>
+                <input type="text" class="form-control mb-2" id="document" />
+              </div>
+              <div class="col-6 col-lg-4">
+                <label for="birth" class="form-label mb-0">Nascimento</label>
+                <input type="text" class="form-control mb-2" id="birth" />
+              </div>
+              <div class="col-6">
+                <label for="name" class="form-label mb-0">Nível de Acesso</label>
+                <input type="text" class="form-control mb-2" id="name" />
+              </div>
+              <div class="col-12 col-lg-6">
+                <label for="name" class="form-label mb-0">Cargo</label>
+                <input type="text" class="form-control mb-2" id="name" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row text-start mt-2">
+          <div class="col-12">
+            <hr />
+          </div>
+          <div class="col-12 mb-2">
+            <span class="h4">Contato</span>
+          </div>
+          <div class="col-6 col-lg-3">
+            <label for="phonePrimary" class="form-label mb-0">Telefone Residencial</label>
+            <input type="text" class="form-control mb-2" id="phonePrimary" />
+          </div>
+          <div class="col-6 col-lg-3">
+            <label for="phoneSecondary" class="form-label mb-0">Telefone Celular</label>
+            <input type="text" class="form-control mb-2" id="phoneSecondary" />
+          </div>
+          <div class="col-6 col-lg-3">
+            <label for="name" class="form-label mb-0">E-mail</label>
+            <input type="email" class="form-control mb-2" id="name" />
+          </div>
+          <div class="col-6 col-lg-3">
+            <label for="name" class="form-label mb-0">E-mail Alternativo</label>
+            <input type="email" class="form-control mb-2" id="name" />
+          </div>
+        </div>
+        <div class="row text-start mt-2">
+          <div class="col-12">
+            <hr />
+          </div>
+          <div class="col-12 mb-2">
+            <span class="h4">Endereço</span>
+          </div>
+          <div class="col-4">
+            <label for="zipCode" class="form-label mb-0">CEP</label>
+            <input type="text" class="form-control mb-2" id="zipCode" />
+          </div>
+          <div class="col-8">
+            <label for="city" class="form-label mb-0">Cidade</label>
+            <input type="text" class="form-control mb-2" id="city" />
+          </div>
+          <div class="col-12">
+            <label for="street" class="form-label mb-0">Rua</label>
+            <input type="text" class="form-control mb-2" id="street" />
+          </div>
+          <div class="col-6">
+            <label for="neighborhood" class="form-label mb-0">Bairro</label>
+            <input type="text" class="form-control mb-2" id="neighborhood" />
+          </div>
+          <div class="col-6">
+            <label for="state" class="form-label mb-0">Estado</label>
+            <input type="text" class="form-control mb-2" id="state" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 text-end">
+            <button class="btn btn-sm btn-outline-primary">
+              <i class="fa fa-pencil" aria-hidden="true"></i> Editar </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="company" role="tabpanel" aria-labelledby="company-tab">
+        <div class="row mt-3">
+          <div class="col-3 col-lg-2 d-flex justify-content-center align-items-center border pb-2 pt-2 rounded">
+            <div class="img">
+              <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/5149/5149019.png" alt="logo.png" />
+            </div>
+          </div>
+          <div class="col-9 col-lg-10">
+            <div class="row text-start">
+              <div class="col-12 col-lg-6">
+                <label for="nameCompany" class="form-label mb-0">Razão Social</label>
+                <input type="text" class="form-control mb-2" id="nameCompany" />
+              </div>
+              <div class="col-12 col-lg-2">
+                <label for="documentCompany" class="form-label mb-0">CNPJ</label>
+                <input type="text" class="form-control mb-2" id="documentCompany" />
+              </div>
+              <div class="col-6 col-lg-4">
+                <label for="opening" class="form-label mb-0">Abertura</label>
+                <input type="text" class="form-control mb-2" id="opening" />
+              </div>
+              <div class="col-6">
+                <label for="activity" class="form-label mb-0">Atividade</label>
+                <input type="text" class="form-control mb-2" id="activity" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row text-start mt-2">
+          <div class="col-12">
+            <hr />
+          </div>
+          <div class="col-12 mb-2">
+            <span class="h4">Contato</span>
+          </div>
+          <div class="col-6 col-lg-3">
+            <label for="phonePrimary" class="form-label mb-0">Telefone Comercial</label>
+            <input type="text" class="form-control mb-2" id="phonePrimary" />
+          </div>
+          <div class="col-6 col-lg-3">
+            <label for="phoneSecondary" class="form-label mb-0">Telefone Celular</label>
+            <input type="text" class="form-control mb-2" id="phoneSecondary" />
+          </div>
+          <div class="col-6 col-lg-3">
+            <label for="name" class="form-label mb-0">E-mail</label>
+            <input type="email" class="form-control mb-2" id="name" />
+          </div>
+          <div class="col-6 col-lg-3">
+            <label for="name" class="form-label mb-0">E-mail Alternativo</label>
+            <input type="email" class="form-control mb-2" id="name" />
+          </div>
+        </div>
+        <div class="row text-start mt-2">
+          <div class="col-12">
+            <hr />
+          </div>
+          <div class="col-12 mb-2">
+            <span class="h4">Endereço</span>
+          </div>
+          <div class="col-4">
+            <label for="zipCode" class="form-label mb-0">CEP</label>
+            <input type="text" class="form-control mb-2" id="zipCode" />
+          </div>
+          <div class="col-8">
+            <label for="city" class="form-label mb-0">Cidade</label>
+            <input type="text" class="form-control mb-2" id="city" />
+          </div>
+          <div class="col-12">
+            <label for="street" class="form-label mb-0">Rua</label>
+            <input type="text" class="form-control mb-2" id="street" />
+          </div>
+          <div class="col-6">
+            <label for="neighborhood" class="form-label mb-0">Bairro</label>
+            <input type="text" class="form-control mb-2" id="neighborhood" />
+          </div>
+          <div class="col-6">
+            <label for="state" class="form-label mb-0">Estado</label>
+            <input type="text" class="form-control mb-2" id="state" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 text-end">
+            <button class="btn btn-sm btn-outline-primary">
+              <i class="fa fa-pencil" aria-hidden="true"></i> Editar </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="planns" role="tabpanel" aria-labelledby="planns-tab">
+        <div class="row text-start mt-4">
+          <div class="col-3 col-lg-auto d-flex flex-column">
+            <span class="h6">Plano:</span>
+            <span>Basic</span>
+          </div>
+          <div class="col-4 col-lg-auto d-flex flex-column">
+            <span class="h6">Valor:</span>
+            <span>R$ 355,00 <small class="text-small">Anual</small>
+            </span>
+          </div>
+          <div class="col-5 col-lg-auto d-flex flex-column">
+            <span class="h6">Renovação</span>
+            <span>01/01/2027</span>
+          </div>
+
+          <div class="col-12">
+            <hr />
+          </div>
+          <div class="col-12 mb-2">
+            <span class="h4">Histórico de Pagamentos</span>
+          </div>
+          <div class="col-12 d-none d-md-block">
+            <nz-table #sortTable [nzData]="listOfData">
+                <thead>
+                  <tr>
+                    <th
+                      *ngFor="let column of listOfColumn; trackBy: trackColumn"
+                      [nzSortFn]="column.compare"
+                      [nzSortPriority]="column.priority"
+                    >
+                      {{ column.title }}
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let data of sortTable.data; trackBy: trackData">
+                    <td>{{ data.dueDate | format: "date"}}</td>
+                    <td>{{ data.payDate | format: "date"}}</td>
+                    <td>{{ data.description }}</td>
+                    <td>{{ data.amount | format: "currency"}}</td>
+                    <td>{{ data.method }}</td>
+                    <td>{{ data.status }}</td>
+                  </tr>
+                </tbody>
+              </nz-table>
+          </div>
+          <div class="col-12 d-block d-md-none">
+            cards para mobile
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

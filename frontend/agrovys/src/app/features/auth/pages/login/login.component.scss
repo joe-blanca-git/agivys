@@ -1,0 +1,43 @@
+:host {
+  width: 100%;
+  height: 100%;
+}
+
+.container-fluid {
+  background-image: url("https://materiaisparaprofes.com.br/wp-content/uploads/2022/12/fundo-login-min-1080x720.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+
+  .row {
+    height: 100vh;
+    width: 100%;
+
+    :host-context(.screen-small) & {
+      height: 70vh;
+    }
+  }
+}
+
+.icon {
+  position: absolute;
+  top:-4rem;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.logo{
+  width: 8rem;
+}
+
+.links{
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}

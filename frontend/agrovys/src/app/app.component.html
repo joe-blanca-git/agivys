@@ -1,0 +1,61 @@
+<div class="content h-100 overflow-x-hidden" *ngIf="isRouteReady">
+  <ng-container *ngIf="isPublicRoute">
+    <router-outlet></router-outlet>
+  </ng-container>
+
+  <nz-layout *ngIf="!isPublicRoute">
+    
+    <nz-sider
+      *ngIf="!isMobile"
+      nzTheme="light"
+      nzCollapsible
+      [nzWidth]="200"
+      [nzTrigger]="null"
+      [(nzCollapsed)]="isVisibleMenu"
+    >
+      <div class="logo-container p-2 text-center">
+        <a routerLink="/bit-admin/home">
+          <img [src]="isVisibleMenu ? 'images/logo/logo-bit-sm.png' : 'images/logo/logo-bit.png'" 
+               [height]="isVisibleMenu ? 30 : 60" />
+        </a>
+      </div>
+      <app-sider-menu [collapsed]="isVisibleMenu"></app-sider-menu>
+    </nz-sider>
+
+    <nz-drawer
+      *ngIf="isMobile"
+      nzWidth="200"
+      [nzVisible]="isVisibleMenu"
+      nzPlacement="left" 
+      [nzTitle]="''"
+      [nzClosable]="false"
+      (nzOnClose)="isVisibleMenu = false"
+    >
+      <ng-container *nzDrawerContent>
+        <div class="mb-4 text-center">
+           <img src="images/logo/logo-bit.png" height="60" />
+        </div>
+        <app-sider-menu [collapsed]="false"></app-sider-menu>
+      </ng-container>
+    </nz-drawer>
+
+    <nz-layout>
+      <nz-header class="bg-light border p-0">
+        <app-header (collapsedOut)="onChangeVisibleMenu($event)"></app-header>
+      </nz-header>
+
+      <nz-content class="p-3">
+        <!-- <div class="card border-0 bg-transparent mb-3">
+          <p-breadcrumb [model]="items" [home]="home"></p-breadcrumb>
+        </div> -->
+        <router-outlet></router-outlet>
+      </nz-content>
+
+      <nz-footer class="text-center">
+        Desenvolvido por <a href="https://joederblanca.com.br" target="_blank">Joeder Blanca</a>
+      </nz-footer>
+    </nz-layout>
+  </nz-layout>
+</div>
+
+<app-toast-container></app-toast-container>

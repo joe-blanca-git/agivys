@@ -1,0 +1,18 @@
+<ul
+  nz-menu
+  [nzMode]="collapsed ? 'vertical' : 'inline'"
+>
+  <li
+    *ngFor="let item of menu"
+    nz-submenu
+    [nzTitle]="item.title"
+    [nzIcon]="item.icon"
+    
+  >
+    <ul>
+      <li class="" *ngFor="let subItem of item.submenus" nz-menu-item [routerLink]="subItem.route">
+        <u [routerLink]="subItem.route">{{ subItem.title }}</u>
+      </li>
+    </ul>
+  </li>
+</ul>
