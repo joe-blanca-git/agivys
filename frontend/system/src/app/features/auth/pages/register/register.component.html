@@ -1,9 +1,9 @@
-<div class="container-fluid p-4 p-md-5">
+<div class="container-fluid px-4 px-md-5">
   <div class="card shadow-sm border-0 rounded-4">
     <div class="card-header d-flex flex-column justify-content-center align-items-center">
       <div class="d-flex align-items-center">
         <img class="img-logo-header cursor-pointer" [routerLink]="['/auth/login']" src="/images/logo/logo.png" />
-        <span class="title h1 m-0 text-agivys">CRIE SUA CONTA AGI <span class="text-agivys-secondary">VYS</span>
+        <span class="title h1 m-0 text-agivys">CRIE SUA CONTA AGI<span class="text-agivys-secondary">VYS</span>
         </span>
       </div>
       <span class="text-secondary">Preencha as informações ou crie sua conta pelo WhatsApp de forma rápida e prática respondendo algumas perguntas. <a href="" class="fw-bold text-success">
@@ -31,6 +31,7 @@
         </div>
       </div>
       <div class="steper-body py-1 min-vh-50">
+
         <div *ngIf="currentStep === 9">
           <app-register-form *ngIf="!isPersonalDataComplete"></app-register-form>
           <div *ngIf="isPersonalDataComplete" class="alert alert-success text-start">
@@ -50,15 +51,19 @@
             <p class="mb-0 mt-3 text-muted small"> * Estes dados já foram registrados. Para alterar seus Dados Pessoais <a class="fw-bold text-agivys" [href]="urlAccesAgiVys">ACESSE SUA CONTA</a> na plataforma AGIVYS ou finalize seu cadastro clicando no botão Próximo!. </p>
           </div>
         </div>
+
         <div *ngIf="currentStep === 0">
           <app-register-company-form></app-register-company-form>
         </div>
+
         <div *ngIf="currentStep === 2">
-          <h5 class="mb-3 text-secondary">Escolha seu Plano</h5>
+          <app-register-plan-form></app-register-plan-form>
         </div>
+
         <div *ngIf="currentStep === 3">
           <h5 class="mb-3 text-secondary">Confirme os Dados</h5>
         </div>
+
       </div>
       <div class="d-flex justify-content-between mt-4 pt-4 border-top">
         <button class="btn btn-outline-secondary px-4 rounded-pill" (click)="prevStep()" [disabled]="currentStep === 0">

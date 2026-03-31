@@ -1,0 +1,228 @@
+::ng-deep html,
+::ng-deep body {
+  margin: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+// colors
+$agrovys-color: #245625;
+$agrovys-color-secondary: #afe75c;
+
+// fundos
+.bg-agrovys {
+  background-color: $agrovys-color !important;
+  color: #fff !important;
+}
+
+.bg-agrovys-secondary {
+  background-color: $agrovys-color-secondary !important;
+  color: #fff !important;
+}
+
+//bordas
+.border-agrovys{
+  border-color: $agrovys-color;
+}
+
+.border-top-agrovys-secondary{
+  border-top: $agrovys-color-secondary solid;
+}
+
+// texto
+.text-agrovys {
+  color: $agrovys-color !important;
+}
+
+.text-agrovys-secondary{
+  color: $agrovys-color-secondary !important;
+}
+
+.text-x-small {
+  font-size: x-small;
+}
+
+.text-small {
+  font-size: small;
+}
+
+.text-smaller {
+  font-size: smaller;
+}
+
+.text-medium {
+  font-size: medium;
+}
+
+.text-large {
+  font-size: large;
+}
+
+.text-larger {
+  font-size: larger;
+}
+
+.breadcrumb {
+  color: $agrovys-color;
+}
+
+//botões
+.btn-agrovys-primary {
+  background-color: $agrovys-color !important;
+  color: #fff !important;
+  transition: all 0.2s ease !important;
+
+  &:hover {
+    background-color: darken($agrovys-color, 8%) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    background-color: darken($agrovys-color, 15%) !important;
+    transform: scale(0.97) !important;
+  }
+}
+
+.btn-agrovys-secondary {
+  background-color: $agrovys-color-secondary !important;
+  color: #fff !important;
+  transition: all 0.2s ease !important;
+
+  &:hover {
+    background-color: darken($agrovys-color-secondary, 8%) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    background-color: darken($agrovys-color-secondary, 15%) !important;
+    transform: scale(0.97) !important;
+  }
+}
+
+/* ===============================
+   NZ-RANGE-PICKER RESPONSIVO
+   Mobile / Tablet
+   =============================== */
+
+@media (max-width: 991px) {
+  ::ng-deep .ant-picker-panel-container .ant-picker-panels {
+    display: block !important;
+    width: min-content !important;
+    overflow-y: auto;
+    max-height: 280px;
+  }
+
+  /* Reduz o tamanho geral do dropdown */
+  .ant-picker-dropdown {
+    transform: scale(0.8);
+    margin: 0 !important;
+  }
+
+  /* Corrige origem do scale conforme posição */
+  .ant-picker-dropdown-placement-bottomLeft,
+  .ant-picker-dropdown-placement-bottomRight {
+    transform-origin: top left;
+  }
+
+  .ant-picker-dropdown-placement-topLeft,
+  .ant-picker-dropdown-placement-topRight {
+    transform-origin: bottom left;
+  }
+
+  /* Remove segundo mês (range picker) */
+  .ant-picker-panel-container {
+    .ant-picker-panels {
+      .ant-picker-panel:last-child {
+        display: none;
+      }
+    }
+  }
+
+  /* Ajusta largura para não sobrar espaço */
+  .ant-picker-panel {
+    width: 100% !important;
+  }
+
+  /* Header menor */
+  .ant-picker-header {
+    padding: 4px 8px;
+  }
+
+  .ant-picker-header-view {
+    font-size: 12px;
+  }
+
+  /* Células do calendário menores */
+  .ant-picker-cell {
+    padding: 2px 0;
+  }
+
+  .ant-picker-cell-inner {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 11px;
+  }
+
+  /* Footer menor */
+  .ant-picker-footer {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  /* Texto do input menor */
+  .ant-picker-input > input {
+    font-size: 12px;
+  }
+
+  /* Ícone do calendário menor */
+  .ant-picker-suffix {
+    font-size: 12px;
+  }
+}
+
+.content-site {
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+nz-footer {
+  // line-height: 1.5;
+}
+
+nz-content {
+  min-height: 120px;
+  // line-height: 120px;
+}
+
+nz-layout {
+  margin-bottom: 48px;
+}
+
+nz-layout nz-layout,
+nz-layout:last-child {
+  margin: 0;
+  height: 100%;
+}
+
+.ant-layout-header {
+  line-height: 10px;
+}
+
+.ant-table {
+  :host-context(.screen-medium) & {
+    font-size: x-small;
+  }
+
+  :host-context(.screen-large) & {
+    font-size: small;
+  }
+}
+
+.p-breadcrumb {
+  background: #f0f2f5 !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

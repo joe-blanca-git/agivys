@@ -1,0 +1,164 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="title"
+  [nzFooter]="footer"
+  [nzWidth]="800"
+  (nzOnCancel)="handleCancel()"
+>
+  <ng-container *nzModalContent>
+    <form [formGroup]="newPersonForm" nz-form nzLayout="vertical">
+      <div class="row">
+        <div class="col-12 col-md-4">
+          <nz-form-item>
+            <nz-form-label nzRequired>E-mail Principal</nz-form-label>
+            <nz-form-control>
+              <input nz-input [disabled]="isLoadingData" placeholder="email@exemplo.com" formControlName="email" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <nz-form-item>
+            <nz-form-label>E-mail Secundário</nz-form-label>
+            <nz-form-control nzErrorTip="Informe um e-mail válido">
+              <input nz-input [disabled]="isLoadingData"  placeholder="outro-email@exemplo.com" formControlName="emailSecondary" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <nz-form-item>
+            <nz-form-label nzRequired>Tipo de Usuário</nz-form-label>
+            <nz-form-control>
+              <nz-select  [disabled]="isLoadingData" formControlName="userType" nzPlaceHolder="Selecione...">
+                <nz-option nzValue="SUPPLIER" nzLabel="Fornecedor"></nz-option>
+                <nz-option nzValue="CLIENT" nzLabel="Cliente"></nz-option>
+                <nz-option nzValue="CARRIER" nzLabel="Transportadora"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div class="col-12" formGroupName="profileData">
+          <div class="row">
+            <div class="col-12 col-md-6">
+              <nz-form-item>
+                <nz-form-label nzRequired>Nome</nz-form-label>
+                <nz-form-control>
+                  <input [disabled]="isLoadingData"  nz-input placeholder="Informe o Nome..." formControlName="name" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div class="col-12 col-md-3">
+              <nz-form-item>
+                <nz-form-label nzRequired>Documento (CPF/CNPJ)</nz-form-label>
+                <nz-form-control>
+                  <input [disabled]="isLoadingData"  nz-input placeholder="00.000.000/0000-00" formControlName="document" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div class="col-12 col-md-3">
+              <nz-form-item>
+                <nz-form-label nzRequired>Data de Nascimento</nz-form-label>
+                <nz-form-control>
+                  <nz-date-picker [disabled]="isLoadingData"  formControlName="birthDate" style="width: 100%"></nz-date-picker>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div class="col-4 col-md-4">
+              <nz-form-item>
+                <nz-form-label nzRequired>Telefone</nz-form-label>
+                <nz-form-control>
+                  <input nz-input  [disabled]="isLoadingData" placeholder="(00) 00000-0000" formControlName="phone" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div class="col-12 col-md-4">
+                <nz-form-item>
+                  <nz-form-label>Telefone Secundário</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input  [disabled]="isLoadingData" placeholder="(00) 00000-0000" formControlName="phoneSecondary" />
+                  </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div class="col-12 col-md-4">
+              <nz-form-item>
+                <nz-form-label>Cargo/Posição</nz-form-label>
+                <nz-form-control>
+                  <input nz-input [disabled]="isLoadingData"  placeholder="Ex: Gerente" formControlName="position" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div class="col-12" formArrayName="addresses">
+              <h5 class="mt-3">Endereço</h5>
+              <div *ngFor="let addr of addresses.controls; let i = index" [formGroupName]="i" class="row border-bottom mb-3 pb-3">
+                <div class="col-12 col-md-3">
+                  <nz-form-item>
+                    <nz-form-label nzRequired>CEP</nz-form-label>
+                    <nz-form-control>
+                      <input [disabled]="isLoadingData"  nz-input formControlName="zipCode" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div class="col-12 col-md-7">
+                  <nz-form-item>
+                    <nz-form-label nzRequired>Rua</nz-form-label>
+                    <nz-form-control>
+                      <input [disabled]="isLoadingData"  nz-input formControlName="street" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div class="col-12 col-md-2">
+                  <nz-form-item>
+                    <nz-form-label nzRequired>Nº</nz-form-label>
+                    <nz-form-control>
+                      <input [disabled]="isLoadingData"  nz-input formControlName="number" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div class="col-12 col-md-4">
+                  <nz-form-item>
+                    <nz-form-label nzRequired>Bairro</nz-form-label>
+                    <nz-form-control>
+                      <input [disabled]="isLoadingData"  nz-input formControlName="neighborhood" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div class="col-12 col-md-4">
+                  <nz-form-item>
+                    <nz-form-label nzRequired>Cidade</nz-form-label>
+                    <nz-form-control>
+                      <input [disabled]="isLoadingData"  nz-input formControlName="city" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div class="col-12 col-md-4">
+                  <nz-form-item>
+                    <nz-form-label nzRequired>Estado (UF)</nz-form-label>
+                    <nz-form-control>
+                      <input  [disabled]="isLoadingData" nz-input formControlName="state" maxlength="2" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+
+  <ng-template #footer>
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-outline-secondary btn-sm"  [disabled]="isLoadingData"  (click)="handleCancel()">
+        <i class="fa fa-xmark"></i>&nbsp;
+        <span>Cancelar</span>
+      </button>
+      <button class="btn btn-primary btn-sm"  [disabled]="isLoadingData"  (click)="handleOk()" [disabled]="newPersonForm.invalid">
+        <i class="fa" [ngClass]="{'fa-plus': !isLoadingData, 'fa-refresh fa-spin': isLoadingData}"></i>&nbsp;
+        <span>Cadastrar</span>
+      </button>
+    </div>
+  </ng-template>
+</nz-modal>

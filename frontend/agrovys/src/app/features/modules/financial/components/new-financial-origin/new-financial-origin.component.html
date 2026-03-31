@@ -1,0 +1,34 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="title"
+  [nzFooter]="footer"
+  [nzWidth]="300"
+  (nzOnCancel)="handleCancel()"
+>
+  <ng-container *nzModalContent>
+    <form [formGroup]="newFinancialOrigin" nz-form nzLayout="vertical">
+      <div class="row">
+        <div class="col-12">
+          <nz-form-item>
+            <nz-form-label nzRequired>Descrição</nz-form-label>
+            <nz-form-control>
+              <input nz-input [disabled]="isLoadingData" placeholder="Ex.: Venda Direta..." formControlName="description" class="w-100"/>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+   <ng-template #footer>
+        <div class="d-flex justify-content-end gap-2">
+          <button class="btn btn-outline-secondary btn-sm" [disabled]="isLoadingData" (click)="handleCancel()">
+                <i class="fa fa-xmark" aria-hidden="true"></i>&nbsp;
+                <span>Cancelar</span>
+            </button>
+            <button class="btn btn-primary btn-sm" [disabled]="isLoadingData" (click)="handleOk()">
+                <i class="fa" [ngClass]="{'fa-plus': !isLoadingData, 'fa-refresh fa-spin': isLoadingData}"></i>&nbsp;
+                <span>Cadastrar</span>
+            </button>
+        </div>
+    </ng-template>
+</nz-modal>

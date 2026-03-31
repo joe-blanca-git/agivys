@@ -14,7 +14,7 @@ namespace AgiVysSystem.Api.Controllers.Configuration;
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/systems")]
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin, Dev")]
 public class AppSystemController : ControllerBase
 {
     private readonly AppDbContext _context;

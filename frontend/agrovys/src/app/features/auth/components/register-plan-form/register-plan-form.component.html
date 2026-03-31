@@ -1,0 +1,62 @@
+<div class="row">
+  
+    <div class="col-12 col-md-8 text-start mb-4">
+        <div class="row justify-content-center g-4">
+            <div class="col-12 col-lg-4" *ngFor="let plan of plans">
+            <div 
+                class="card h-100 border-0 shadow-sm plan-card" 
+                [class.selected]="selectedPlan?.id === plan.id"
+                (click)="selectPlan(plan)"
+            >
+                <div class="card-body p-4">
+                <div class="text-overline mb-2">PLANO</div>
+                <h3 class="fw-bold mb-3">{{ plan.title }}</h3>
+                <h6 class="fw-bold mb-1">{{ plan.users }} usuário{{plan.users > 1 ? 's': ''}}</h6>
+                
+                <div class="price-tag mb-4">
+                    <span class="currency">R$</span>
+                    <span class="amount">{{ plan.price | number:'1.2-2' }}</span>
+                    <span class="period">/mês</span>
+                </div>
+
+                <hr class="my-4 opacity-10">
+
+                <ul class="list-unstyled mb-0">
+                    <li *ngFor="let feat of plan.features" class="mb-2 d-flex flex-column">
+                    <div class="d-flex align-items-center" [class.text-muted]="!feat.included" [class.text-strike]="!feat.included">
+                        <i class="bi" [ngClass]="feat.included ? 'bi-check-circle-fill text-success' : 'bi-x-circle text-secondary'"></i>
+                        <span class="ms-2 text-small">{{ feat.text }}</span>
+                    </div>
+                    
+                    <ul class="list-unstyled ms-4 mt-1" *ngIf="feat.subFeatures">
+                        <li *ngFor="let sub of feat.subFeatures" class="text-extra-small mb-1" 
+                            [class.text-muted]="!sub.included" [class.text-strike]="!sub.included">
+                        • {{ sub.text }}
+                        </li>
+                    </ul>
+                    </li>
+                </ul>
+                </div>
+                
+                <div class="card-footer bg-transparent border-0 p-4 pt-0 text-center">
+                <button class="btn w-100 py-2 fw-bold" [ngClass]="selectedPlan?.id === plan.id ? 'btn-primary' : 'btn-outline-primary'">
+                    {{ selectedPlan?.id === plan.id ? 'Selecionado' : 'Selecionar' }}
+                </button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4 text-end mb-4">
+        <div class="card shadow-lg border-0 bg-dark text-white p-4">
+            <h5 *ngIf="selectedPlan else notSelected" class="mb-0">Resumo: {{ selectedPlan?.title }}</h5>
+            <small *ngIf="selectedPlan" class="opacity-75">Total a pagar: R$ {{ selectedPlan?.price | number:'1.2-2' }}</small>
+        </div>
+    </div>
+</div>
+
+<ng-template #notSelected>
+    <h5 class="mb-0">Selecione seu plano</h5>
+</ng-template>
+
+

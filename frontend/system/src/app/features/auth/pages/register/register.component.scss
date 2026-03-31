@@ -11,7 +11,12 @@
   background-attachment: fixed;
   width: 100%;
   min-height: 100vh;
-  padding: 5vw 10vw !important;
+  padding: 1vw 10vw !important;
+}
+
+.steper-body{
+  min-height: 40vh;
+  max-height: 45vh;
 }
 
 .img-logo-header {
