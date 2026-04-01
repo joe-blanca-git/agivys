@@ -21,6 +21,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Limpa mapeamento para não dar conflito com Claims curtas
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
+builder.Services.AddHttpClient<AgiVysSystem.Api.Services.External.AsaasService>(client =>
+{
+    var baseUrl = builder.Configuration["Asaas:BaseUrl"] ?? "https://sandbox.asaas.com/api/v3/";
+    var apiKey = builder.Configuration["Asaas:ApiKey"];
+
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Add("access_token", apiKey);
+});
+
+builder.Services.AddScoped<AgiVysSystem.Api.Services.Financial.CheckoutService>();
+
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
     {

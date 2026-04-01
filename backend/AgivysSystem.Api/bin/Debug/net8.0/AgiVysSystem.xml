@@ -249,6 +249,16 @@
             </summary>
             <param name="id">ID do plano a ser removido.</param>
         </member>
+        <member name="M:AgiVysSystem.Api.Services.External.AsaasService.CreateCustomerAsync(AgiVysSystem.Api.DTOs.External.Asaas.AsaasCustomerRequest)">
+            <summary>
+            Cria um novo cliente no Asaas e retorna o ID (cus_...)
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Services.External.AsaasService.CreateSubscriptionAsync(AgiVysSystem.Api.DTOs.External.Asaas.AsaasSubscriptionRequest)">
+            <summary>
+            Cria uma assinatura recorrente no cartão de crédito
+            </summary>
+        </member>
         <member name="T:AgiVysSystem.Migrations.InitialIdentity">
             <inheritdoc />
         </member>
@@ -391,6 +401,18 @@
             <inheritdoc />
         </member>
         <member name="M:AgiVysSystem.Migrations.AddAddressPersonTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.AddFinancialAsaasTables">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddFinancialAsaasTables.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddFinancialAsaasTables.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddFinancialAsaasTables.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
     </members>
