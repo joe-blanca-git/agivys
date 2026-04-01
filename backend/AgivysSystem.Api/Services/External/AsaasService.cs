@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using AgiVysSystem.Api.DTOs.External.Asaas;
 using Microsoft.Extensions.Configuration;
 
@@ -26,6 +27,12 @@ public class AsaasService
     /// </summary>
     public async Task<string?> CreateCustomerAsync(AsaasCustomerRequest request)
     {
+        // GERA O LOG DO JSON EXATO ANTES DE ENVIAR
+        var jsonPayload = JsonSerializer.Serialize(request);
+        Console.WriteLine("\n=== LOG ASAAS: PAYLOAD ENVIADO ===");
+        Console.WriteLine(jsonPayload);
+        Console.WriteLine("==================================\n");
+
         var response = await _httpClient.PostAsJsonAsync("customers", request);
 
         if (response.IsSuccessStatusCode)

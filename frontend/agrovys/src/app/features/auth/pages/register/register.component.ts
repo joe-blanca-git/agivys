@@ -136,7 +136,7 @@ export class RegisterComponent {
       return;
     }
 
-    // PASSO 1: Meu Negócio
+    // PASSO 1: Organização
     if (this.currentStep === 1) {
       if (this.isCompanyDataComplete) {
         this.currentStep++;

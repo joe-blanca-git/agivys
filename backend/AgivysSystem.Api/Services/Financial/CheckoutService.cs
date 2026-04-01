@@ -29,23 +29,32 @@ public class CheckoutService
             throw new Exception("Usuário ou dados de pessoa não encontrados.");
 
         // 1. Garantir ID no Asaas
+
         if (string.IsNullOrEmpty(user.AsaasCustomerId))
         {
+            // Pega o endereço da pessoa (ajuste os nomes das propriedades se necessário)
+            var addr = await _context.AddressPeople.FirstOrDefaultAsync(a => a.PersonId == user.PersonId);
+
             var customerRequest = new AsaasCustomerRequest
             {
-                // AJUSTE: Usei 'Name' em vez de 'FullName'. Verifique sua classe Person.
-                name = user.Person.Name, 
-                email = user.Email!,
-                cpfCnpj = user.Person.Document,
-                mobilePhone = user.PhoneNumber
+                name = user.Person.Name,
+                cpfCnpj = user.Person.Document.Replace(".", "").Replace("-", "").Replace("/", "").Trim(),
+                email = user.Email,
+                phone = user.PhoneNumber ?? "",
+                address = addr?.Street,
+                addressNumber = addr?.Number,
+                province = addr?.State, // "SP"
+                postalCode = addr?.ZipCode?.Replace("-", "")
             };
 
             var asaasId = await _asaasService.CreateCustomerAsync(customerRequest);
-            user.AsaasCustomerId = asaasId;
             
+            if (string.IsNullOrEmpty(asaasId))
+                throw new Exception("O Asaas não retornou um ID de cliente válido.");
+
+            user.AsaasCustomerId = asaasId;
             _context.Users.Update(user);
-            // CORREÇÃO: Método correto é SaveChangesAsync
-            await _context.SaveChangesAsync(); 
+            await _context.SaveChangesAsync();
         }
 
         // 2. Criar Assinatura no Asaas

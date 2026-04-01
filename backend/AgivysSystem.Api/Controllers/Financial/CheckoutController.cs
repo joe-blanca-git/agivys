@@ -7,7 +7,6 @@ using System.Security.Claims;
 
 namespace AgiVysSystem.Api.Controllers.Financial;
 
-[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class CheckoutController : ControllerBase

@@ -28,6 +28,7 @@ builder.Services.AddHttpClient<AgiVysSystem.Api.Services.External.AsaasService>(
 
     client.BaseAddress = new Uri(baseUrl);
     client.DefaultRequestHeaders.Add("access_token", apiKey);
+    client.DefaultRequestHeaders.Add("User-Agent", "AgiVysSystem-Api");
 });
 
 builder.Services.AddScoped<AgiVysSystem.Api.Services.Financial.CheckoutService>();
