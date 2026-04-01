@@ -1,16 +1,15 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using AgiVysSystem.Api.Models.User;
 using AgiVysSystem.Api.Models.People; 
 using AgiVysSystem.Api.Models.Configuration;
 using AgiVysSystem.Api.Models.Company;
 using AgiVysSystem.Api.Models.Companies;
-
+using AgiVysSystem.Api.Models.Financial;
 
 namespace AgiVysSystem.Api.Data;
 
-public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
+public class AppDbContext : IdentityDbContext<AgiVysSystem.Api.Models.User.User, IdentityRole<int>, int>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -23,10 +22,19 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<CompanyAddress> CompanyAddresses { get; set; }
     public DbSet<AddressPerson> AddressPeople { get; set; }
 
+    public DbSet<AgiVysSystem.Api.Models.Order.Order> Orders { get; set; }
+    public DbSet<AgiVysSystem.Api.Models.Order.OrderItem> OrderItems { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {   
         base.OnModelCreating(builder);
         
+        builder.Entity<AgiVysSystem.Api.Models.Order.Order>().Property(p => p.TotalValue).HasPrecision(18, 2);
+        builder.Entity<AgiVysSystem.Api.Models.Order.OrderItem>().Property(p => p.Value).HasPrecision(18, 2);
+        builder.Entity<Payment>().Property(p => p.Value).HasPrecision(18, 2);
+        builder.Entity<Payment>().Property(p => p.NetValue).HasPrecision(18, 2);
+
         builder.Entity<Person>()
             .HasIndex(p => p.Document)
             .IsUnique();
