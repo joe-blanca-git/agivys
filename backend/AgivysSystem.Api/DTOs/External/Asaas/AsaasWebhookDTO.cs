@@ -10,6 +10,7 @@ public class PaymentWebhookData
 {
     public string id { get; set; } = string.Empty;
     public string status { get; set; } = string.Empty;
+    public string subscription { get; set; } = string.Empty;
     public decimal value { get; set; }
     public decimal? netValue { get; set; }
     public DateTime? paymentDate { get; set; }
