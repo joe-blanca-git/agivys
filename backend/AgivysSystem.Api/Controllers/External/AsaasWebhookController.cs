@@ -30,19 +30,29 @@ public class AsaasWebhookController : ControllerBase
         // Lógica para Pagamento Confirmado ou Recebido
         if (webhook.@event == "PAYMENT_RECEIVED" || webhook.@event == "PAYMENT_CONFIRMED")
         {
+            // Dentro do if que verifica "PAYMENT_CONFIRMED" ou "PAYMENT_RECEIVED":
+
             var payment = await _context.Payments
-                .FirstOrDefaultAsync(p => p.AsaasId == webhook.payment.id || p.AsaasSubscriptionId == webhook.payment.id);
+                .FirstOrDefaultAsync(p => p.AsaasSubscriptionId == payload.payment.subscription);
 
             if (payment != null)
             {
-                payment.Status = "CONFIRMED";
-                payment.PaymentDate = webhook.payment.paymentDate ?? DateTime.UtcNow;
-                payment.NetValue = webhook.payment.netValue ?? 0;
+                // 1. Atualiza o status na tabela Payments
+                payment.Status = payload.payment.status; 
+                _context.Payments.Update(payment);
 
-                // Aqui você também pode buscar a Order vinculada e dar baixa nela
-                var order = await _context.Orders.FirstOrDefaultAsync(o => o.UserId == payment.UserId && o.Status == "Pending");
-                if (order != null) order.Status = "Paid";
+                // 2. Acha a Order pendente desse mesmo usuário para atualizar
+                var order = await _context.Orders
+                    .FirstOrDefaultAsync(o => o.UserId == payment.UserId && o.Status == "Pending");
 
+                if (order != null)
+                {
+                    // Atualiza para o status de aprovado que você preferir (ex: "Confirmed", "Paid", "Active")
+                    order.Status = "Confirmed"; 
+                    _context.Orders.Update(order);
+                }
+
+                // Salva as duas tabelas de uma vez
                 await _context.SaveChangesAsync();
             }
         }
