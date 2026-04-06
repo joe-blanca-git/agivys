@@ -56,17 +56,13 @@
           <app-register-company-form></app-register-company-form>
         </div>
 
-        <div *ngIf="currentStep === 2">
-          <app-register-plan-form></app-register-plan-form>
-        </div>
-
       </div>
       <div class="d-flex justify-content-between mt-4 pt-4 border-top">
         <button class="btn btn-outline-secondary px-4 rounded-pill" (click)="prevStep()" [disabled]="currentStep === 0">
           <i class="fa fa-arrow-left me-2"></i> Voltar </button>
         <button class="btn btn-primary px-4 rounded-pill" (click)="nextStep()" *ngIf="currentStep < steps.length - 1"> Próximo <i class="fa fa-arrow-right ms-2"></i>
         </button>
-        <button class="btn btn-success px-4 rounded-pill" *ngIf="currentStep === steps.length - 1"> Confirmar Pagamento <i class="fa fa-check ms-2"></i>
+        <button class="btn btn-success px-4 rounded-pill" *ngIf="currentStep === steps.length - 1"  (click)="finsheStep()"> Finalizar Cadastro <i class="fa fa-check ms-2"></i>
         </button>
       </div>
     </div>

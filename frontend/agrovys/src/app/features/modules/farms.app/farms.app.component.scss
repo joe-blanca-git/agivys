@@ -1,0 +1,48 @@
+:host {
+  width: 100%;
+  height: 100%;
+}
+
+.header-farms {
+  min-height: 5vh;
+  overflow-y: hidden;
+  display: flex;
+  justify-content: space-between;
+
+  .title {
+    font-weight: 500;
+
+    :host-context(.screen-x-small) & {
+      font-size: small;
+    }
+
+    :host-context(.screen-small) & {
+      font-size: smaller;
+    }
+
+    :host-context(.screen-medium) & {
+      font-size: medium;
+    }
+
+    :host-context(.screen-large) & {
+      font-size: large;
+    }
+
+    :host-context(.screen-x-large) & {
+      font-size: larger;
+    }
+  }
+
+  .description {
+  }
+}
+
+.list-farms {
+  height: 72vh;
+  overflow-y: auto;
+}
+
+.map-farms {
+  height: 72vh;
+  overflow-y: hidden;
+}

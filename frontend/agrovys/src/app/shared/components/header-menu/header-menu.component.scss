@@ -1,0 +1,29 @@
+.nav-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.nav-item {
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+    padding: 0 1rem;
+
+  &:hover {
+    background-color: gray !important;
+    color: rgb(30, 30, 30);
+    cursor: pointer;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    background-color: gray !important;
+    transform: scale(0.97) !important;
+    color: rgb(30, 30, 30);
+  }
+}

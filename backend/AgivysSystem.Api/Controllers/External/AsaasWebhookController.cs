@@ -21,15 +21,11 @@ public class AsaasWebhookController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Receive([FromBody] AsaasWebhookDTO webhook)
     {
-        // Descomente as linhas abaixo quando for rodar em produção com o Asaas de verdade.
-        // Comentadas agora para você conseguir testar direto pelo Swagger.
-        
-        // var authToken = Request.Headers["asaas-access-token"].ToString();
-        // var myWebhookToken = _configuration["Asaas:WebhookToken"];
-        // if (string.IsNullOrEmpty(myWebhookToken) || authToken != myWebhookToken)
-        //     return Unauthorized();
+        var authToken = Request.Headers["asaas-access-token"].ToString();
+        var myWebhookToken = _configuration["Asaas:WebhookToken"];
+        if (string.IsNullOrEmpty(myWebhookToken) || authToken != myWebhookToken)
+            return Unauthorized();
 
-        // Lógica para Pagamento Confirmado ou Recebido
         if (webhook.@event == "PAYMENT_RECEIVED" || webhook.@event == "PAYMENT_CONFIRMED")
         {
             var payment = await _context.Payments
@@ -37,26 +33,24 @@ public class AsaasWebhookController : ControllerBase
 
             if (payment != null)
             {
-                // 1. Atualiza o status na tabela Payments
                 payment.Status = webhook.payment.status; 
+                payment.PaymentDate = DateTime.Now; 
+                
                 _context.Payments.Update(payment);
 
-                // 2. Acha a Order pendente desse mesmo usuário para atualizar
                 var order = await _context.Orders
                     .FirstOrDefaultAsync(o => o.UserId == payment.UserId && o.Status == "Pending");
 
                 if (order != null)
                 {
-                    // Atualiza para o status de aprovado
                     order.Status = "Confirmed"; 
                     _context.Orders.Update(order);
                 }
 
-                // Salva as duas tabelas de uma vez
                 await _context.SaveChangesAsync();
             }
         }
 
-        return Ok(); // Sempre retorne 200 para o Asaas não ficar tentando reenviar
+        return Ok();
     }
 }

@@ -6,7 +6,7 @@ export const HOME_ROUTES: Routes = [
   {
     path: '',
     component: HomeAppComponent,
-    canActivate: [AuthGuardService],
+    // canActivate: [AuthGuardService],
     children: [
     ],
   },

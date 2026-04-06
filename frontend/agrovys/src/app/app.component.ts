@@ -18,6 +18,7 @@ import { ScreenService } from './core/services/screen.service';
 import { SiderMenuComponent } from './shared/components/sider-menu/sider-menu.component';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
+import { HeaderMenuComponent } from './shared/components/header-menu/header-menu.component';
 
 @Component({
   selector: 'app-root',
@@ -33,6 +34,7 @@ import { ToastContainerComponent } from './shared/components/toast-container/toa
     BreadcrumbModule,
     SiderMenuComponent,
     HeaderComponent,
+    HeaderMenuComponent,
     ToastContainerComponent,
   ],
   templateUrl: './app.component.html',
@@ -62,8 +64,35 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.detectMobile();
-    
     this.home = { icon: 'pi pi-home', routerLink: '/' };
+    
+    this.getUserLocation();
+  }
+
+  private getUserLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const coords = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            timestamp: new Date().getTime()
+          };
+
+          localStorage.setItem('user_location', JSON.stringify(coords));
+        },
+        (error) => {
+          console.warn('Erro ao obter localização:', error.message);
+        },
+        {
+          enableHighAccuracy: true, 
+          timeout: 5000,           
+          maximumAge: 0           
+        }
+      );
+    } else {
+      console.error('Geolocalização não é suportada por este navegador.');
+    }
   }
 
   private initNavigationListener() {

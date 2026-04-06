@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { FarmsAppComponent } from './features/modules/farms.app/farms.app.component';
 
 export const routes: Routes = [
   //modulos
@@ -18,9 +19,9 @@ export const routes: Routes = [
       import('./features/modules/home/home.route').then((r) => r.HOME_ROUTES),
   },
   {
-    path: 'financial',
-    loadChildren: () =>
-      import('./features/modules/financial/financial.route').then((r) => r.FINANCIAL_ROUTES),
+    path: 'farms',
+    component: FarmsAppComponent,
+    // canActivate: [AuthGuardService],
   },
   {
     path: '**',

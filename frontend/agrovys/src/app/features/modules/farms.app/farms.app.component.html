@@ -1,0 +1,168 @@
+<div class="row text-start mb-3">
+    <div class="col-12">
+        <div class="header-farms" [ngClass]="{'bg-loading': isLoadingData}">
+            <div class="title-header d-flex flex-column align-items-start">
+                <span class="title text-secondary"  *ngIf="!isLoadingData">{{title}}</span>
+                <span class="description text-secondary d-none d-md-block"  *ngIf="!isLoadingData">{{description}}</span>
+            </div>
+
+            <div class="actions-header d-flex align-items-end gap-2" *ngIf="!isLoadingData">
+                <div class="btn btn-sm btn-warning d-flex gap-2 align-items-center" title="Sincronizar Fazendas com Opertaions Center">
+                    <i class="fa fa-globe-americas"></i>
+                    <span class="d-none d-md-block">Sinc. Operations Center</span>
+                </div>
+                <div class="btn btn-sm btn-agrovys-primary d-flex gap-2 align-items-center">
+                    <i class="fa fa-plus"></i>
+                    <span class="d-none d-md-block">Adiocionar Fazenda</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-sm-4 col-md-3">
+        <div class="list-farms" [ngClass]="{'bg-loading': isLoadingData}">
+            <div class="card h-100" *ngIf="!isLoadingData">
+                <div class="card-body">
+
+                    <!-- filters -->
+                    <div class="row">
+                        <div class="col-12 d-flex gap-2">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <i class="fa fa-magnifying-glass" aria-hidden="true"></i>
+                                </span>
+                                <input type="text" class="form-control" placeholder="Pesquisar" aria-label="pesquisar" aria-describedby="basic-addon1">
+                            </div>
+                             <div class="dropdown">
+                                <button class="btn btn-agrovys-outline-primary " type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-filter"></i>
+                                </button>
+                                
+                                <ul class="dropdown-menu dropdown-menu-end p-3 shadow" aria-labelledby="dropdownMenuButton1" style="min-width: 250px;">
+                                    <h6 class="dropdown-header px-0 text-dark">Filtros</h6>
+                                    
+                                    <li class="mb-2">
+                                        <label class="form-label small">Unidade</label>
+                                        <input type="text" class="form-control form-control-sm">
+                                    </li>
+
+                                    <li class="mb-2">
+                                        <label class="form-label small">Fazenda</label>
+                                        <input type="text" class="form-control form-control-sm">
+                                    </li>
+
+                                    <li class="mb-2">
+                                        <label class="form-label small">Talhão</label>
+                                        <input type="text" class="form-control form-control-sm">
+                                    </li>
+
+                                    <li class="mb-2">
+                                        <label class="form-label small">Status</label>
+                                        <select class="form-select form-select-sm">
+                                            <option selected>Todos</option>
+                                            <option value="1">Ativo</option>
+                                            <option value="2">Inativo</option>
+                                        </select>
+                                    </li>
+
+                                    <li class="mt-3">
+                                        <button class="btn btn-agrovys-primary btn-sm w-100">Aplicar</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="text-secondary text-small d-flex align-items-center gap-2">
+                                <i class="fa fa-database cursor-pointer" aria-hidden="true"></i>
+                                <span>Banco de Dados <span class="text-success fw-bold">Conectado</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- list -->
+                    <div class="accordion accordion-flush" id="accordionFarms" *ngIf="farms.length > 0 else notFoudFarm">
+                        <div class="accordion-item" *ngFor="let farm of farms; let i = index">
+                            <h2 class="accordion-header" [id]="'heading' + i">
+                                <div class="accordion-button collapsed rounded-2 d-flex align-items-center cursor-pointer">
+                                    
+                                    <input class="form-check-input me-3" type="checkbox" 
+                                        (click)="$event.stopPropagation()" 
+                                        [id]="'check' + i">
+
+                                    <div class="d-flex flex-column align-items-baseline justify-content-between w-100"
+                                        data-bs-toggle="collapse" 
+                                        [attr.data-bs-target]="'#collapse' + i" 
+                                        [attr.aria-controls]="'collapse' + i">
+                                        <span class="fw-bold">{{ farm.farmName }}</span>
+                                        <span class="text-secondary text-small">{{ farm.area }} (ha)</span>
+                                    </div>
+                                    
+                                </div>
+                            </h2>
+
+                            <div [id]="'collapse' + i" class="accordion-collapse collapse" 
+                                [attr.aria-labelledby]="'heading' + i" 
+                                data-bs-parent="#accordionFarms">
+                                <div class="accordion-body">
+                                    <ul class="nav nav-tabs" [id]="'tab' + i" role="tablist">
+                                        <li class="nav-item">
+                                            <button class="nav-link active small" [id]="'field-tab' + i" data-bs-toggle="tab" 
+                                                    [attr.data-bs-target]="'#field' + i" type="button" role="tab">
+                                                Talhões ({{ farm.fields.length }})
+                                            </button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <button class="nav-link small" [id]="'guidance-tab' + i" data-bs-toggle="tab" 
+                                                    [attr.data-bs-target]="'#guidance' + i" type="button" role="tab">
+                                                Linhas
+                                            </button>
+                                        </li>
+                                    </ul>
+
+                                    <div class="tab-content border border-top-0" [id]="'content' + i">
+                                        <div class="tab-pane fade show active p-2" [id]="'field' + i" role="tabpanel">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item px-0" *ngFor="let field of farm.fields">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span>{{ field.name }} 
+                                                            <span class="text-small text-secondary">({{ field.area }} ha)</span>
+                                                        </span>
+                                                        <div class="d-flex gap-1">
+                                                            <button class="btn btn-sm btn-outline-primary py-0" style="font-size: 10px;" title="Fazer upload do limite do talhão (SHP).">
+                                                                <i class="fa fa-upload"></i> Limite
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="tab-pane fade p-2" [id]="'guidance' + i" role="tabpanel">
+                                            <span class="text-muted small">Nenhuma linha guia cadastrada.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-none d-md-block col-sm-8 col-md-9">
+        <div class="map-farms"[ngClass]="{'bg-loading': isLoadingData}">
+            <div class="card h-100" *ngIf="!isLoadingData">
+                <div class="card-body">
+                    <app-farm-map></app-farm-map>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #notFoudFarm>
+    <div class="border text-secondary d-flex align-items-center justify-content-center mt-5 h-25">
+        <span>Nenhuma Fazenda Encontrada</span>
+    </div>
+</ng-template>
