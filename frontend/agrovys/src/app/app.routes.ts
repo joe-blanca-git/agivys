@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { FarmsAppComponent } from './features/modules/farms.app/farms.app.component';
+import { AuthGuardService } from './core/guards/auth.guard.ts.service';
 
 export const routes: Routes = [
   //modulos
@@ -21,7 +22,7 @@ export const routes: Routes = [
   {
     path: 'farms',
     component: FarmsAppComponent,
-    // canActivate: [AuthGuardService],
+    canActivate: [AuthGuardService],
   },
   {
     path: '**',

@@ -13,6 +13,7 @@ export abstract class BaseService {
 
   public LocalStorage = new LocalStorageUtils();
   protected UrlServiceApi: string = environment.apiUrlAgiVys;
+  protected UrlServiceAgroVysApi: string = environment.apiUrlAgroVys;
   protected UrlServiceLoginV1: string = environment.apiUrlLoginv1;
   protected UrlServiceBrApi: string = environment.apiUrlBrApi;
   protected UrlServiceViaCep: string = environment.apiRulViaCep;
