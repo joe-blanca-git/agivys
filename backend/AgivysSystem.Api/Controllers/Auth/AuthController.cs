@@ -37,8 +37,8 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("validate-token")]
-    [AllowAnonymous] // Permite que a API Python chame sem precisar estar autenticada nela mesma
-    [ApiExplorerSettings(IgnoreApi = true)] // Esconde do Swagger
+    [AllowAnonymous]
+   // [ApiExplorerSettings(IgnoreApi = true)]
     public IActionResult ValidateToken([FromBody] TokenValidationRequest dto)
     {
         if (string.IsNullOrEmpty(dto.Token))
