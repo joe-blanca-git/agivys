@@ -95,7 +95,6 @@ export class FarmNewComponent implements OnInit {
         this.toasService.success('Upload concluído com sucesso!', 5000);
       },
       error: (erro) => {
-        this.toasService.error('Erro ao se comunicar com a API: ' + erro.message, 5000);
         this.isLoadingUpload = false;
         this.loadingEmit.emit(false);
       },

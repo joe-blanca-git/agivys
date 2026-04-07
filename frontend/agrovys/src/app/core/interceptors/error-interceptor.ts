@@ -38,7 +38,9 @@ export const errorInterceptor: HttpInterceptorFn = (
 
         //erro de autenticação
         if (err.status === 401) {
-          toastService.error(err.error.message, 5000);
+          const message = err.error.message ? err.error.message : err.error.detail;
+          toastService.error(message, 5000);
+
           localStorageUtil.clearLocaleUserData();
           router.navigate(['/auth/login']);
         }

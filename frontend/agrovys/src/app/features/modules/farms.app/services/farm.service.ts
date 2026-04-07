@@ -14,6 +14,6 @@ export class FarmService extends BaseService {
 
   uploadBoundary(formData: FormData): Observable<any> {
     const url = `${this.UrlServiceAgroVysApi}upload-boundary/`
-    return this.http.post(url, formData);
+    return this.http.post(url, formData, this.GetAuthHeaderJson());
   }
 }
