@@ -88,7 +88,6 @@ builder.Services.AddSwaggerGen(c =>
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-    
 
 // Identity
 builder.Services.AddIdentity<User, IdentityRole<int>>(options => {
@@ -215,7 +214,7 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// app.Urls.Add("http://0.0.0.0:5000");
+app.Urls.Add("http://0.0.0.0:5000");
 
 app.UseHttpsRedirection();
 
