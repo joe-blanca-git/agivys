@@ -10,7 +10,7 @@ app = FastAPI(
 
 # 1. Defina explicitamente onde o seu Angular está rodando
 origens_permitidas = [
-    "http://localhost:4200",
+    "http://localhost:60561",
     "http://127.0.0.1:4200",
 ]
 

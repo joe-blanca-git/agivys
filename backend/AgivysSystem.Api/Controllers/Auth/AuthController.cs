@@ -36,6 +36,47 @@ public class AuthController : ControllerBase
         _emailService = emailService;
     }
 
+    [HttpPost("validate-token")]
+    [AllowAnonymous] // Permite que a API Python chame sem precisar estar autenticada nela mesma
+    [ApiExplorerSettings(IgnoreApi = true)] // Esconde do Swagger
+    public IActionResult ValidateToken([FromBody] TokenValidationRequest dto)
+    {
+        if (string.IsNullOrEmpty(dto.Token))
+            return BadRequest(false);
+
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ?? "");
+
+            tokenHandler.ValidateToken(dto.Token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
+                ValidateAudience = true,
+                ValidAudience = _configuration["Jwt:Audience"],
+                ValidateLifetime = true, // Verifica se o token expirou
+                ClockSkew = TimeSpan.Zero // Remove a tolerância padrão de 5 min para ser exato
+            }, out SecurityToken validatedToken);
+
+            // Se chegou aqui sem lançar exceção, o token é válido
+            return Ok(true);
+        }
+        catch (Exception)
+        {
+            // Se der erro na validação (token expirado, chave errada, etc)
+            return Ok(false);
+        }
+    }
+
+    // DTO simples para receber o JSON do Python
+    public class TokenValidationRequest
+    {
+        public string Token { get; set; } = string.Empty;
+    }
+
     /// <summary>
     /// Autentica um usuário e retorna o Token JWT junto com os dados do perfil e permissões.
     /// </summary>

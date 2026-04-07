@@ -2,12 +2,13 @@ import os
 import json # <--- Novo import adicionado
 import tempfile
 from typing import List
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 import geopandas as gpd
+from app.core.security import verify_jwt_token
 
 router = APIRouter()
 
-@router.post("/upload-boundary/", summary="Recebe Arquivos ShapeFile")
+@router.post("/upload-boundary/", summary="Recebe Arquivos ShapeFile", dependencies=[Depends(verify_jwt_token)])
 async def upload_boundary(files: List[UploadFile] = File(...)):
     """
     Recebe múltiplos arquivos (shp, shx, dbf, prj), extrai dados geográficos e retorna um GeoJSON.
