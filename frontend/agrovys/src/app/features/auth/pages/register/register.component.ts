@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RegisterFormComponent } from '../../components/register-form/register-form.component';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AccountService } from '../../../modules/setup/pages/account/services/account.service';
@@ -17,52 +17,60 @@ interface Step {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, RouterModule, RegisterFormComponent, RegisterCompanyFormComponent, RegisterPlanFormComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    RegisterFormComponent,
+    RegisterCompanyFormComponent,
+    RegisterPlanFormComponent,
+  ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss', '../../auth.app.component.scss'],
 })
 export class RegisterComponent {
   @ViewChild(RegisterFormComponent) formComponent!: RegisterFormComponent;
-  @ViewChild(RegisterCompanyFormComponent) formCompanyComponent!: RegisterCompanyFormComponent;
-  
+  @ViewChild(RegisterCompanyFormComponent)
+  formCompanyComponent!: RegisterCompanyFormComponent;
+
   currentStep = 0;
-  
+
   // Controles Passo 0
   isPersonalDataComplete = false;
   savedPersonalData: any = null;
-  
+
   // Controles Passo 1
   isCompanyDataComplete = false;
   savedCompanyData: any = null;
 
   urlAccesagrovys = '';
+  emailToLogin = '';
+  passwordToLogin = '';
 
   steps: Step[] = [
     { index: 0, name: 'Dados Pessoais', icon: 'fa-user' },
     { index: 1, name: 'Organização', icon: 'fa-building' },
-    { index: 2, name: 'Plano', icon: 'fa-money-bill' },
   ];
 
   constructor(
     private authService: AuthService,
     private accountService: AccountService,
+    private router: Router
   ) {}
 
   async processRegister(formInfo: any) {
     try {
       const resRegistro: any = await lastValueFrom(
-        this.authService.register(formInfo.userBody)
+        this.authService.register(formInfo.userBody),
       );
 
       if (resRegistro && (resRegistro.status === 400 || resRegistro.errors)) {
         console.error('A API recusou o cadastro:', resRegistro);
-        return; 
+        return;
       }
 
       this.savedPersonalData = formInfo.userBody;
       this.isPersonalDataComplete = true;
       this.currentStep++;
-
     } catch (error) {
       console.error('Falha crítica na requisição (Erro 400/500):', error);
     }
@@ -73,7 +81,7 @@ export class RegisterComponent {
       const rawData = formInfo.data;
 
       const companyBody = {
-        name: rawData.organizationName
+        name: rawData.organizationName,
       };
 
       const addressBody = {
@@ -84,42 +92,45 @@ export class RegisterComponent {
         complement: '',
         neighborhood: '',
         city: rawData.city,
-        state: rawData.state
+        state: rawData.state,
       };
 
       // 1. Cadastra a Empresa (ajuste o nome do método no AccountService se necessário)
       const resCompany: any = await lastValueFrom(
-        this.accountService.registerCompany(companyBody)
+        this.accountService.registerCompany(companyBody),
       );
 
       if (resCompany && (resCompany.status === 400 || resCompany.errors)) {
         console.error('Erro ao cadastrar empresa:', resCompany);
-        return; 
+        return;
       }
 
       // 2. Cadastra o Endereço (ajuste o nome do método no AccountService se necessário)
       const resAddress: any = await lastValueFrom(
-        this.accountService.registerCompanyAddress(addressBody)
+        this.accountService.registerCompanyAddress(addressBody),
       );
 
       if (resAddress && (resAddress.status === 400 || resAddress.errors)) {
-        console.error('A API recusou o cadastro do endereço da empresa:', resAddress);
-        return; 
+        console.error(
+          'A API recusou o cadastro do endereço da empresa:',
+          resAddress,
+        );
+        return;
       }
 
       // SUCESSO: Salva os dados para exibição (read-only) e avança
       this.savedCompanyData = rawData;
       this.isCompanyDataComplete = true;
       this.currentStep++;
-
     } catch (error) {
-      console.error('Falha crítica na requisição de empresa (Erro 400/500):', error);
+      console.error(
+        'Falha crítica na requisição de empresa (Erro 400/500):',
+        error,
+      );
     }
   }
 
   async nextStep() {
-    // PASSO 0: Dados Pessoais
-    this.currentStep++;
     if (this.currentStep === 0) {
       if (this.isPersonalDataComplete) {
         this.currentStep++;
@@ -131,12 +142,15 @@ export class RegisterComponent {
         this.formComponent.formRegister.markAllAsTouched();
         return;
       }
-      
+
       await this.processRegister(formInfo);
+      this.emailToLogin = formInfo.userBody.email;
+      this.passwordToLogin = formInfo.userBody.password;
       return;
     }
+  }
 
-    // PASSO 1: Organização
+  async finsheStep() {
     if (this.currentStep === 1) {
       if (this.isCompanyDataComplete) {
         this.currentStep++;
@@ -148,19 +162,20 @@ export class RegisterComponent {
         this.formCompanyComponent.formRegisterCompany.markAllAsTouched();
         return;
       }
-      
-      await this.processRegisterCompany(formInfo);
-      return;
-    }
 
-    // DEMAIS PASSOS
-    if (this.currentStep < this.steps.length - 1) {
-      this.currentStep++;
+      await this.processRegisterCompany(formInfo);
+
+      this.authService
+        .login(this.emailToLogin, this.passwordToLogin)
+        .subscribe({
+          next: (r) => this.processSuccess(r),
+          error: (e) => this.processError(e),
+        });
+      return;
     }
   }
 
   setStep(index: number) {
-    // Validação Step 0
     if (this.currentStep === 0 && index > 0) {
       if (!this.isPersonalDataComplete) {
         const formInfo = this.formComponent.getFormData();
@@ -171,7 +186,6 @@ export class RegisterComponent {
       }
     }
 
-    // Validação Step 1 (Impede pular do 1 para o 2 se estiver inválido)
     if (this.currentStep === 1 && index > 1) {
       if (!this.isCompanyDataComplete) {
         const formInfo = this.formCompanyComponent.getFormData();
@@ -181,11 +195,20 @@ export class RegisterComponent {
         }
       }
     }
-    
+
     this.currentStep = index;
   }
 
   prevStep() {
     if (this.currentStep > 0) this.currentStep--;
+  }
+
+  async processSuccess(response: any) {
+    this.authService.LocalStorage.saveLocaleDataUser(response);
+    this.router.navigate(['/home']);
+  }
+
+  async processError(error: any) {
+    console.error(error);
   }
 }

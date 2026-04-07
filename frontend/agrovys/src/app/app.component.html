@@ -5,7 +5,7 @@
 
   <nz-layout *ngIf="!isPublicRoute">
     
-    <nz-sider
+    <!-- <nz-sider
       *ngIf="!isMobile"
       nzTheme="light"
       nzCollapsible
@@ -15,12 +15,12 @@
     >
       <div class="logo-container p-2 text-center">
         <a routerLink="/bit-admin/home">
-          <img [src]="isVisibleMenu ? 'images/logo/logo-bit-sm.png' : 'images/logo/logo-bit.png'" 
+          <img [src]="isVisibleMenu ? 'images/logo/logo-agrovys.png' : 'images/logo/logo-agrovys-brand.png'" 
                [height]="isVisibleMenu ? 30 : 60" />
         </a>
       </div>
       <app-sider-menu [collapsed]="isVisibleMenu"></app-sider-menu>
-    </nz-sider>
+    </nz-sider> -->
 
     <nz-drawer
       *ngIf="isMobile"
@@ -33,7 +33,7 @@
     >
       <ng-container *nzDrawerContent>
         <div class="mb-4 text-center">
-           <img src="images/logo/logo-bit.png" height="60" />
+           <img src="images/logo/logo-agrovys.png" height="60" />
         </div>
         <app-sider-menu [collapsed]="false"></app-sider-menu>
       </ng-container>
@@ -42,6 +42,9 @@
     <nz-layout>
       <nz-header class="bg-light border p-0">
         <app-header (collapsedOut)="onChangeVisibleMenu($event)"></app-header>
+      </nz-header>
+      <nz-header class="bg-light border p-0 d-none d-sm-block" style="height: 5vh;">
+        <app-header-menu></app-header-menu>
       </nz-header>
 
       <nz-content class="p-3">
@@ -52,7 +55,7 @@
       </nz-content>
 
       <nz-footer class="text-center">
-        Desenvolvido por <a href="https://joederblanca.com.br" target="_blank">Joeder Blanca</a>
+          <span>Copyright © 2026 Agrovys MEI. Todos os direitos são reservados.</span>
       </nz-footer>
     </nz-layout>
   </nz-layout>

@@ -29,7 +29,7 @@ export class AccountService extends BaseService {
   }
 
   registerCompanyAddress(companyAddress: any): Observable<any> {
-    const url = `${this.UrlServiceLoginV1}my-addresses`;
+    const url = `${this.UrlServiceLoginV1}company-addresses`;
 
     return this.http
       .post(url, companyAddress, this.GetAuthHeaderJson())

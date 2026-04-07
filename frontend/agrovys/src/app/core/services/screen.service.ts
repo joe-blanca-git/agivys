@@ -12,15 +12,9 @@ export class ScreenService {
         Breakpoints.Small,
         Breakpoints.Medium,
         Breakpoints.Large,
+        Breakpoints.XLarge,
       ])
       .subscribe(() => this.changed.next(true));
-  }
-
-  private isLargeScreen() {
-    const isLarge = this.breakpointObserver.isMatched(Breakpoints.Large);
-    const isXLarge = this.breakpointObserver.isMatched(Breakpoints.XLarge);
-
-    return isLarge || isXLarge;
   }
 
   public get sizes(): Record<string, boolean> {
@@ -28,7 +22,8 @@ export class ScreenService {
       'screen-x-small': this.breakpointObserver.isMatched(Breakpoints.XSmall),
       'screen-small': this.breakpointObserver.isMatched(Breakpoints.Small),
       'screen-medium': this.breakpointObserver.isMatched(Breakpoints.Medium),
-      'screen-large': this.isLargeScreen(),
+      'screen-large': this.breakpointObserver.isMatched(Breakpoints.Large),
+      'screen-x-large': this.breakpointObserver.isMatched(Breakpoints.XLarge),
     };
   }
 }

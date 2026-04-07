@@ -1,0 +1,30 @@
+:host {
+  width: 100%;
+  height: 100%;
+}
+
+.new-farm {
+  height: 53vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  // :host-context(.screen-x-small) & {
+  //   min-height: 70vh;
+  // }
+
+  // :host-context(.screen-small) & {
+  //   min-height: 60vh;
+  // }
+
+  // :host-context(.screen-medium) & {
+  //   min-height: 60vh;
+  // }
+
+  // :host-context(.screen-large) & {
+  //   min-height: 50vh;
+  // }
+
+  // :host-context(.screen-x-large) & {
+  //   min-height: 45vh;
+  // }
+}

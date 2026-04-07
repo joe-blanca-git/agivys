@@ -1,0 +1,43 @@
+<div class="modal-backdrop fade show" *ngIf="isVisible" [style.z-index]="zIndexBackdrop"></div>
+
+<div class="modal fade" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'" [style.z-index]="zIndexModal" tabindex="-1" role="dialog" [attr.aria-modal]="isVisible ? 'true' : null">
+  
+  <div class="modal-dialog" [ngClass]="{
+      'modal-dialog-centered': isCentered,
+      'modal-sm': size === 'sm',
+      'modal-lg': size === 'lg',
+      'modal-xl': size === 'xl'
+    }">
+    
+    <div class="modal-content bg-modal">
+
+      <!-- header -->
+      <div class="modal-header text-start" [ngClass]="styleTextTitle" *ngIf="isHeader">
+        <div class="icon-card p-2 me-2" *ngIf="iconTitle">
+          <i [className]="iconTitle"></i>
+        </div>
+        <div class="title">
+          <h5 class="modal-title">{{title}}</h5>
+          <span class="modal-description text-small" [innerHTML]="description"></span>
+        </div>
+        <button type="button" class="btn position-absolute top-0 end-0 mt-2 me-2" (click)="closeModal()" aria-label="Close">X</button>
+      </div>
+
+      <button *ngIf="!isHeader" type="button" class=" btn btn-none position-absolute end-0 mt-2 me-2 z-3 border-0" (click)="closeModal()" aria-label="Close" title="Fechar">X</button>
+      
+      <!-- body -->
+      <div class="modal-body">
+        <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+      </div>
+
+      <!-- footers -->
+      <div class="modal-footer" *ngIf="customActions && customActions.length > 0">
+        <button *ngFor="let action of customActions" class="btn" [title]="action.title" [ngClass]="action.class" [disabled]="isActionsDisabled" (click)="onActionClick(action.type)">
+          <div *ngIf="action.icon" [class]="action.icon"></div>
+          {{ action.text }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
