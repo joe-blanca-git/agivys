@@ -86,11 +86,9 @@ builder.Services.AddSwaggerGen(c =>
 
 // Banco de Dados
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-// builder.Services.AddDbContext<AppDbContext>(options =>
-//     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 34))));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    
 
 // Identity
 builder.Services.AddIdentity<User, IdentityRole<int>>(options => {
