@@ -4,8 +4,8 @@ export class loggUser {
   name?: string;
   id?: string;
   userName?: string;
-  roles?: roles[];
-  menuAllowed?: menu[];
+  companyId?: string;
+
 }
 
 class menu {
