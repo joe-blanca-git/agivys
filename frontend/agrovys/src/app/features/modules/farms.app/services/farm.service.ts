@@ -4,16 +4,15 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FarmService extends BaseService {
-
   constructor(private http: HttpClient) {
-    super()
+    super();
   }
 
   uploadBoundary(formData: FormData): Observable<any> {
-    const url = `${this.UrlServiceAgroVysApi}upload-boundary/`
-    return this.http.post(url, formData, this.GetAuthHeaderJson());
+    const url = `${this.UrlServiceAgroVysApi}upload-boundary/`;
+    return this.http.post(url, formData, this.GetAuthHeaderFormJson());
   }
 }
