@@ -35,11 +35,10 @@ export abstract class BaseService {
     };
   }
 
-  protected GetAuthHeaderTokenJson(token: string) {
+  protected GetAuthHeaderFormJson() {
     return {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
+        Authorization: 'Bearer ' + this.LocalStorage.getUserToken(),
       }),
     };
   }
