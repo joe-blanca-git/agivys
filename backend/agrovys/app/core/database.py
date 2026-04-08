@@ -6,7 +6,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 # Formato: postgresql://usuario:senha@ip_da_vps:porta/banco
 SQLALCHEMY_DATABASE_URL = os.getenv(
     "DATABASE_URL", 
-    "postgresql://agrovys_user:Likeaboos@1980@147.182.209.185:5432/agrovys_db"
+    "postgresql://agrovys_user:Likeaboos%401980@147.182.209.185:5432/agrovys_db"
 )
 
 # pool_pre_ping=True testa a conexão antes de usá-la, evitando quedas por inatividade

@@ -7,6 +7,9 @@ import {
 } from '../../../shared/components/modal/modal.component';
 import { FarmNewComponent } from './components/farm-new/farm-new.component';
 import { LocalStorageUtils } from '../../../core/utils/localstorage';
+import { FarmService } from './services/farm.service';
+import { ListFarmsModel } from './models/farm.model';
+import { finalize, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-farms.app',
@@ -25,7 +28,7 @@ export class FarmsAppComponent {
   isLoadingNewFarm = false;
   isVisibleNewFarm = false;
 
-  farms: any[] = [];
+  farms: ListFarmsModel[] = [];
   actionsModal: ModalAction[] = [
     {
       class: 'btn-outline-secondary',
@@ -43,60 +46,30 @@ export class FarmsAppComponent {
     },
   ];
 
-  ngOnInit(): void {    
-    setTimeout(() => {
-      this.isLoadingData = false;
-    }, 2000);
+  constructor(private farmService: FarmService) {}
 
-    this.farms = [
-      {
-        farmId: 1,
-        farmName: 'Fazenda Mata Nova',
-        description: 'Produção de soja e milho, região norte.',
-        area: 1200,
-        fields: [
-          { fieldId: 101, name: 'Talhão A1', area: 500 },
-          { fieldId: 102, name: 'Talhão A2', area: 700 },
-        ],
-      },
-      {
-        farmId: 2,
-        farmName: 'Estância do Sol',
-        description: 'Área de pastagem e pecuária intensiva.',
-        area: 850,
-        fields: [
-          { fieldId: 201, name: 'Piquete Norte', area: 400 },
-          { fieldId: 202, name: 'Piquete Sul', area: 450 },
-        ],
-      },
-      {
-        farmId: 3,
-        farmName: 'Sítio Recanto Feliz',
-        description: 'Hortifruti orgânico e estufas.',
-        area: 45,
-        fields: [
-          { fieldId: 301, name: 'Canteiro Central', area: 20 },
-          { fieldId: 302, name: 'Estufa 01', area: 25 },
-        ],
-      },
-      {
-        farmId: 4,
-        farmName: 'Fazenda Rio Claro',
-        description: 'Reserva florestal e plantio de eucalipto.',
-        area: 3000,
-        fields: [
-          { fieldId: 401, name: 'Setor Florestal', area: 1500 },
-          { fieldId: 402, name: 'Área de Manejo', area: 1500 },
-        ],
-      },
-      {
-        farmId: 5,
-        farmName: 'Agro Vale',
-        description: 'Cultivo de cana-de-açúcar.',
-        area: 500,
-        fields: [{ fieldId: 501, name: 'Gleba 01', area: 500 }],
-      },
-    ];
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+async loadData() {
+    this.isLoadingData = true;
+
+    try {
+      await Promise.all([
+        this.loadFarms(),
+      ]);
+      
+      console.log('Todos os dados foram carregados com sucesso!');
+    } catch (error) {
+      console.error('Erro ao carregar dados da página:', error);
+    } finally {
+      this.isLoadingData = false;
+    }
+  }
+
+  async loadFarms(): Promise<void> {
+    this.farms = await firstValueFrom(this.farmService.getFarmsList());
   }
 
   onSaveNewFarm() {

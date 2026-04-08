@@ -9,7 +9,7 @@ class Farm(Base):
     __tablename__ = "farm"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    client_unit_id = Column(UUID(as_uuid=True), nullable=False)
+    client_unit_id = Column(String(255), nullable=False)
     agivys_user_id = Column(String(255), nullable=False)
     name = Column(String(100), nullable=False)
     description = Column(String)

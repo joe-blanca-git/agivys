@@ -1,13 +1,28 @@
 <div class="new-farm" [ngClass]="{'bg-loading': isLoading}">
   <div class="row" *ngIf="!isLoading">
-    <div class="col-12 col-sm-6">
-
+    <div class="col-12 col-sm-6 d-flex flex-column justify-content-between pb-0">
 
       <form class="text-start">
         <div class="row">
           <div class="col-12 mb-3">
+
+            <label for="cropYear" class="form-label">Ano Safra</label>
+            <input 
+              class="form-control" 
+              list="datalistOptions" 
+              id="cropYear" 
+              name="cropYear"  placeholder="Informe o ano safra da fazenda..."
+              [(ngModel)]="selectedYear" 
+            >
+
+            <datalist id="datalistOptions">
+              <option *ngFor="let year of listYears" [value]="year"></option>
+            </datalist>
+
+          </div>
+          <div class="col-12 mb-3">
             <label class="mb-2 fw-bold">
-              <span>Arquivos do Talhão </span>
+              <span>Arquivos da Fazenda</span>
               <i class="fa fa-info-circle text-primary cursor-pointer" aria-hidden="true"></i>
             </label>
             <div class="position-relative d-flex flex-column align-items-center justify-content-center p-2 rounded-3" [ngClass]="isDragging ? 'bg-primary bg-opacity-10 border-primary' : 'bg-light'" style="border: 2px dashed #adb5bd; transition: all 0.3s;" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
@@ -36,6 +51,20 @@
           </div>
         </div>
       </form>
+
+      <div class="card text-start text-small bg-light">
+        <div class="card-body px-3 py-3">
+          <h5 class="card-title text-agrovys fw-bold mb-2">
+            <i class="fas fa-map text-secondary me-2"></i> Guia de Modelagem de Shapefiles
+          </h5>
+          <p class="card-text text-muted mb-3">
+            Acesse nossa documentação oficial e confira a estrutura de dados e os exemplos homologados para garantir uma importação rápida e sem erros no Portal Agrovys.
+          </p>
+          <a href="LINK_AQUI" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+            Acessar Documentação <i class="fas fa-external-link-alt ms-1"></i>
+          </a>
+        </div>
+      </div>
 
     </div>
 

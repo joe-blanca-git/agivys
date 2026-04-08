@@ -12,11 +12,13 @@ import { FarmService } from '../../services/farm.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { FarmPreviewMapComponent } from '../farm-preview-map/farm-preview-map.component';
 import { LocalStorageUtils } from '../../../../../core/utils/localstorage';
+import { loggUser } from '../../../../../shared/models/loggUser';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-farm-new',
   standalone: true,
-  imports: [CommonModule, FarmPreviewMapComponent],
+  imports: [CommonModule, FarmPreviewMapComponent, FormsModule],
   templateUrl: './farm-new.component.html',
   styleUrl: './farm-new.component.scss',
 })
@@ -25,13 +27,15 @@ export class FarmNewComponent implements OnInit {
   @ViewChild('fileDropRef') fileDropRef!: ElementRef<HTMLInputElement>;
   @Output() loadingEmit = new EventEmitter<boolean>();
 
-  localStorage = new LocalStorageUtils;
+  localStorage = new LocalStorageUtils();
 
   isDragging: boolean = false;
   isLoading: boolean = true;
   isLoadingUpload: boolean = false;
 
   selectedFiles: File[] = [];
+  selectedYear!: number;
+  listYears: any[] = [];
   errorMessage: string = '';
   uploadedFiles: any;
 
@@ -43,6 +47,13 @@ export class FarmNewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const currentYear = new Date().getFullYear();
+    this.selectedYear = currentYear;
+    this.listYears = [];
+    for (let i = -5; i <= 5; i++) {
+      this.listYears.push(currentYear + i);
+    }
+
     this.loadData();
   }
 
@@ -55,38 +66,52 @@ export class FarmNewComponent implements OnInit {
     setTimeout(() => {
       this.isLoading = false;
       this.loadingEmit.emit(false);
-    }, 2000);
+    }, 500);
   }
 
-  public submitNewFarm(){
-    if (this.isLoadingUpload) return; 
+  public submitNewFarm() {
+    if (this.isLoadingUpload) return;
 
     if (this.errorMessage !== '' || this.selectedFiles.length < 4) {
-      this.errorMessage = 'Verifique os arquivos obrigatórios cadastrar a fazenda.';
+      this.errorMessage =
+        'Verifique os arquivos obrigatórios cadastrar a fazenda.';
       return;
     }
 
-    this.isLoadingUpload = true;
+    this.isLoading = true;
     this.loadingEmit.emit(true);
 
-    const user = this.localStorage.getUser();
-
-    const farmName = '';
-    const clientUnitId = '';
+    const user: loggUser = this.localStorage.getUser();
+    const farmName = this.previewMap.shapeInfo.nome;
+    const clientUnitId = user.companyId;
     const agivysUserId = user.id;
-    const cropYear = '';
+    const cropYear = '2026';
 
     const farmForm = {
       name: farmName,
       clientUnitId: clientUnitId,
       agivysUserId: agivysUserId,
-      cropYear: cropYear
+      cropYear: cropYear,
     };
 
+    this.farmService
+      .createFarmWithBoundaries(farmForm, this.selectedFiles)
+      .subscribe({
+        next: (response) => {
+          this.toasService.success('Fazenda Cadastrada com Sucesso!', 3000);
+          this.isLoading = false;
+          this.loadingEmit.emit(false);
+        },
+        error: (err) => {
+          console.error('Erro ao cadastrar fazenda', err);
+          this.isLoading = false;
+          this.loadingEmit.emit(false);
+        },
+      });
   }
-  
+
   public submitBoundary(): void {
-    if (this.isLoadingUpload) return; 
+    if (this.isLoadingUpload) return;
 
     if (this.errorMessage !== '' || this.selectedFiles.length < 4) {
       this.errorMessage = 'Verifique os arquivos obrigatórios antes de enviar.';
@@ -105,14 +130,17 @@ export class FarmNewComponent implements OnInit {
     this.farmService.uploadBoundary(formData).subscribe({
       next: (response) => {
         console.log('Dados do Shapefile lidos com sucesso:', response);
-        
+
         this.uploadedFiles = response;
         this.isLoadingUpload = false;
         this.loadingEmit.emit(false);
-        
+
         setTimeout(() => {
           if (this.previewMap && response.geojson) {
-            this.previewMap.drawShapefile(response.geojson, response.area_total_ha);
+            this.previewMap.drawShapefile(
+              response.geojson,
+              response.area_total_ha,
+            );
           }
         }, 150);
 
@@ -218,7 +246,7 @@ export class FarmNewComponent implements OnInit {
         'Atenção: Para o talhão ser carregado corretamente, os arquivos .shp, .shx, .dbf e .prj precisam ser enviados juntos.';
     } else {
       this.errorMessage = '';
-      
+
       // AUTO-SUBMIT: Validação passou, chama a API automaticamente!
       this.submitBoundary();
     }
