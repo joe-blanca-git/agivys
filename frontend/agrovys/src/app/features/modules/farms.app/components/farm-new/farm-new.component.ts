@@ -11,6 +11,7 @@ import {
 import { FarmService } from '../../services/farm.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { FarmPreviewMapComponent } from '../farm-preview-map/farm-preview-map.component';
+import { LocalStorageUtils } from '../../../../../core/utils/localstorage';
 
 @Component({
   selector: 'app-farm-new',
@@ -23,6 +24,8 @@ export class FarmNewComponent implements OnInit {
   @ViewChild(FarmPreviewMapComponent) previewMap!: FarmPreviewMapComponent;
   @ViewChild('fileDropRef') fileDropRef!: ElementRef<HTMLInputElement>;
   @Output() loadingEmit = new EventEmitter<boolean>();
+
+  localStorage = new LocalStorageUtils;
 
   isDragging: boolean = false;
   isLoading: boolean = true;
@@ -55,9 +58,34 @@ export class FarmNewComponent implements OnInit {
     }, 2000);
   }
 
-  // --- FUNÇÃO PARA ENVIAR PARA A API PYTHON ---
+  public submitNewFarm(){
+    if (this.isLoadingUpload) return; 
+
+    if (this.errorMessage !== '' || this.selectedFiles.length < 4) {
+      this.errorMessage = 'Verifique os arquivos obrigatórios cadastrar a fazenda.';
+      return;
+    }
+
+    this.isLoadingUpload = true;
+    this.loadingEmit.emit(true);
+
+    const user = this.localStorage.getUser();
+
+    const farmName = '';
+    const clientUnitId = '';
+    const agivysUserId = user.id;
+    const cropYear = '';
+
+    const farmForm = {
+      name: farmName,
+      clientUnitId: clientUnitId,
+      agivysUserId: agivysUserId,
+      cropYear: cropYear
+    };
+
+  }
+  
   public submitBoundary(): void {
-    // 1. Trava de segurança: se já estiver enviando, não faz nada
     if (this.isLoadingUpload) return; 
 
     if (this.errorMessage !== '' || this.selectedFiles.length < 4) {
@@ -74,7 +102,6 @@ export class FarmNewComponent implements OnInit {
       formData.append('files', file);
     });
 
-    // Chama o Service
     this.farmService.uploadBoundary(formData).subscribe({
       next: (response) => {
         console.log('Dados do Shapefile lidos com sucesso:', response);
@@ -83,11 +110,8 @@ export class FarmNewComponent implements OnInit {
         this.isLoadingUpload = false;
         this.loadingEmit.emit(false);
         
-        // REMOVIDO: this.selectedFiles = []; (Assim o form não "reseta" visualmente)
-        
         setTimeout(() => {
           if (this.previewMap && response.geojson) {
-            // Agora passamos o geojson e a área total que veio da API
             this.previewMap.drawShapefile(response.geojson, response.area_total_ha);
           }
         }, 150);

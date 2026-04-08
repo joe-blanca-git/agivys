@@ -6,16 +6,16 @@ export class LocalStorageUtils {
   //shared
   //gets
   public getUser() {
-    const userJson = localStorage.getItem('BITADMIN.user');
+    const userJson = localStorage.getItem('AGROVYS.user');
     return userJson ? JSON.parse(userJson) : null;
   }
 
   public getUserToken(): string | null {
-    return localStorage.getItem('BITADMIN.token');
+    return localStorage.getItem('AGROVYS.token');
   }
 
   public getMenuAllowed(): string | null {
-    const userStorage = localStorage.getItem('BITADMIN.user');
+    const userStorage = localStorage.getItem('AGROVYS.user');
 
     if (!userStorage) return null;
 
@@ -33,31 +33,29 @@ export class LocalStorageUtils {
   //saves
   public saveLocaleDataUser(response: any) {
     this.saveUserToken(response.token);
-
     this.saveUser(response);
   }
 
   public saveUserToken(token: string) {
-    localStorage.setItem('BITADMIN.token', token);
+    localStorage.setItem('AGROVYS.token', token);
   }
 
   public saveUser(response: any) {
-    this.user.name = String(response.user.name);
+    this.user.name = String(response.person.name);
     this.user.id = String(response.user.id);
     this.user.email = String(response.user.email);
-    this.user.userName = String(response.user.userName);
-    this.user.roles = response.user.roles;
-    this.user.menuAllowed = response.menus;
+    this.user.userName = String(response.user.email);
+    this.user.companyId = String(response.user.companyId);
 
-    localStorage.setItem('BITADMIN.user', JSON.stringify(this.user) || '');
+    localStorage.setItem('AGROVYS.user', JSON.stringify(this.user) || '');
   }
 
   //clear
   public clearLocaleUserData() {
-    localStorage.removeItem('BITADMIN.token');
-    localStorage.removeItem('BITADMIN.refreshtoken');
-    localStorage.removeItem('BITADMIN.user');
-    localStorage.removeItem('BITADMIN.claims');
+    localStorage.removeItem('AGROVYS.token');
+    localStorage.removeItem('AGROVYS.refreshtoken');
+    localStorage.removeItem('AGROVYS.user');
+    localStorage.removeItem('AGROVYS.claims');
   }
   //
 }

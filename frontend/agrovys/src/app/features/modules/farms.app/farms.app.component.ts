@@ -6,6 +6,7 @@ import {
   ModalComponent,
 } from '../../../shared/components/modal/modal.component';
 import { FarmNewComponent } from './components/farm-new/farm-new.component';
+import { LocalStorageUtils } from '../../../core/utils/localstorage';
 
 @Component({
   selector: 'app-farms.app',
@@ -42,7 +43,7 @@ export class FarmsAppComponent {
     },
   ];
 
-  ngOnInit(): void {
+  ngOnInit(): void {    
     setTimeout(() => {
       this.isLoadingData = false;
     }, 2000);
@@ -99,7 +100,7 @@ export class FarmsAppComponent {
   }
 
   onSaveNewFarm() {
-    this.newFarmComponent.submitBoundary();
+    this.newFarmComponent.submitNewFarm();
   }
 
   handleNewFarm() {

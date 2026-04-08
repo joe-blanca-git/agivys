@@ -5,6 +5,7 @@ using AgiVysSystem.Api.Data;
 using AgiVysSystem.Api.DTOs;
 using AgiVysSystem.Api.Models.User;
 using AgiVysSystem.Api.Models.People;
+using AgiVysSystem.Api.Models.Company;
 using AgiVysSystem.Api.Interfaces;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
@@ -38,7 +39,7 @@ public class AuthController : ControllerBase
 
     [HttpPost("validate-token")]
     [AllowAnonymous]
-   // [ApiExplorerSettings(IgnoreApi = true)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public IActionResult ValidateToken([FromBody] TokenValidationRequest dto)
     {
         if (string.IsNullOrEmpty(dto.Token))
@@ -100,6 +101,9 @@ public class AuthController : ControllerBase
 
         // Busca os dados da Pessoa vinculada
         var person = await _context.People.FirstOrDefaultAsync(p => p.Id == user.PersonId);
+
+        // Busca os dados da Empresa vinculada
+        var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserOwnerId == user.Id);
         
         // Busca as Roles do usuário
         var roles = await _userManager.GetRolesAsync(user);
@@ -116,6 +120,7 @@ public class AuthController : ControllerBase
             {
                 id = user.Id,
                 email = user.Email,
+                companyId = company?.Id,
                 role = new 
                 { 
                     name = "UserType", 
@@ -126,7 +131,6 @@ public class AuthController : ControllerBase
             {
                 id = person?.Id,
                 name = person?.Name,
-                document = person?.Document,
                 email = person?.Email
             }
         });
