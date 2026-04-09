@@ -104,6 +104,11 @@
             <response code="403">Tentativa de remover endereço de outro usuário.</response>
             <response code="404">Endereço não encontrado.</response>
         </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.CreateWithAddress(AgiVysSystem.Api.Dtos.CreateCompanyWithAddressDto)">
+            <summary>
+            Cadastra uma nova empresa e seu endereço em uma única operação.
+            </summary>
+        </member>
         <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.Create(AgiVysSystem.Api.Dtos.CreateCompanyDto)">
             <summary>
             Cadastra uma nova empresa vinculada a um usuário proprietário.

@@ -22,6 +22,74 @@ public class CompanyController : ControllerBase
     }
 
     /// <summary>
+    /// Cadastra uma nova empresa e seu endereço em uma única operação.
+    /// </summary>
+    [HttpPost("create-with-address")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CreateWithAddress([FromBody] CreateCompanyWithAddressDto dto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        // Iniciamos uma transação para garantir integridade
+        using var transaction = await _context.Database.BeginTransactionAsync();
+
+        try
+        {
+            // 1. Validar CNPJ Duplicado
+            var cnpjExists = await _context.Companies.AnyAsync(c => c.Cnpj == dto.Cnpj);
+            if (cnpjExists) return BadRequest(new { message = "Este CNPJ já está cadastrado." });
+
+            // 2. Criar a Empresa
+            var company = new AgiVysSystem.Api.Models.Company.Company
+            {
+                Name = dto.Name,
+                Cnpj = dto.Cnpj,
+                LogoUrl = dto.LogoUrl,
+                UserOwnerId = dto.UserOwnerId,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.Companies.Add(company);
+            await _context.SaveChangesAsync(); // Aqui o ID da empresa é gerado
+
+            // 3. Criar o Endereço vinculado ao ID gerado acima
+            var address = new CompanyAddress
+            {
+                CompanyId = company.Id,
+                Description = dto.Description,
+                ZipCode = dto.ZipCode,
+                Street = dto.Street,
+                Number = dto.Number,
+                Complement = dto.Complement,
+                Neighborhood = dto.Neighborhood,
+                City = dto.City,
+                State = dto.State
+            };
+
+            _context.CompanyAddresses.Add(address);
+            await _context.SaveChangesAsync();
+
+            // 4. Se tudo deu certo, comita as alterações no banco
+            await transaction.CommitAsync();
+
+            return Ok(new 
+            { 
+                message = "Empresa e endereço cadastrados com sucesso!", 
+                companyId = company.Id,
+                addressId = address.Id
+            });
+        }
+        catch (Exception ex)
+        {
+            // Em caso de erro, desfaz tudo o que foi feito nesta chamada
+            await transaction.RollbackAsync();
+            return StatusCode(500, new { message = "Erro ao processar cadastro completo.", details = ex.Message });
+        }
+    }
+
+    /// <summary>
     /// Cadastra uma nova empresa vinculada a um usuário proprietário.
     /// </summary>
     /// <response code="200">Empresa cadastrada com sucesso!</response>
