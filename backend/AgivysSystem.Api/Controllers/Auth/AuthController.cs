@@ -247,7 +247,7 @@ public class AuthController : ControllerBase
                 </div>
             </div>";
 
-            await _emailService.SendEmailAsync(model.Email, "Bem-vindo ao AgiVys System", welcomeMessage);
+            //await _emailService.SendEmailAsync(model.Email, "Bem-vindo ao AgiVys System", welcomeMessage);
 
             return Ok(new { message = "Usuário cadastrado com sucesso!" });
         }
