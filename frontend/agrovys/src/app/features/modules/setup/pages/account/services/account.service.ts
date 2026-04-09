@@ -16,7 +16,7 @@ export class AccountService extends BaseService {
     const url = `${this.UrlServiceLoginV1}my-addresses`;
 
     return this.http
-      .post(url, address, this.GetAuthHeaderJson())
+      .post(url, address, this.GetHeaderJson())
       .pipe(map(this.extractData));
   }
 
@@ -24,7 +24,7 @@ export class AccountService extends BaseService {
     const url = `${this.UrlServiceLoginV1}my-addresses`;
 
     return this.http
-      .post(url, company, this.GetAuthHeaderJson())
+      .post(url, company, this.GetHeaderJson())
       .pipe(map(this.extractData));
   }
 
@@ -32,7 +32,7 @@ export class AccountService extends BaseService {
     const url = `${this.UrlServiceLoginV1}company-addresses`;
 
     return this.http
-      .post(url, companyAddress, this.GetAuthHeaderJson())
+      .post(url, companyAddress, this.GetHeaderJson())
       .pipe(map(this.extractData));
   }
 }
