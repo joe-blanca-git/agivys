@@ -31,7 +31,7 @@ export const errorInterceptor: HttpInterceptorFn = (
           }
 
           //outros erros
-          if (err.error.errors.Mensagens) {
+          if (err.error.errors.message) {
             toastService.error(err.error.message, 5000);
           }
         }

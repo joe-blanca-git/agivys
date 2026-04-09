@@ -1,15 +1,14 @@
-import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
+
 import { RegisterFormComponent } from '../../components/register-form/register-form.component';
+import { RegisterCompanyFormComponent } from '../../components/register-company-form/register-company-form.component';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AccountService } from '../../../modules/setup/pages/account/services/account.service';
-import { lastValueFrom } from 'rxjs';
-import { RegisterCompanyFormComponent } from '../../components/register-company-form/register-company-form.component';
-import { RegisterPlanFormComponent } from '../../components/register-plan-form/register-plan-form.component';
-import { LocalStorageUtils } from '../../../../core/utils/localstorage';
-import { ClientUnitModel } from '../../../modules/farms/models/client';
 import { ClientService } from '../../../modules/farms/services/client.service';
+import { LocalStorageUtils } from '../../../../core/utils/localstorage';
 
 interface Step {
   index: number;
@@ -20,35 +19,21 @@ interface Step {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    RegisterFormComponent,
-    RegisterCompanyFormComponent,
-    RegisterPlanFormComponent,
-  ],
+  imports: [CommonModule, RouterModule, RegisterFormComponent, RegisterCompanyFormComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss', '../../auth.app.component.scss'],
 })
 export class RegisterComponent {
   @ViewChild(RegisterFormComponent) formComponent!: RegisterFormComponent;
-  @ViewChild(RegisterCompanyFormComponent)formCompanyComponent!: RegisterCompanyFormComponent;
+  @ViewChild(RegisterCompanyFormComponent) formCompanyComponent!: RegisterCompanyFormComponent;
 
-  localStorage = new LocalStorageUtils;
-
+  private localStorage = new LocalStorageUtils();
+  
   currentStep = 0;
-
-  // Controles Passo 0
-  isPersonalDataComplete = false;
-  savedPersonalData: any = null;
-
-  // Controles Passo 1
-  isCompanyDataComplete = false;
-  savedCompanyData: any = null;
-
-  urlAccesagrovys = '';
-  emailToLogin = '';
-  passwordToLogin = '';
+  isLoading = false;
+  
+  private emailToLogin = '';
+  private passwordToLogin = '';
 
   steps: Step[] = [
     { index: 0, name: 'Dados Pessoais', icon: 'fa-user' },
@@ -62,171 +47,83 @@ export class RegisterComponent {
     private router: Router
   ) {}
 
-  async processRegister(formInfo: any) {
+  async nextStep() {
+    if (this.currentStep !== 0) return;
+
+    const formInfo = this.formComponent.getFormData();
+    if (!formInfo.isValid) {
+      this.formComponent.formRegister.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading = true;
     try {
-      const resRegistro: any = await lastValueFrom(
-        this.authService.register(formInfo.userBody),
-      );
+      // 1. Registro do Usuário
+      const res = await firstValueFrom(this.authService.register(formInfo.userBody));
+      if (res?.errors) throw res;
 
-      if (resRegistro && (resRegistro.status === 400 || resRegistro.errors)) {
-        console.error('A API recusou o cadastro:', resRegistro);
-        return;
-      }
-
-      this.savedPersonalData = formInfo.userBody;
-      this.isPersonalDataComplete = true;
-      this.currentStep++;
+      this.emailToLogin = formInfo.userBody.email;
+      this.passwordToLogin = formInfo.userBody.password;
+      this.currentStep = 1;
     } catch (error) {
-      console.error('Falha crítica na requisição (Erro 400/500):', error);
+      console.error('Erro no registro de usuário:', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 
-  async processRegisterCompany(formInfo: any) {
+  async finishStep() {
+    if (this.currentStep !== 1) return;
+
+    const formInfo = this.formCompanyComponent.getFormData();
+    if (!formInfo.isValid) {
+      this.formCompanyComponent.formRegisterCompany.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading = true;
     try {
+      // 2. Login imediato para obter Token necessário para os próximos passos
+      const loginRes = await firstValueFrom(this.authService.login(this.emailToLogin, this.passwordToLogin));
+      this.localStorage.saveLocaleDataUser(loginRes);
+
+      // 3. Preparação dos corpos das requisições
       const rawData = formInfo.data;
-
-      const companyBody = {
-        name: rawData.organizationName,
-      };
-
+      const companyBody = { name: rawData.organizationName };
       const addressBody = {
-        description: rawData.description || 'Sede',
+        description: 'Sede',
         zipCode: rawData.cep.replace(/\D/g, ''),
         street: rawData.street,
         number: rawData.number,
-        complement: '',
-        neighborhood: '',
         city: rawData.city,
         state: rawData.state,
       };
 
-      // 1. Cadastra a Empresa (ajuste o nome do método no AccountService se necessário)
-      const resCompany: any = await lastValueFrom(
-        this.accountService.registerCompany(companyBody),
-      );
+      // 4. Cadastros que exigem Token (AccountService)
+      await firstValueFrom(this.accountService.registerCompany(companyBody));
+      await firstValueFrom(this.accountService.registerCompanyAddress(addressBody));
 
-      if (resCompany && (resCompany.status === 400 || resCompany.errors)) {
-        console.error('Erro ao cadastrar empresa:', resCompany);
-        return;
-      }
-
-      // 2. Cadastra o Endereço (ajuste o nome do método no AccountService se necessário)
-      const resAddress: any = await lastValueFrom(
-        this.accountService.registerCompanyAddress(addressBody),
-      );
-
-      if (resAddress && (resAddress.status === 400 || resAddress.errors)) {
-        console.error(
-          'A API recusou o cadastro do endereço da empresa:',
-          resAddress,
-        );
-        return;
-      }
-
+      // 5. Cadastro na API Agrovys (PostgreSQL)
       const user = this.localStorage.getUser();
-
-      // 3. Cadastra ClientUnit (empresa na api agrovys)
-      const clientData: ClientUnitModel = {
-        name: user.companyName,
+      await firstValueFrom(this.clientService.createClientUnit({
+        id: user.companyId,
+        name: rawData.organizationName,
         agivysUserId: user.id
-      };
+      }));
 
-      this.clientService.createClientUnit(clientData).subscribe({
-        next: () => console.log('Complete Client'),
-        error: (err) => console.error('Erro ao cadastrar Cliente em Agrovys', err)
-      });
-
-      // SUCESSO: Salva os dados para exibição (read-only) e avança
-      this.savedCompanyData = rawData;
-      this.isCompanyDataComplete = true;
-      this.currentStep++;
+      this.router.navigate(['/home']);
     } catch (error) {
-      console.error(
-        'Falha crítica na requisição de empresa (Erro 400/500):',
-        error,
-      );
-    }
-  }
-
-  async nextStep() {
-    if (this.currentStep === 0) {
-      if (this.isPersonalDataComplete) {
-        this.currentStep++;
-        return;
-      }
-
-      const formInfo = this.formComponent.getFormData();
-      if (!formInfo.isValid) {
-        this.formComponent.formRegister.markAllAsTouched();
-        return;
-      }
-
-      await this.processRegister(formInfo);
-      this.emailToLogin = formInfo.userBody.email;
-      this.passwordToLogin = formInfo.userBody.password;
-      return;
-    }
-  }
-
-  async finsheStep() {
-    if (this.currentStep === 1) {
-      if (this.isCompanyDataComplete) {
-        this.currentStep++;
-        return;
-      }
-
-      const formInfo = this.formCompanyComponent.getFormData();
-      if (!formInfo.isValid) {
-        this.formCompanyComponent.formRegisterCompany.markAllAsTouched();
-        return;
-      }
-
-      await this.processRegisterCompany(formInfo);
-
-      this.authService
-        .login(this.emailToLogin, this.passwordToLogin)
-        .subscribe({
-          next: (r) => this.processSuccess(r),
-          error: (e) => this.processError(e),
-        });
-      return;
+      console.error('Erro no fluxo de organização:', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 
   setStep(index: number) {
-    if (this.currentStep === 0 && index > 0) {
-      if (!this.isPersonalDataComplete) {
-        const formInfo = this.formComponent.getFormData();
-        if (!formInfo.isValid) {
-          this.formComponent.formRegister.markAllAsTouched();
-          return;
-        }
-      }
-    }
-
-    if (this.currentStep === 1 && index > 1) {
-      if (!this.isCompanyDataComplete) {
-        const formInfo = this.formCompanyComponent.getFormData();
-        if (!formInfo.isValid) {
-          this.formCompanyComponent.formRegisterCompany.markAllAsTouched();
-          return;
-        }
-      }
-    }
-
-    this.currentStep = index;
+    if (index < this.currentStep) this.currentStep = index;
   }
 
   prevStep() {
     if (this.currentStep > 0) this.currentStep--;
-  }
-
-  async processSuccess(response: any) {
-    this.authService.LocalStorage.saveLocaleDataUser(response);
-    this.router.navigate(['/home']);
-  }
-
-  async processError(error: any) {
-    console.error(error);
   }
 }
