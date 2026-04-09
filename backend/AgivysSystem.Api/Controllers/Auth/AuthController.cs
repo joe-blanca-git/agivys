@@ -176,11 +176,11 @@ public class AuthController : ControllerBase
         // 1. Validações de existência
         var userExists = await _userManager.FindByEmailAsync(model.Email);
         if (userExists != null)
-            return BadRequest(new { message = "Dados Inválidos" });
+            return BadRequest(new { message = "Dados Inválidos! Verifique seu E-mail." });
 
         var documentExists = await _context.People.AnyAsync(p => p.Document == model.Document);
         if (documentExists)
-            return BadRequest(new { message = "Dados Inválidos" });
+            return BadRequest(new { message = "Dados Inválidos! Verifique seu documento." });
 
         // 2. Criar a Pessoa (People)
         var person = new Person

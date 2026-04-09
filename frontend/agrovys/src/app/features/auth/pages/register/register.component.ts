@@ -9,6 +9,7 @@ import { RegisterCompanyFormComponent } from '../../components/register-company-
 import { RegisterPlanFormComponent } from '../../components/register-plan-form/register-plan-form.component';
 import { LocalStorageUtils } from '../../../../core/utils/localstorage';
 import { ClientUnitModel } from '../../../modules/farms/models/client';
+import { ClientService } from '../../../modules/farms/services/client.service';
 
 interface Step {
   index: number;
@@ -57,6 +58,7 @@ export class RegisterComponent {
   constructor(
     private authService: AuthService,
     private accountService: AccountService,
+    private clientService: ClientService,
     private router: Router
   ) {}
 
@@ -128,6 +130,11 @@ export class RegisterComponent {
         name: user.companyName,
         agivysUserId: user.id
       };
+
+      this.clientService.createClientUnit(clientData).subscribe({
+        next: () => console.log('Complete Client'),
+        error: (err) => console.error('Erro ao cadastrar Cliente em Agrovys', err)
+      });
 
       // SUCESSO: Salva os dados para exibição (read-only) e avança
       this.savedCompanyData = rawData;
