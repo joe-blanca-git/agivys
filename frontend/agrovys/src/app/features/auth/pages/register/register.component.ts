@@ -100,7 +100,7 @@ export class RegisterComponent {
       };
 
       // 4. Cadastros que exigem Token (AccountService)
-      await firstValueFrom(this.accountService.registerCompany(companyBody));
+      const ressponse = await firstValueFrom(this.accountService.registerCompany(companyBody));
       await firstValueFrom(this.accountService.registerCompanyAddress(addressBody));
 
       // 5. Cadastro na API Agrovys (PostgreSQL)
