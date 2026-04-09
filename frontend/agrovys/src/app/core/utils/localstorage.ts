@@ -46,6 +46,7 @@ export class LocalStorageUtils {
     this.user.email = String(response.user.email);
     this.user.userName = String(response.user.email);
     this.user.companyId = String(response.user.companyId);
+    this.user.companyName = String(response.user.companyName);
 
     localStorage.setItem('AGROVYS.user', JSON.stringify(this.user) || '');
   }

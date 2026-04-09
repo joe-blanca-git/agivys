@@ -7,6 +7,8 @@ import { AccountService } from '../../../modules/setup/pages/account/services/ac
 import { lastValueFrom } from 'rxjs';
 import { RegisterCompanyFormComponent } from '../../components/register-company-form/register-company-form.component';
 import { RegisterPlanFormComponent } from '../../components/register-plan-form/register-plan-form.component';
+import { LocalStorageUtils } from '../../../../core/utils/localstorage';
+import { ClientUnitModel } from '../../../modules/farms/models/client';
 
 interface Step {
   index: number;
@@ -29,8 +31,9 @@ interface Step {
 })
 export class RegisterComponent {
   @ViewChild(RegisterFormComponent) formComponent!: RegisterFormComponent;
-  @ViewChild(RegisterCompanyFormComponent)
-  formCompanyComponent!: RegisterCompanyFormComponent;
+  @ViewChild(RegisterCompanyFormComponent)formCompanyComponent!: RegisterCompanyFormComponent;
+
+  localStorage = new LocalStorageUtils;
 
   currentStep = 0;
 
@@ -117,6 +120,14 @@ export class RegisterComponent {
         );
         return;
       }
+
+      const user = this.localStorage.getUser();
+
+      // 3. Cadastra ClientUnit (empresa na api agrovys)
+      const clientData: ClientUnitModel = {
+        name: user.companyName,
+        agivysUserId: user.id
+      };
 
       // SUCESSO: Salva os dados para exibição (read-only) e avança
       this.savedCompanyData = rawData;

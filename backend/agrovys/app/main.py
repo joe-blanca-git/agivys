@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1 import farm
+from app.api.v1 import farm, client
 
 app = FastAPI(
     title="Agrovys - API",
@@ -24,6 +24,7 @@ app.add_middleware(
 )
 
 app.include_router(farm.router, prefix="/api/v1", tags=["Geoprocessamento"])
+app.include_router(client.router, prefix="/api/v1")
 
 @app.get("/", tags=["Health Check"])
 def root():

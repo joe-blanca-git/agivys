@@ -42,3 +42,13 @@ class Boundary(Base):
     updated_by = Column(String(255))
 
     farm = relationship("Farm", back_populates="boundaries")
+
+class ClientUnit(Base):
+    __tablename__ = "client_unit"
+
+    id = Column(String(255), primary_key=True)
+    name = Column(String(150), nullable=False)
+    description = Column(String)
+    agivys_user_id = Column(String(255), nullable=False)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    created_by = Column(String(255), nullable=False)

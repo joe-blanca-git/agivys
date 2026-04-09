@@ -121,6 +121,7 @@ public class AuthController : ControllerBase
                 id = user.Id,
                 email = user.Email,
                 companyId = company?.Id,
+                companyName = compane?.Name,
                 role = new 
                 { 
                     name = "UserType", 

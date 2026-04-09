@@ -5,7 +5,7 @@ export class loggUser {
   id?: string;
   userName?: string;
   companyId?: string;
-
+  companyName?: string;
 }
 
 class menu {
