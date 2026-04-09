@@ -8,7 +8,6 @@ from shapely.geometry import mapping
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-# Imports do seu projeto
 from app.core.security import verify_jwt_token
 from app.core.database import get_db
 from app.models.agrovys import Farm, Boundary

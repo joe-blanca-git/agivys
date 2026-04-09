@@ -16,23 +16,23 @@ export class AccountService extends BaseService {
     const url = `${this.UrlServiceLoginV1}my-addresses`;
 
     return this.http
-      .post(url, address, this.GetHeaderJson())
+      .post(url, address, this.GetAuthHeaderJson())
       .pipe(map(this.extractData));
   }
 
   registerCompany(company: any): Observable<any> {
-    const url = `${this.UrlServiceLoginV1}my-addresses`;
+    const url = `${this.UrlServiceApi}companies`;
 
     return this.http
-      .post(url, company, this.GetHeaderJson())
+      .post(url, company, this.GetAuthHeaderJson())
       .pipe(map(this.extractData));
   }
 
   registerCompanyAddress(companyAddress: any): Observable<any> {
-    const url = `${this.UrlServiceLoginV1}company-addresses`;
+    const url = `${this.UrlServiceLoginV1}addresses`;
 
     return this.http
-      .post(url, companyAddress, this.GetHeaderJson())
+      .post(url, companyAddress, this.GetAuthHeaderJson())
       .pipe(map(this.extractData));
   }
 }
