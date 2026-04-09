@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { FarmsAppComponent } from './features/modules/farms.app/farms.app.component';
+import { FarmsAppComponent } from './features/modules/farms/farms.app.component';
 import { AuthGuardService } from './core/guards/auth.guard.ts.service';
 
 export const routes: Routes = [

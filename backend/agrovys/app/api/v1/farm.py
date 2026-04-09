@@ -5,7 +5,8 @@ from typing import List
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 import geopandas as gpd
 from shapely.geometry import mapping
-from sqlalchemy.orm import Session  # <--- Aqui está ele
+from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 # Imports do seu projeto
 from app.core.security import verify_jwt_token
@@ -75,6 +76,8 @@ async def upload_boundary(files: List[UploadFile] = File(...)):
         
 @router.post("/new-farm/", summary="Cadastra Fazenda e Talhões via Shapefile", dependencies=[Depends(verify_jwt_token)])
 async def cadastrar_fazenda(
+
+
 
     name: str = Form(...),
     client_unit_id: str = Form(...),
@@ -176,4 +179,37 @@ async def cadastrar_fazenda(
     except Exception as e:
         db.rollback() # Se qualquer coisa der erro, desfaz tudo (evita lixo no banco)
         raise HTTPException(status_code=500, detail=f"Erro ao salvar no banco de dados: {str(e)}")
+
+@router.get("/", summary="Lista todas as fazendas", dependencies=[Depends(verify_jwt_token)])
+def list_farms(
+    # agivys_user_id: str, # Descomente se quiser filtrar só as fazendas do usuário logado
+    db: Session = Depends(get_db)
+):
+    """
+    Retorna a lista de fazendas com a soma das áreas dos talhões 
+    e a data da última alteração.
+    """
     
+    # Query otimizada fazendo JOIN e GROUP BY no banco de dados
+    results = db.query(
+        Farm.id,
+        Farm.name,
+        Farm.description,
+        func.coalesce(Farm.updated_at, Farm.created_at).label('last_update'),
+        func.sum(Boundary.area_ha).label('total_area')
+    ).outerjoin(Boundary, Farm.id == Boundary.farm_id)\
+     .group_by(Farm.id)\
+     .all()
+
+    # Formatando a resposta para o Angular
+    farms_list = []
+    for row in results:
+        farms_list.append({
+            "id": str(row.id), # Sempre bom mandar o ID para o front poder clicar e abrir detalhes
+            "name": row.name,
+            "description": row.description or "Sem descrição",
+            "area": round(float(row.total_area), 2) if row.total_area else 0.0,
+            "lastUpdate": row.last_update.isoformat() if row.last_update else None
+        })
+
+    return farms_list
