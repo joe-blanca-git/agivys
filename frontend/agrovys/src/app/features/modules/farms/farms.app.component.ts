@@ -10,11 +10,13 @@ import { LocalStorageUtils } from '../../../core/utils/localstorage';
 import { FarmService } from './services/farm.service';
 import { ListFarmsModel } from './models/farm.model';
 import { finalize, firstValueFrom } from 'rxjs';
+import { ClientService } from './services/client.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-farms.app',
   standalone: true,
-  imports: [CommonModule, FarmMapComponent, ModalComponent, FarmNewComponent],
+  imports: [CommonModule, FarmMapComponent, ModalComponent, FarmNewComponent, FormsModule],
   templateUrl: './farms.app.component.html',
   styleUrl: './farms.app.component.scss',
 })
@@ -22,13 +24,14 @@ export class FarmsAppComponent {
   @ViewChild('newFarm') newFarmComponent!: FarmNewComponent;
 
   title = 'Fazendas';
-  description = 'Gerenciamento de Limites, Talhões e Linhas de Orientação';
+  description = 'Limites, Talhões e Linhas de Orientação';
 
   isLoadingData = true;
   isLoadingNewFarm = false;
   isVisibleNewFarm = false;
 
   farms: ListFarmsModel[] = [];
+  clients: any[] = [];
   actionsModal: ModalAction[] = [
     {
       class: 'btn-outline-secondary',
@@ -46,20 +49,20 @@ export class FarmsAppComponent {
     },
   ];
 
-  constructor(private farmService: FarmService) {}
+  constructor(private farmService: FarmService, private clientService: ClientService) { }
 
   ngOnInit(): void {
     this.loadData();
   }
 
-async loadData() {
+  async loadData() {
     this.isLoadingData = true;
 
     try {
-      await Promise.all([
-        this.loadFarms(),
-      ]);
-      
+      await Promise.all([this.loadFarms(), this.loadClients()]);
+      console.log(this.clients);
+
+
       console.log('Todos os dados foram carregados com sucesso!');
     } catch (error) {
       console.error('Erro ao carregar dados da página:', error);
@@ -68,8 +71,13 @@ async loadData() {
     }
   }
 
+  async loadClients(): Promise<void> {
+    this.clients = await firstValueFrom(this.clientService.getClients());
+  }
+
   async loadFarms(): Promise<void> {
-    this.farms = await firstValueFrom(this.farmService.getFarmsList());
+    const farms = await firstValueFrom(this.farmService.getFarmsList());
+    this.farms = farms.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   onSaveNewFarm() {
@@ -94,5 +102,65 @@ async loadData() {
 
   handleLoadingNewFarm(event: boolean) {
     this.isLoadingNewFarm = event;
+  }
+
+  async handleSuccessNewFarm() {
+    this.isVisibleNewFarm = false;
+    this.isLoadingData = true;
+    try {
+      await this.loadFarms();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.isLoadingData = false;
+    }
+  }
+
+  get hasSelectedFarms(): boolean {
+    return this.farms.some(f => f.selected);
+  }
+
+  archiveSelectedFarms() {
+    if (!this.hasSelectedFarms) return;
+    
+    const selectedFarms = this.farms.filter(f => f.selected);
+    console.log('Arquivando fazendas:', selectedFarms);
+    
+    // TODO: Chamar o endpoint de arquivamento na API quando estiver pronto
+    // this.farmService.archiveFarms(selectedFarms).subscribe({
+    //   next: (res) => {
+    //     console.log('Fazendas arquivadas com sucesso');
+    //     this.loadData();
+    //   },
+    //   error: (err) => console.error('Erro ao arquivar:', err)
+    // });
+  }
+
+  editFarmName(farm: any) {
+    farm.isEditing = true;
+    farm.tempName = farm.name;
+  }
+
+  cancelEditName(farm: any) {
+    farm.isEditing = false;
+  }
+
+  saveFarmName(farm: any) {
+    farm.isEditing = false;
+    
+    const oldName = farm.name;
+    farm.name = farm.tempName;
+    console.log(`Alterando nome da fazenda de ${oldName} para ${farm.name}`);
+    
+    // TODO: Chamar o endpoint para atualizar o nome da fazenda na API
+    // this.farmService.updateFarmName(farm.agrovys_uuid, farm.name).subscribe({
+    //   next: (res) => {
+    //      console.log('Nome alterado com sucesso na API');
+    //   },
+    //   error: (err) => {
+    //      console.error('Erro ao atualizar nome, revertendo...');
+    //      farm.name = oldName;
+    //   }
+    // });
   }
 }

@@ -1,438 +1,661 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>AGROVYS - INTEGRAÇÕES AGRÍCOLAS</title>
-        <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-        <!-- Bootstrap icons-->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
-        <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
-    </head>
-    <body>
-        <!-- Responsive navbar-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-agrovys fixed-top">
-            <div class="container px-5">
-                <a class="navbar-brand" href="#!">
-                    <img src="./assets/images/logo/logo-agrovys-brand-inline.png" width="150" alt="logo-brand.png">
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active text-agrovys-secondary" aria-current="page" href="#!">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">Sobre Nós</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">Soluções</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">Contatos</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- Header-->
-        <header class="bg-agrovys header py-5">
-            <div class="container px-5">
-                <div class="row gx-5 justify-content-center">
-                    <div class="col-lg-6">
-                        <div class="text-center my-5">
-                            <h1 class="display-5 fw-bolder text-white mb-2"><b class="text-agrovys-secondary">AGRO<b class="text-primary">VYS</b></b> Descomplicando suas integrações!</h1>
-                            <p class="lead text-white-50 mb-4">
-                                Fazendas, Projetos de Piloto Automático, Exportação Jhon Deere e Trimble totalmente integrados.
-                            </p>
-                            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                                <a class="btn btn-agrovys-secondary btn-lg px-4 me-sm-3" href="#features">TESTE GRÁTIS</a>
-                                <a class="btn btn-outline-light btn-lg px-4" href="#!">ENTRAR</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-        <!-- Features section-->
-        <section class="py-5 border-bottom" id="features">
-            <div class="container px-5 my-5">
-                <div class="row gx-5">
-                    <div class="col-lg-4 mb-5 mb-lg-0">
-                        <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-collection"></i></div>
-                        <h2 class="h4 fw-bolder">GESTÃO DE FAZENDAS</h2>
-                        <p>Gerencia sua fazendas e talhões. Extrai seus limites em ShapeFile ou GeoJson para formato John Deere e Trimble.</p>
-                        <a class="text-decoration-none" href="#!">
-                            Saiba mais...
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                    <div class="col-lg-4 mb-5 mb-lg-0">
-                        <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-building"></i></div>
-                        <h2 class="h4 fw-bolder">PILOTO AUTOMÁTICO</h2>
-                        <p>Converta projetos de piloto automático de Shapefile para Monitores John Deere ou Trimble de forma rápida e fácil.</p>
-                        <a class="text-decoration-none" href="#!">
-                            Saiba mais...
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-toggles2"></i></div>
-                        <h2 class="h4 fw-bolder">GESTÃO DE TRABALHO</h2>
-                        <p>Gerencie as atividades do campo com planos de trabalho que contém informações como (Ordem de Serviço, Vazão, Prescrição, Linhas de Oriejtação).</p>
-                        <a class="text-decoration-none" href="#!">
-                            Saiba mais...
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AGROVYS — Plataforma de integrações agrícolas premium. Conecte sua operação ao John Deere Operations Center e Trimble com tecnologia de ponta." />
+  <title>AGROVYS — Inteligência no Campo</title>
 
-        <section class="py-5 border-bottom bg-light" id="features">
-            <div class="container px-5 my-5">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bolder">Operations Center John Deere</h2>
-                    <p class="lead mb-0">Integre os seus dados com a maior plataforma de gestão agrícola do mundo!</p>
-                </div>
-                <div class="row gx-5">
-                    <div class="col-lg-6 mb-5 mb-lg-3">
-                        <div class="card h-100 w-100 rounded-5 bg-transparent">
-                            <img class="rounded-5" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIiZxRYxUU4ovwZmeSpy_cridLkyqprUE__w&s" class="card-img-top" alt="...">
-                            <div class="card-body">
-                                <span class="h4 text-agrovys">Equipamentos</span>
-                                <p class="card-text">
-                                    <ul class="">
-                                        <li class="fw-bold text-success">Gerenciamento de Combustível</li>
-                                        <li class="">Alertas de Falha com Localização</li>
-                                        <li class="">Sistema de Ordens de Serviço e Aplicativo de Atendimento.</li>
-                                    </ul>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 mb-5 mb-lg-3">
-                        <div class="card h-100 w-100 rounded-5 bg-transparent">
-                            <img class="rounded-5" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIiZxRYxUU4ovwZmeSpy_cridLkyqprUE__w&s" class="card-img-top" alt="...">
-                            <div class="card-body">
-                                <span class="h4 text-agrovys">Fazendas</span>
-                                <p class="card-text">
-                                    <ul class="">
-                                        <li class="">Clientes, Fazendas e Talhões integrados com sua base dados.</li>
-                                        <li class="">Linhas de Orientação integradas.</li>
-                                        <li class="">Sistema de Ordens de Serviço e Aplicativo de Atendimento.</li>
-                                    </ul>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 mb-5 mb-lg-3">
-                        <div class="card h-100 w-100 rounded-5 bg-transparent">
-                            <img class="rounded-5" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIiZxRYxUU4ovwZmeSpy_cridLkyqprUE__w&s" class="card-img-top" alt="...">
-                            <div class="card-body">
-                                <span class="h4 text-agrovys">Trabalhos</span>
-                                <p class="card-text">
-                                    <ul class="">
-                                        <li class="">Gerencie Planos de trabalho integrados com seu sistema de ordens de serviço.</li>
-                                        <li class="">Crie planos de trabalho com prescrição e controle de vazão.</li>
-                                        <li class="">Acompanhe o progresso dos planos de trabalho.</li>
-                                    </ul>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 mb-5 mb-lg-3">
-                        <div class="card h-100 w-100 rounded-5 bg-transparent">
-                            <img class="rounded-5" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIiZxRYxUU4ovwZmeSpy_cridLkyqprUE__w&s" class="card-img-top" alt="...">
-                            <div class="card-body">
-                                <span class="h4 text-agrovys">Banco de Dados</span>
-                                <p class="card-text">
-                                    <ul class="">
-                                        <li class="">Conecte sua Organização no Operations Center com seu banco de dados Oracle ou PostgreSQL.</li>
-                                        <li class="">Crie planos de trabalho com prescrição e controle de vazão.</li>
-                                        <li class="">Acompanhe o progresso dos planos de trabalho.</li>
-                                    </ul>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  <!-- Google Fonts: Cabinet Grotesk (display) + Plus Jakarta Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
-        <!-- Pricing section-->
-        <section class="bg-light py-5 border-bottom">
-            <div class="container px-5 my-5">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bolder">Planos</h2>
-                    <p class="lead mb-0">Temos o plano ideal para você!</p>
-                </div>
-                <div class="row gx-5 justify-content-center">
-                    <!-- Pricing card free-->
-                    <div class="col-lg-6 col-xl-4">
-                        <div class="card mb-5 mb-xl-0">
-                            <div class="card-body p-5">
-                                <div class="small text-uppercase fw-bold text-muted">Básico</div>
-                                <div class="mb-3">
-                                    <span class="display-4 fw-bold">R$ 299,90</span>
-                                    <span class="text-muted"><br> mensal</span>
-                                </div>
-                                <ul class="list-unstyled mb-4">
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        <strong>1 usuário</strong>
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Gestão de Fazendas (Shapefile)
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Piloto Automático (Shapefile)
-                                    </li>
-                                    <li class="mb-2 text-muted">
-                                        <i class="bi bi-x"></i>
-                                        Gestão de Trabalho
-                                    </li>
-                                    <li class="mb-2 text-muted">
-                                        <hr>
-                                    </li>
-                                    <li class="mb-2 text-muted">
-                                        <i class="bi bi-x"></i>
-                                         <strong>Integração Operations Center</strong>
-                                    </li>
-                                     <li class="mb-2 text-muted">
-                                        <i class="bi bi-x"></i>
-                                        Fazendas
-                                    </li>
-                                    <li class="mb-2 text-muted">
-                                        <i class="bi bi-x"></i>
-                                        Equipamentos
-                                    </li>
-                                    <li class="text-muted">
-                                        <i class="bi bi-x"></i>
-                                        Banco de Dados
-                                    </li>
-                                </ul>
-                                <div class="d-grid"><a class="btn btn-outline-primary" href="#!">Adiquirir Plano</a></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Pricing card pro-->
-                    <div class="col-lg-6 col-xl-4">
-                        <div class="card mb-5 mb-xl-0">
-                            <div class="card-body p-5">
-                                <div class="small text-uppercase fw-bold">
-                                    <i class="bi bi-star-fill text-warning"></i>
-                                    Profissional
-                                </div>
-                                <div class="mb-3">
-                                    <span class="display-4 fw-bold">R$ 499,90</span>
-                                    <span class="text-muted">mensal</span>
-                                </div>
-                                <ul class="list-unstyled mb-4">
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        <strong>3 usuários</strong>
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Gestão de Fazendas (Shapefile)
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Piloto Automático (Shapefile)
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Gestão de Trabalho
-                                    </li>
-                                    <li class="mb-2 text-muted">
-                                        <hr>
-                                    </li>
-                                    <li class="mb-2 text-muted">
-                                        <i class="bi bi-x"></i>
-                                         <strong>Integração Operations Center</strong>
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Fazendas
-                                    </li>
-                                    <li class="mb-2 text-muted">
-                                        <i class="bi bi-x"></i>
-                                        Equipamentos
-                                    </li>
-                                    <li class="text-muted">
-                                        <i class="bi bi-x"></i>
-                                        Banco de Dados
-                                    </li>
-                                </ul>
-                                <div class="d-grid"><a class="btn btn-primary" href="#!">Adiquirir Plano</a></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Pricing card enterprise-->
-                    <div class="col-lg-6 col-xl-4">
-                        <div class="card">
-                            <div class="card-body p-5">
-                                <div class="small text-uppercase fw-bold text-muted">Enterprise</div>
-                                <div class="mb-3">
-                                    <span class="display-4 fw-bold">R$ 999,90</span>
-                                    <span class="text-muted">mensal</span>
-                                </div>
-                                <ul class="list-unstyled mb-4">
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        <strong>20 usuários</strong>
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Gestão de Fazendas (Shapefile)
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Piloto Automático (Shapefile)
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Gestão de Trabalho
-                                    </li>
-                                    <li class="mb-2 text-muted">
-                                        <hr>
-                                    </li>
-                                    <li class="mb-2 text-muted">
-                                        <i class="bi bi-x"></i>
-                                         <strong>Integração Operations Center</strong>
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Fazendas
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Equipamentos
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="bi bi-check text-success"></i>
-                                        Banco de Dados
-                                    </li>
-                                </ul>
-                                <div class="d-grid"><a class="btn btn-outline-primary" href="#!">Adiquirir Plano</a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar__container">
+
+      <a href="#home" class="navbar__logo" data-section="home">
+        <div class="">
+          <img src="./assets/images/logo/logo-agrovys-brand-inline.png" width="120" alt="">
+        </div>
+      </a>
+
+      <ul class="navbar__links">
+        <li><a href="#home"     class="navbar__link" data-section="home">Home</a></li>
+        <li><a href="#features" class="navbar__link" data-section="features">Soluções</a></li>
+        <li><a href="#jd"       class="navbar__link" data-section="jd">John Deere</a></li>
+        <li><a href="#pricing"  class="navbar__link" data-section="pricing">Planos</a></li>
+        <li><a href="#contact"  class="navbar__link" data-section="contact">Contato</a></li>
+      </ul>
+
+      <div class="navbar__actions">
+        <a href="#" class="btn btn--ghost">Entrar</a>
+        <a href="#pricing" class="btn btn--primary">Teste Grátis</a>
+      </div>
+
+      <button class="navbar__hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <div class="navbar__mobile" id="mobileMenu">
+      <ul class="navbar__mobile-links">
+        <li><a href="#home"     class="navbar__link" data-section="home">Home</a></li>
+        <li><a href="#features" class="navbar__link" data-section="features">Soluções</a></li>
+        <li><a href="#jd"       class="navbar__link" data-section="jd">John Deere</a></li>
+        <li><a href="#pricing"  class="navbar__link" data-section="pricing">Planos</a></li>
+        <li><a href="#contact"  class="navbar__link" data-section="contact">Contato</a></li>
+      </ul>
+      <div class="navbar__mobile-actions">
+        <a href="#" class="btn btn--ghost btn--full">Entrar</a>
+        <a href="#pricing" class="btn btn--primary btn--full">Teste Grátis</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <header class="hero" id="home">
+
+    <!-- Video Background -->
+    <video class="hero__video" autoplay muted loop playsinline>
+      <source src="./assets/video/video1.mp4" type="video/mp4" />
+    </video>
+
+    <!-- Overlays -->
+    <div class="hero__overlay"></div>
+
+    <!-- Decorative shapes -->
+    <div class="hero__shape hero__shape--1"></div>
+    <div class="hero__shape hero__shape--2"></div>
+    <div class="hero__dots"></div>
+
+    <div class="hero__container">
+      <div class="hero__badge fade-up">
+        <i data-lucide="zap" class="hero__badge-icon"></i>
+        Integração Certificada · John Deere &amp; Trimble
+      </div>
+
+      <h1 class="hero__headline fade-up fade-up--delay-1">
+        O Campo do Futuro<br />
+        <span class="hero__headline-accent">Começa Aqui.</span>
+      </h1>
+
+      <p class="hero__sub fade-up fade-up--delay-2">
+        Conecte fazendas, pilotos automáticos e planos de trabalho diretamente ao
+        <strong>John Deere Operations Center</strong> e <strong>Trimble</strong>,
+        com precisão de milímetros e dados em tempo real.
+      </p>
+
+      <div class="hero__actions fade-up fade-up--delay-3">
+        <a href="#pricing" class="btn btn--primary btn--lg">
+          <i data-lucide="rocket"></i>
+          Começar Grátis
+        </a>
+        <a href="#features" class="btn btn--outline btn--lg">
+          <i data-lucide="play-circle"></i>
+          Ver Soluções
+        </a>
+      </div>
+
+      <!-- <div class="hero__stats fade-up fade-up--delay-4">
+        <div class="hero__stat">
+          <span class="hero__stat-number">+2.400</span>
+          <span class="hero__stat-label">Fazendas Ativas</span>
+        </div>
+        <div class="hero__stat-divider"></div>
+        <div class="hero__stat">
+          <span class="hero__stat-number">98,7%</span>
+          <span class="hero__stat-label">Uptime Garantido</span>
+        </div>
+        <div class="hero__stat-divider"></div>
+        <div class="hero__stat">
+          <span class="hero__stat-number">15M+</span>
+          <span class="hero__stat-label">Hectares Gerenciados</span>
+        </div>
+      </div> -->
+    </div>
+
+    <div class="hero__scroll">
+      <div class="hero__scroll-line"></div>
+      <span>V</span>
+    </div>
+  </header>
+
+  <!-- ===================== FEATURES ===================== -->
+  <section class="features" id="features">
+    <div class="container">
+
+      <div class="section-header reveal">
+        <div class="section-tag">
+          <i data-lucide="layers"></i>
+          Plataforma Integrada
+        </div>
+        <h2 class="section-title">Soluções que Transformam<br /><span>sua Operação Agrícola</span></h2>
+        <p class="section-sub">Gerencie fazendas, linhas de orientação e planos de trabalho em uma única plataforma conectada ao mundo agro.</p>
+      </div>
+
+      <div class="features__grid">
+
+        <div class="feature-card reveal reveal--delay-1">
+          <div class="feature-card__icon-wrap feature-card__icon-wrap--green">
+            <i data-lucide="map" class="feature-card__icon"></i>
+          </div>
+          <div class="feature-card__number">01</div>
+          <h3 class="feature-card__title">Gestão de Fazendas</h3>
+          <p class="feature-card__desc">Cadastre e gerencie fazendas e talhões com precisão. Exporte limites em ShapeFile ou GeoJSON compatíveis com John Deere e Trimble em segundos.</p>
+          <ul class="feature-card__list">
+            <li><i data-lucide="check-circle-2"></i> Mapa interativo de talhões</li>
+            <li><i data-lucide="check-circle-2"></i> Exportação ShapeFile / GeoJSON</li>
+            <li><i data-lucide="check-circle-2"></i> Compatível JD &amp; Trimble</li>
+          </ul>
+          <a href="#" class="feature-card__link">
+            Explorar recurso <i data-lucide="arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="feature-card reveal reveal--delay-2">
+          <div class="feature-card__icon-wrap feature-card__icon-wrap--blue">
+            <i data-lucide="navigation" class="feature-card__icon"></i>
+          </div>
+          <div class="feature-card__number">02</div>
+          <h3 class="feature-card__title">Piloto Automático</h3>
+          <p class="feature-card__desc">Converta projetos de piloto automático de Shapefile para monitores John Deere ou Trimble com precisão centimétrica e zero retrabalho.</p>
+          <ul class="feature-card__list">
+            <li><i data-lucide="check-circle-2"></i> Conversão automática de formatos</li>
+            <li><i data-lucide="check-circle-2"></i> Linhas de orientação precisas</li>
+            <li><i data-lucide="check-circle-2"></i> Exportação direta ao monitor</li>
+          </ul>
+          <a href="#" class="feature-card__link">
+            Explorar recurso <i data-lucide="arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="feature-card reveal reveal--delay-3">
+          <div class="feature-card__icon-wrap feature-card__icon-wrap--teal">
+            <i data-lucide="clipboard-list" class="feature-card__icon"></i>
+          </div>
+          <div class="feature-card__number">03</div>
+          <h3 class="feature-card__title">Gestão de Trabalho</h3>
+          <p class="feature-card__desc">Crie e acompanhe planos de trabalho completos com ordens de serviço, vazão, prescrição e linhas de orientação — tudo integrado e rastreável.</p>
+          <ul class="feature-card__list">
+            <li><i data-lucide="check-circle-2"></i> Ordens de Serviço digitais</li>
+            <li><i data-lucide="check-circle-2"></i> Prescrição &amp; controle de vazão</li>
+            <li><i data-lucide="check-circle-2"></i> Rastreamento em tempo real</li>
+          </ul>
+          <a href="#" class="feature-card__link">
+            Explorar recurso <i data-lucide="arrow-right"></i>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== JOHN DEERE ===================== -->
+  <section class="jd-section" id="jd">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-tag">
+          <i data-lucide="link-2"></i>
+          Integração Oficial
+        </div>
+        <h2 class="section-title">Operations Center<br /><span>John Deere</span></h2>
+        <p class="section-sub">Conecte seus dados à maior plataforma de gestão agrícola do planeta. Sincronização bidirecional, em tempo real.</p>
+      </div>
+
+      <div class="jd-grid">
+
+        <div class="jd-card reveal reveal--delay-1">
+          <div class="jd-card__header">
+            <div class="jd-card__icon-wrap"><i data-lucide="tractor"></i></div>
+            <span class="jd-card__tag">Frota</span>
+          </div>
+          <h3 class="jd-card__title">Equipamentos</h3>
+          <ul class="jd-card__list">
+            <li>
+              <i data-lucide="fuel"></i>
+              <div><strong>Gerenciamento de Combustível</strong><span>Controle de consumo por máquina e talhão</span></div>
+            </li>
+            <li>
+              <i data-lucide="bell-dot"></i>
+              <div><strong>Alertas de Falha com Localização</strong><span>Receba notificações precisas de onde parar</span></div>
+            </li>
+            <li>
+              <i data-lucide="wrench"></i>
+              <div><strong>Ordens de Serviço Integradas</strong><span>App de atendimento para equipe técnica</span></div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="jd-card reveal reveal--delay-2">
+          <div class="jd-card__header">
+            <div class="jd-card__icon-wrap"><i data-lucide="trees"></i></div>
+            <span class="jd-card__tag">Território</span>
+          </div>
+          <h3 class="jd-card__title">Fazendas</h3>
+          <ul class="jd-card__list">
+            <li>
+              <i data-lucide="users"></i>
+              <div><strong>Clientes, Fazendas e Talhões</strong><span>Sincronizados com seu banco de dados</span></div>
+            </li>
+            <li>
+              <i data-lucide="route"></i>
+              <div><strong>Linhas de Orientação Integradas</strong><span>Transmita diretamente ao monitor do trator</span></div>
+            </li>
+            <li>
+              <i data-lucide="smartphone"></i>
+              <div><strong>App de Atendimento no Campo</strong><span>Acesso mobile para equipes externas</span></div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="jd-card reveal reveal--delay-3">
+          <div class="jd-card__header">
+            <div class="jd-card__icon-wrap"><i data-lucide="workflow"></i></div>
+            <span class="jd-card__tag">Operações</span>
+          </div>
+          <h3 class="jd-card__title">Trabalhos</h3>
+          <ul class="jd-card__list">
+            <li>
+              <i data-lucide="list-checks"></i>
+              <div><strong>Planos de Trabalho Integrados</strong><span>Sincronizados com ordens de serviço</span></div>
+            </li>
+            <li>
+              <i data-lucide="droplets"></i>
+              <div><strong>Prescrição &amp; Controle de Vazão</strong><span>Aplicação variável precisa e rastreável</span></div>
+            </li>
+            <li>
+              <i data-lucide="activity"></i>
+              <div><strong>Progresso em Tempo Real</strong><span>Dashboard ao vivo do andamento das atividades</span></div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="jd-card reveal reveal--delay-4">
+          <div class="jd-card__header">
+            <div class="jd-card__icon-wrap"><i data-lucide="database"></i></div>
+            <span class="jd-card__tag">Infraestrutura</span>
+          </div>
+          <h3 class="jd-card__title">Banco de Dados</h3>
+          <ul class="jd-card__list">
+            <li>
+              <i data-lucide="server"></i>
+              <div><strong>Oracle &amp; PostgreSQL</strong><span>Conecte sua organização ao Operations Center</span></div>
+            </li>
+            <li>
+              <i data-lucide="refresh-cw"></i>
+              <div><strong>Sincronização Bidirecional</strong><span>Dados sempre atualizados, sem conflitos</span></div>
+            </li>
+            <li>
+              <i data-lucide="shield-check"></i>
+              <div><strong>Segurança Empresarial</strong><span>Criptografia e controle de acesso granular</span></div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="jd-cta reveal">
+        <div class="jd-cta__content">
+          <h3>Pronto para conectar ao Operations Center?</h3>
+          <p>Configure sua integração em menos de 10 minutos com suporte especializado.</p>
+        </div>
+        <a href="#contact" class="btn btn--primary btn--lg">
+          <i data-lucide="plug-zap"></i>
+          Solicitar Integração
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PRICING ===================== -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+
+      <div class="section-header reveal">
+        <div class="section-tag">
+          <i data-lucide="sparkles"></i>
+          Planos &amp; Preços
+        </div>
+        <h2 class="section-title">Escolha o Plano Ideal<br /><span>para sua Operação</span></h2>
+        <p class="section-sub">Sem surpresas. Sem taxas ocultas. Cancele quando quiser.</p>
+      </div>
+
+      <div class="pricing__grid">
+
+        <!-- Básico -->
+        <div class="pricing-card reveal reveal--delay-1">
+          <div class="pricing-card__header">
+            <span class="pricing-card__tier">Básico</span>
+            <div class="pricing-card__price">
+              <span class="pricing-card__currency">R$</span>
+              <span class="pricing-card__amount">299</span>
+              <span class="pricing-card__period">,90<br>/mês</span>
             </div>
-        </section>
-        <!-- Testimonials section-->
-        <!-- <section class="py-5 border-bottom">
-            <div class="container px-5 my-5 px-5">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bolder">Customer testimonials</h2>
-                    <p class="lead mb-0">Our customers love working with us</p>
-                </div>
-                <div class="row gx-5 justify-content-center">
-                    <div class="col-lg-6">
-                        <div class="card mb-4">
-                            <div class="card-body p-4">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0"><i class="bi bi-chat-right-quote-fill text-primary fs-1"></i></div>
-                                    <div class="ms-4">
-                                        <p class="mb-1">Thank you for putting together such a great product. We loved working with you and the whole team, and we will be recommending you to others!</p>
-                                        <div class="small text-muted">- Client Name, Location</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body p-4">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0"><i class="bi bi-chat-right-quote-fill text-primary fs-1"></i></div>
-                                    <div class="ms-4">
-                                        <p class="mb-1">The whole team was a huge help with putting things together for our company and brand. We will be hiring them again in the near future for additional work!</p>
-                                        <div class="small text-muted">- Client Name, Location</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <p class="pricing-card__tagline">Para produtores individuais que buscam organização digital.</p>
+          </div>
+          <div class="pricing-card__body">
+            <ul class="pricing-card__features">
+              <li class="has"><i data-lucide="check"></i><span><strong>1 usuário</strong></span></li>
+              <li class="has"><i data-lucide="check"></i><span>Gestão de Fazendas (Shapefile)</span></li>
+              <li class="has"><i data-lucide="check"></i><span>Piloto Automático (Shapefile)</span></li>
+              <li class="hasnt"><i data-lucide="minus"></i><span>Gestão de Trabalho</span></li>
+              <li class="pricing-card__divider"><span>Operations Center</span></li>
+              <li class="hasnt"><i data-lucide="minus"></i><span>Integração Fazendas JD</span></li>
+              <li class="hasnt"><i data-lucide="minus"></i><span>Integração Equipamentos JD</span></li>
+              <li class="hasnt"><i data-lucide="minus"></i><span>Banco de Dados Avançado</span></li>
+            </ul>
+            <a href="#" class="btn btn--outline btn--full">Adquirir Plano</a>
+          </div>
+        </div>
+
+        <!-- Profissional (featured) -->
+        <div class="pricing-card pricing-card--featured reveal reveal--delay-2">
+          <div class="pricing-card__badge"><i data-lucide="star"></i> Mais Popular</div>
+          <div class="pricing-card__header">
+            <span class="pricing-card__tier">Profissional</span>
+            <div class="pricing-card__price">
+              <span class="pricing-card__currency">R$</span>
+              <span class="pricing-card__amount">499</span>
+              <span class="pricing-card__period">,90<br>/mês</span>
             </div>
-        </section> -->
-        <!-- Contact section-->
-        <section class="bg-light py-5">
-            <div class="container px-5 my-5 px-5">
-                <div class="text-center mb-5">
-                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-envelope"></i></div>
-                    <h2 class="fw-bolder">Fale Conosco</h2>
-                    <p class="lead mb-0">Vamos ter muito prazer em te ajudar!</p>
-                </div>
-                <div class="row gx-5 justify-content-center">
-                    <div class="col-lg-6">
-                        <!-- * * * * * * * * * * * * * * *-->
-                        <!-- * * SB Forms Contact Form * *-->
-                        <!-- * * * * * * * * * * * * * * *-->
-                        <!-- This form is pre-integrated with SB Forms.-->
-                        <!-- To make this form functional, sign up at-->
-                        <!-- https://startbootstrap.com/solution/contact-forms-->
-                        <!-- to get an API token!-->
-                        <form id="contactForm" data-sb-form-api-token="API_TOKEN">
-                            <!-- Name input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="name" type="text" placeholder="Enter your name..." data-sb-validations="required" />
-                                <label for="name">Nome Completo</label>
-                                <div class="invalid-feedback" data-sb-feedback="name:required">Nome é obrigatório</div>
-                            </div>
-                            <!-- Email address input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="email" type="email" placeholder="name@example.com" data-sb-validations="required,email" />
-                                <label for="email">E-mail</label>
-                                <div class="invalid-feedback" data-sb-feedback="email:required">E-mail é obrigatório</div>
-                                <div class="invalid-feedback" data-sb-feedback="email:email">E-mail inválido</div>
-                            </div>
-                            <!-- Phone number input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="phone" type="tel" placeholder="(123) 456-7890" data-sb-validations="required" />
-                                <label for="phone">Fone</label>
-                                <div class="invalid-feedback" data-sb-feedback="phone:required">Fone é obrigatório</div>
-                            </div>
-                            <!-- Message input-->
-                            <div class="form-floating mb-3">
-                                <textarea class="form-control" id="message" type="text" placeholder="Enter your message here..." style="height: 10rem" data-sb-validations="required"></textarea>
-                                <label for="message">Mensagem</label>
-                                <div class="invalid-feedback" data-sb-feedback="message:required">Mensagem é obrigatória</div>
-                            </div>
-                            <!-- Submit success message-->
-                            <!---->
-                            <!-- This is what your users will see when the form-->
-                            <!-- has successfully submitted-->
-                            <div class="d-none" id="submitSuccessMessage">
-                                <div class="text-center mb-3">
-                                    <div class="fw-bolder">Mensagem enviada com sucesso!</div>
-                                    <br />
-                                    <a href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
-                                </div>
-                            </div>
-                            <!-- Submit error message-->
-                            <!---->
-                            <!-- This is what your users will see when there is-->
-                            <!-- an error submitting the form-->
-                            <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Erro ao enviar mensagem</div></div>
-                            <!-- Submit Button-->
-                            <div class="d-grid"><button class="btn btn-primary btn-lg disabled" id="submitButton" type="submit">Enviar Mensagem</button></div>
-                        </form>
-                    </div>
-                </div>
+            <p class="pricing-card__tagline">Para equipes que precisam de integração completa com JD.</p>
+          </div>
+          <div class="pricing-card__body">
+            <ul class="pricing-card__features">
+              <li class="has"><i data-lucide="check"></i><span><strong>3 usuários</strong></span></li>
+              <li class="has"><i data-lucide="check"></i><span>Gestão de Fazendas (Shapefile)</span></li>
+              <li class="has"><i data-lucide="check"></i><span>Piloto Automático (Shapefile)</span></li>
+              <li class="has"><i data-lucide="check"></i><span>Gestão de Trabalho</span></li>
+              <li class="pricing-card__divider"><span>Operations Center</span></li>
+              <li class="has"><i data-lucide="check"></i><span>Integração Fazendas JD</span></li>
+              <li class="hasnt"><i data-lucide="minus"></i><span>Integração Equipamentos JD</span></li>
+              <li class="hasnt"><i data-lucide="minus"></i><span>Banco de Dados Avançado</span></li>
+            </ul>
+            <a href="#" class="btn btn--primary btn--full">Adquirir Plano</a>
+          </div>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="pricing-card reveal reveal--delay-3">
+          <div class="pricing-card__header">
+            <span class="pricing-card__tier">Enterprise</span>
+            <div class="pricing-card__price">
+              <span class="pricing-card__currency">R$</span>
+              <span class="pricing-card__amount">999</span>
+              <span class="pricing-card__period">,90<br>/mês</span>
             </div>
-        </section>
-        <!-- Footer-->
-        <footer class="py-5 bg-dark">
-            <div class="container px-5"><p class="m-0 text-center text-white">Copyright &copy; 2026 <a href="#" class="text-agrovys-secondary">Agivys ME</a> Todos os direitos são reservados</p></div>
-        </footer>
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <!-- * *                               SB Forms JS                               * *-->
-        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
-    </body>
+            <p class="pricing-card__tagline">Para grandes operações com infraestrutura própria de dados.</p>
+          </div>
+          <div class="pricing-card__body">
+            <ul class="pricing-card__features">
+              <li class="has"><i data-lucide="check"></i><span><strong>20 usuários</strong></span></li>
+              <li class="has"><i data-lucide="check"></i><span>Gestão de Fazendas (Shapefile)</span></li>
+              <li class="has"><i data-lucide="check"></i><span>Piloto Automático (Shapefile)</span></li>
+              <li class="has"><i data-lucide="check"></i><span>Gestão de Trabalho</span></li>
+              <li class="pricing-card__divider"><span>Operations Center</span></li>
+              <li class="has"><i data-lucide="check"></i><span>Integração Fazendas JD</span></li>
+              <li class="has"><i data-lucide="check"></i><span>Integração Equipamentos JD</span></li>
+              <li class="has"><i data-lucide="check"></i><span>Banco de Dados Oracle / PostgreSQL</span></li>
+            </ul>
+            <a href="#" class="btn btn--outline btn--full">Adquirir Plano</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pricing__trust reveal">
+        <div class="trust-badge"><i data-lucide="shield-check"></i><span>Dados Seguros</span></div>
+        <div class="trust-badge"><i data-lucide="refresh-cw"></i><span>Cancele Quando Quiser</span></div>
+        <div class="trust-badge"><i data-lucide="headphones"></i><span>Suporte Especializado</span></div>
+        <div class="trust-badge"><i data-lucide="credit-card"></i><span>7 Dias Grátis</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT ===================== -->
+  <section class="contact" id="contact">
+    <div class="container">
+      <div class="contact__layout">
+
+        <div class="contact__info reveal">
+          <div class="section-tag"><i data-lucide="message-circle"></i>Fale Conosco</div>
+          <h2 class="contact__title">Vamos Transformar<br />sua Operação Juntos</h2>
+          <p class="contact__sub">Nossa equipe de especialistas em agritech está pronta para entender seu cenário e propor a melhor solução integrada para sua fazenda ou empresa.</p>
+          <div class="contact__channels">
+            <div class="contact__channel">
+              <div class="contact__channel-icon"><i data-lucide="mail"></i></div>
+              <div><strong>E-mail</strong><span>contato@agrovys.com.br</span></div>
+            </div>
+            <div class="contact__channel">
+              <div class="contact__channel-icon"><i data-lucide="phone"></i></div>
+              <div><strong>Telefone / WhatsApp</strong><span>+55 (16) 99999-9999</span></div>
+            </div>
+            <div class="contact__channel">
+              <div class="contact__channel-icon"><i data-lucide="clock"></i></div>
+              <div><strong>Horário de Atendimento</strong><span>Segunda a Sexta, 8h–18h</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact__form-wrap reveal reveal--delay-2">
+          <form class="contact__form" id="contactForm" novalidate>
+            <div class="form-group">
+              <label for="name">Nome Completo</label>
+              <div class="form-input-wrap">
+                <i data-lucide="user"></i>
+                <input type="text" id="name" name="name" placeholder="Seu nome completo" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">E-mail Profissional</label>
+              <div class="form-input-wrap">
+                <i data-lucide="at-sign"></i>
+                <input type="email" id="email" name="email" placeholder="seu@email.com.br" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="phone">Telefone / WhatsApp</label>
+                <div class="form-input-wrap">
+                  <i data-lucide="phone"></i>
+                  <input type="tel" id="phone" name="phone" placeholder="(16) 99999-9999" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="plan">Plano de Interesse</label>
+                <div class="form-input-wrap form-input-wrap--select">
+                  <i data-lucide="layers"></i>
+                  <select id="plan" name="plan">
+                    <option value="">Selecione...</option>
+                    <option value="basic">Básico</option>
+                    <option value="pro">Profissional</option>
+                    <option value="enterprise">Enterprise</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="message">Mensagem</label>
+              <div class="form-input-wrap form-input-wrap--textarea">
+                <i data-lucide="message-square"></i>
+                <textarea id="message" name="message" rows="4" placeholder="Conte-nos sobre sua operação e como podemos ajudar..." required></textarea>
+              </div>
+            </div>
+            <button type="submit" class="btn btn--primary btn--full btn--lg">
+              <i data-lucide="send"></i>
+              Enviar Mensagem
+            </button>
+            <p class="form-note">
+              <i data-lucide="lock"></i>
+              Seus dados estão seguros. Não compartilhamos informações com terceiros.
+            </p>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="footer__top">
+      <div class="container">
+        <div class="footer__layout">
+          <div class="footer__brand">
+            <a href="#home" class="navbar__logo">
+              <div class="navbar__logo-icon">
+                <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
+                  <path d="M11 2L3 7v8l8 5 8-5V7L11 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  <path d="M11 2v13M3 7l8 8M19 7l-8 8" stroke="currentColor" stroke-width="1.2" opacity=".45"/>
+                </svg>
+              </div>
+              <span class="navbar__logo-text">AGRO<span>VYS</span></span>
+            </a>
+            <p class="footer__brand-desc">Inteligência agrícola integrada para o produtor moderno. Conectamos sua operação ao futuro do agro.</p>
+            <div class="footer__socials">
+              <a href="#" aria-label="LinkedIn"><i data-lucide="linkedin"></i></a>
+              <a href="#" aria-label="Instagram"><i data-lucide="instagram"></i></a>
+              <a href="#" aria-label="YouTube"><i data-lucide="youtube"></i></a>
+            </div>
+          </div>
+          <div class="footer__col">
+            <h4>Plataforma</h4>
+            <ul>
+              <li><a href="#features">Gestão de Fazendas</a></li>
+              <li><a href="#features">Piloto Automático</a></li>
+              <li><a href="#features">Gestão de Trabalho</a></li>
+              <li><a href="#jd">Operations Center JD</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>Empresa</h4>
+            <ul>
+              <li><a href="#">Sobre Nós</a></li>
+              <li><a href="#">Cases de Sucesso</a></li>
+              <li><a href="#">Blog Agro</a></li>
+              <li><a href="#contact">Contato</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>Suporte</h4>
+            <ul>
+              <li><a href="#">Central de Ajuda</a></li>
+              <li><a href="#">Documentação API</a></li>
+              <li><a href="#">Status do Sistema</a></li>
+              <li><a href="#">Política de Privacidade</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <div class="container">
+        <p>© 2026 <strong>Agrovys ME</strong> — Todos os direitos reservados.</p>
+        <p>Desenvolvido com <i data-lucide="heart" style="width:13px;height:13px;color:var(--color-green);display:inline;vertical-align:middle;"></i> para o Agro Brasileiro.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== SCRIPTS ===================== -->
+  <script>
+    // ——— Init Icons ———
+    lucide.createIcons();
+
+    // ——— Sections for active nav tracking ———
+    const sections = ['home', 'features', 'jd', 'pricing', 'contact'];
+    const navLinks = document.querySelectorAll('.navbar__link[data-section]');
+
+    function setActiveLink(sectionId) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.section === sectionId);
+      });
+    }
+
+    // ——— Scroll: navbar style + active link ———
+    const navbar = document.getElementById('navbar');
+
+    function onScroll() {
+      // Navbar scrolled state
+      navbar.classList.toggle('navbar--scrolled', window.scrollY > 60);
+
+      // Active section detection
+      let current = sections[0];
+      const offset = navbar.offsetHeight + 40;
+
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= offset) {
+          current = id;
+        }
+      });
+
+      setActiveLink(current);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // run once on load
+
+    // ——— Hamburger ———
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // ——— Scroll Reveal ———
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // Hero elements
+    setTimeout(() => {
+      document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible'));
+    }, 80);
+
+    // ——— Contact Form ———
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.innerHTML = '<i data-lucide="check-circle"></i> Mensagem Enviada!';
+      btn.classList.add('btn--success');
+      lucide.createIcons();
+      setTimeout(() => {
+        btn.innerHTML = '<i data-lucide="send"></i> Enviar Mensagem';
+        btn.classList.remove('btn--success');
+        lucide.createIcons();
+      }, 3000);
+    });
+
+    // ——— Smooth Scroll ———
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', (e) => {
+        const target = document.querySelector(anchor.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
 </html>

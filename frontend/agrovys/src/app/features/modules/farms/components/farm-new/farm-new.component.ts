@@ -14,6 +14,8 @@ import { FarmPreviewMapComponent } from '../farm-preview-map/farm-preview-map.co
 import { LocalStorageUtils } from '../../../../../core/utils/localstorage';
 import { loggUser } from '../../../../../shared/models/loggUser';
 import { FormsModule } from '@angular/forms';
+import { ClientService } from '../../services/client.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-farm-new',
@@ -26,6 +28,7 @@ export class FarmNewComponent implements OnInit {
   @ViewChild(FarmPreviewMapComponent) previewMap!: FarmPreviewMapComponent;
   @ViewChild('fileDropRef') fileDropRef!: ElementRef<HTMLInputElement>;
   @Output() loadingEmit = new EventEmitter<boolean>();
+  @Output() successEmit = new EventEmitter<void>();
 
   localStorage = new LocalStorageUtils();
 
@@ -39,12 +42,18 @@ export class FarmNewComponent implements OnInit {
   errorMessage: string = '';
   uploadedFiles: any;
 
+  clients: any[] = [];
+
+  selectedClientUuid: string | null = null;
+  farmName: string = '';
+
   readonly allowedExtensions = ['.shp', '.shx', '.dbf', '.prj'];
 
   constructor(
     private farmService: FarmService,
+    private clientService: ClientService,
     private toasService: ToastService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const currentYear = new Date().getFullYear();
@@ -57,16 +66,29 @@ export class FarmNewComponent implements OnInit {
     this.loadData();
   }
 
-  loadData() {
-    setTimeout(() => {
-      this.isLoading = true;
-      this.loadingEmit.emit(true);
-    }, 0);
+  async loadData() {
+    this.isLoading = true;
 
-    setTimeout(() => {
+    try {
+      await this.loadClients();
+
+      if (this.clients && this.clients.length > 0) {
+        const firstValidClient = this.clients.find(c => c.agrovys_uuid != null);
+
+        if (firstValidClient) {
+          this.selectedClientUuid = firstValidClient.agrovys_uuid;
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados da página:', error);
+    } finally {
       this.isLoading = false;
       this.loadingEmit.emit(false);
-    }, 500);
+    }
+  }
+
+  async loadClients(): Promise<void> {
+    this.clients = await firstValueFrom(this.clientService.getClients());
   }
 
   public submitNewFarm() {
@@ -82,8 +104,10 @@ export class FarmNewComponent implements OnInit {
     this.loadingEmit.emit(true);
 
     const user: loggUser = this.localStorage.getUser();
-    const farmName = this.previewMap.shapeInfo.nome;
-    const clientUnitId = user.companyId;
+    const _clientUnitId = this.clients.find(c => String(c.id) === String(user.companyId))?.agrovys_uuid
+
+    const farmName = this.farmName;
+    const clientUnitId = _clientUnitId;
     const agivysUserId = user.id;
     const cropYear = '2026';
 
@@ -101,6 +125,7 @@ export class FarmNewComponent implements OnInit {
           this.toasService.success('Fazenda Cadastrada com Sucesso!', 3000);
           this.isLoading = false;
           this.loadingEmit.emit(false);
+          this.successEmit.emit();
         },
         error: (err) => {
           console.error('Erro ao cadastrar fazenda', err);
@@ -141,6 +166,16 @@ export class FarmNewComponent implements OnInit {
               response.geojson,
               response.area_total_ha,
             );
+
+            // Auto-fill farm name
+            let finalName = this.previewMap.shapeInfo?.nome;
+            if (!finalName || finalName === 'Fazenda Desconhecida') {
+              const shpFile = this.selectedFiles.find(f => f.name.toLowerCase().endsWith('.shp'));
+              if (shpFile) {
+                finalName = shpFile.name.replace(/\.shp$/i, '');
+              }
+            }
+            this.farmName = finalName || '';
           }
         }, 150);
 

@@ -9,6 +9,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { AccountService } from '../../../modules/setup/pages/account/services/account.service';
 import { ClientService } from '../../../modules/farms/services/client.service';
 import { LocalStorageUtils } from '../../../../core/utils/localstorage';
+import { loggUser } from '../../../../shared/models/loggUser';
 
 interface Step {
   index: number;
@@ -19,19 +20,25 @@ interface Step {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, RouterModule, RegisterFormComponent, RegisterCompanyFormComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    RegisterFormComponent,
+    RegisterCompanyFormComponent,
+  ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss', '../../auth.app.component.scss'],
 })
 export class RegisterComponent {
   @ViewChild(RegisterFormComponent) formComponent!: RegisterFormComponent;
-  @ViewChild(RegisterCompanyFormComponent) formCompanyComponent!: RegisterCompanyFormComponent;
+  @ViewChild(RegisterCompanyFormComponent)
+  formCompanyComponent!: RegisterCompanyFormComponent;
 
   private localStorage = new LocalStorageUtils();
-  
+
   currentStep = 0;
   isLoading = false;
-  
+
   private emailToLogin = '';
   private passwordToLogin = '';
 
@@ -44,7 +51,7 @@ export class RegisterComponent {
     private authService: AuthService,
     private accountService: AccountService,
     private clientService: ClientService,
-    private router: Router
+    private router: Router,
   ) {}
 
   async nextStep() {
@@ -59,7 +66,9 @@ export class RegisterComponent {
     this.isLoading = true;
     try {
       // 1. Registro do Usuário
-      const res = await firstValueFrom(this.authService.register(formInfo.userBody));
+      const res = await firstValueFrom(
+        this.authService.register(formInfo.userBody),
+      );
       if (res?.errors) throw res;
 
       this.emailToLogin = formInfo.userBody.email;
@@ -84,32 +93,41 @@ export class RegisterComponent {
     this.isLoading = true;
     try {
       // 2. Login imediato para obter Token necessário para os próximos passos
-      const loginRes = await firstValueFrom(this.authService.login(this.emailToLogin, this.passwordToLogin));
+      const loginRes = await firstValueFrom(
+        this.authService.login(this.emailToLogin, this.passwordToLogin),
+      );
       this.localStorage.saveLocaleDataUser(loginRes);
+      const user = this.localStorage.getUser();
+      const userId = user.id;
 
       // 3. Preparação dos corpos das requisições
       const rawData = formInfo.data;
-      const companyBody = { name: rawData.organizationName };
-      const addressBody = {
+      const companyBody = {
+        name: rawData.organizationName,
+        userOwnerId: userId,
         description: 'Sede',
         zipCode: rawData.cep.replace(/\D/g, ''),
         street: rawData.street,
+        Complement : rawData.complement ?? '',
         number: rawData.number,
         city: rawData.city,
         state: rawData.state,
       };
 
       // 4. Cadastros que exigem Token (AccountService)
-      const ressponse = await firstValueFrom(this.accountService.registerCompany(companyBody));
-      await firstValueFrom(this.accountService.registerCompanyAddress(addressBody));
+      const response = await firstValueFrom(
+        this.accountService.registerCompanyWithAddress(companyBody),
+      );
 
-      // 5. Cadastro na API Agrovys (PostgreSQL)
-      const user = this.localStorage.getUser();
-      await firstValueFrom(this.clientService.createClientUnit({
-        id: user.companyId,
-        name: rawData.organizationName,
-        agivysUserId: user.id
-      }));
+      const clientBody = {
+          name: rawData.organizationName,
+          agivysUserId: user.id,
+          agivysCompanyId: response.companyId
+        }
+      
+      await firstValueFrom(
+        this.clientService.createClientUnit(clientBody),
+      );
 
       this.router.navigate(['/home']);
     } catch (error) {

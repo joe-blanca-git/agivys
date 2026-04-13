@@ -18,10 +18,7 @@ export class ClientService extends BaseService {
     
     formData.append('name', clientData.name);
     formData.append('agivys_user_id', clientData.agivysUserId);
-    
-    if (clientData.description) {
-      formData.append('description', clientData.description);
-    }
+    formData.append('agivys_company_id', clientData.agivysCompanyId);
 
     const url = `${this.UrlServiceAgroVysApi}clients`
 

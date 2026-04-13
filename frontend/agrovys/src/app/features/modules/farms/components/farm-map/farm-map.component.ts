@@ -49,8 +49,11 @@ export class FarmMapComponent implements AfterViewInit, OnDestroy {
     this.map = L.map(this.mapContainer.nativeElement, {
       center: coords,
       zoom: 16, // Aumentei o zoom para ver o ponto melhor
-      layers: [googleSatellite]
+      layers: [googleSatellite],
+      zoomControl: false
     });
+
+    L.control.zoom({ position: 'bottomright' }).addTo(this.map);
 
     L.circleMarker(coords, {
       radius: 8,
@@ -63,7 +66,7 @@ export class FarmMapComponent implements AfterViewInit, OnDestroy {
 
     // 5. Controle de Camadas
     const baseMaps = { "Mapa": googleRoads, "Satélite": googleSatellite };
-    L.control.layers(baseMaps, undefined, { position: 'topright' }).addTo(this.map);
+    L.control.layers(baseMaps, undefined, { position: 'bottomleft' }).addTo(this.map);
 
     // 6. Correção de frames
     setTimeout(() => {

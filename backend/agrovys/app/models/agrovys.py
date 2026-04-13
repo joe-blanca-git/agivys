@@ -48,7 +48,7 @@ class ClientUnit(Base):
 
     id = Column(String(255), primary_key=True)
     name = Column(String(150), nullable=False)
-    description = Column(String)
     agivys_user_id = Column(String(255), nullable=False)
+    agivys_company_id = Column(String(255), nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
     created_by = Column(String(255), nullable=False)

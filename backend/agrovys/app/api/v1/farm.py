@@ -75,9 +75,6 @@ async def upload_boundary(files: List[UploadFile] = File(...)):
         
 @router.post("/new-farm/", summary="Cadastra Fazenda e Talhões via Shapefile", dependencies=[Depends(verify_jwt_token)])
 async def cadastrar_fazenda(
-
-
-
     name: str = Form(...),
     client_unit_id: str = Form(...),
     agivys_user_id: str = Form(...),

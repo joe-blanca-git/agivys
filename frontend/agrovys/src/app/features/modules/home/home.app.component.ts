@@ -12,14 +12,24 @@ export class HomeAppComponent implements OnInit, OnDestroy {
   title = 'Página Inicial';
   description = '';
   formattedDate = '';
+
+  farmsDashBoard: any = {};
   
   private timerInterval: any;
 
   ngOnInit(): void {
+    console.log('ok');
+    
     this.updateDate(); 
         this.timerInterval = setInterval(() => {
       this.updateDate();
     }, 1000);
+
+    this.farmsDashBoard = {
+      farms: 1200,
+      fields: 21000,
+      area: 120000
+    }
   }
 
   ngOnDestroy(): void {

@@ -46,17 +46,20 @@
       <nz-header class="bg-light border p-0 d-none d-sm-block" style="height: 5vh;">
         <app-header-menu></app-header-menu>
       </nz-header>
+     <nz-header class="bg-light border p-0" style="height: 5vh;" [ngClass]="{'d-none d-sm-block': isVisibleAlert, 'd-none': !isVisibleAlert}">
+        <app-alert-page (statusAlert)="getStatusAlert($event)"></app-alert-page>
+      </nz-header>
 
-      <nz-content class="p-3">
+      <nz-content class="">
         <!-- <div class="card border-0 bg-transparent mb-3">
           <p-breadcrumb [model]="items" [home]="home"></p-breadcrumb>
         </div> -->
         <router-outlet></router-outlet>
       </nz-content>
 
-      <nz-footer class="text-center">
+      <!-- <nz-footer class="text-center">
           <span>Copyright © 2026 Agrovys MEI. Todos os direitos são reservados.</span>
-      </nz-footer>
+      </nz-footer> -->
     </nz-layout>
   </nz-layout>
 </div>

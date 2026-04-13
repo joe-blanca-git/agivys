@@ -66,6 +66,10 @@ $skeleton-shimmer: #f0f0f0;
 }
 
 // texto
+.text-secondary-light{
+  color: rgb(209, 208, 208) !important;
+}
+
 .text-agrovys {
   color: $agrovys-color !important;
 }
@@ -96,6 +100,15 @@ $skeleton-shimmer: #f0f0f0;
 
 .text-larger {
   font-size: larger !important;
+}
+
+.text-selection-none {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE10+/Edge antigo */
+  user-select: none;         /* Padrão (Chrome, Edge, Firefox e Safari moderno) */
+  
+  cursor: default;           /* Garante que o mouse não vire o seletor de texto */
 }
 
 .breadcrumb {
@@ -142,7 +155,7 @@ $skeleton-shimmer: #f0f0f0;
 
 .btn-agrovys-secondary {
   background-color: $agrovys-color-secondary !important;
-  color: #fff !important;
+  color: #fff;
   transition: all 0.2s ease !important;
 
   &:hover {

@@ -1,56 +1,43 @@
 
-<div class="row text-start mb-3">
-    <div class="col-3">ORGANIZACAO</div>
+<!-- <div class="row text-start mb-3">
+    <div class="col-3"></div>
     <div class="col-9 text-end text-small text-secondary">
         <span>{{formattedDate}}</span>
     </div>
-</div>
+</div> -->
 
 <div class="row text-start">
-  <div class="col-12 col-sm-6 col-md-3 mb-3">
+
+  <div class="col-12 col-sm-6 col-md-2 mb-3">
     <div class="card-tools">
         <div class="card">
             <div class="card-title mt-2 ms-2 fw-bold">
-                Ferramentas
+                Fazendas
             </div>
             <div class="card-body">
-                
-            </div>
-        </div>
-    </div>
-  </div>
-  <div class="col-12 col-sm-6 col-md-3 mb-3">
-    <div class="card-tools">
-        <div class="card">
-            <div class="card-title mt-2 ms-2 fw-bold">
-                Integrações
-            </div>
-            <div class="card-body">
-                
-            </div>
-        </div>
-    </div>
-  </div>
-  <div class="col-12 col-sm-6 col-md-3 mb-3">
-    <div class="card-tools">
-        <div class="card">
-            <div class="card-title mt-2 ms-2 fw-bold">
-                Alertas
-            </div>
-            <div class="card-body">
-                
-            </div>
-        </div>
-    </div>
-  </div>
-  <div class="col-12 col-sm-6 col-md-3 mb-3">
-    <div class="card-tools">
-        <div class="card">
-            <div class="card-title mt-2 ms-2 fw-bold">
-                Trabalho
-            </div>
-            <div class="card-body">
-                
+                <ul class="list-group text-small">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fa text-secondary fa-map-location-dot" aria-hidden="true"></i>&nbsp;
+                            <span class="text-muted fw-bold">Fazendas:</span>
+                        </div>
+                        <span class="text-agrovys h6 fw-bolder">{{farmsDashBoard.farms}}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fa text-secondary fa-regular fa-map" aria-hidden="true"></i>&nbsp;
+                            <span class="text-muted fw-bold">Talhões:</span>
+                        </div>
+                        <span class="text-agrovys h6 fw-bolder">{{farmsDashBoard.fields}}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fa text-secondary fa-calculator" aria-hidden="true"></i>&nbsp;
+                            <span class="text-muted fw-bold">Área:</span>
+                        </div>
+                        <span class="text-agrovys h6 fw-bolder">{{farmsDashBoard.area}} (ha)</span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

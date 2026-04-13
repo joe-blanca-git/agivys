@@ -3,4 +3,7 @@ export class ListFarmsModel{
     description!: string;
     lastUpdate!: Date;
     name!: string;
+    selected?: boolean;
+    isEditing?: boolean;
+    tempName?: string;
 }
