@@ -2,11 +2,12 @@ import os
 import json
 import tempfile
 from typing import List
+from pydantic import BaseModel
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 import geopandas as gpd
 from shapely.geometry import mapping
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, text
 
 from app.core.security import verify_jwt_token
 from app.core.database import get_db
@@ -194,6 +195,7 @@ def list_farms(
         func.coalesce(Farm.updated_at, Farm.created_at).label('last_update'),
         func.sum(Boundary.area_ha).label('total_area')
     ).outerjoin(Boundary, Farm.id == Boundary.farm_id)\
+     .filter(Farm.active == True)\
      .group_by(Farm.id)\
      .all()
 
@@ -209,3 +211,89 @@ def list_farms(
         })
 
     return farms_list
+
+class FarmSimpleCreate(BaseModel):
+    name: str
+    client_unit_id: str
+    crop_year: str
+    agivys_user_id: str
+
+@router.post("/simple/", summary="Cadastra Fazenda sem Shapefile", dependencies=[Depends(verify_jwt_token)])
+def cadastrar_fazenda_simples(
+    data: FarmSimpleCreate,
+    db: Session = Depends(get_db)
+):
+    """
+    Cria uma nova Fazenda recebendo apenas os dados básicos (nome, cliente e safra), sem Shapefile.
+    """
+    try:
+        nova_fazenda = Farm(
+            client_unit_id=data.client_unit_id,
+            name=data.name,
+            agivys_user_id=data.agivys_user_id,
+            created_by=data.agivys_user_id,
+            description=f"Safra: {data.crop_year}"  # Salvando safra na descrição provisoriamente, pois BD exige shape p/ boundary
+        )
+        db.add(nova_fazenda)
+        db.commit()
+        db.refresh(nova_fazenda)
+
+        return {
+            "mensagem": "Fazenda cadastrada com sucesso sem áreas!",
+            "farm_id": str(nova_fazenda.id)
+        }
+
+    except Exception as e:
+        db.rollback() 
+        raise HTTPException(status_code=500, detail=f"Erro ao salvar no banco de dados: {str(e)}")
+
+class ArchiveFarmsRequest(BaseModel):
+    farm_ids: List[str]
+
+@router.patch("/archive/", summary="Arquiva uma ou mais fazendas", dependencies=[Depends(verify_jwt_token)])
+def archive_farms(
+    data: ArchiveFarmsRequest,
+    db: Session = Depends(get_db)
+):
+    try:
+        if not data.farm_ids:
+            return {"mensagem": "Nenhuma fazenda informada.", "arquivadas": 0}
+
+        db.query(Farm).filter(Farm.id.in_(data.farm_ids)).update({"active": False}, synchronize_session=False)
+        db.commit()
+
+        return {"mensagem": "Fazendas arquivadas com sucesso!", "arquivadas": len(data.farm_ids)}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao arquivar fazendas: {str(e)}")
+
+@router.get("/boundaries/geojson", summary="Retorna todas as boundaries ativas em um único GeoJSON", dependencies=[Depends(verify_jwt_token)])
+def get_boundaries_geojson(db: Session = Depends(get_db)):
+    try:
+        feature_expr = func.jsonb_build_object(
+            'type', 'Feature',
+            'properties', func.jsonb_build_object(
+                'farm_name', Farm.name,
+                'field_id', Boundary.field_id,
+                'name', Boundary.name,
+                'area_ha', Boundary.area_ha,
+                'crop_year', Boundary.crop_year
+            ),
+            'geometry', Boundary.geojson_data
+        )
+
+        query = db.query(func.jsonb_build_object(
+            'type', 'FeatureCollection',
+            'features', func.coalesce(func.jsonb_agg(feature_expr), text("'[]'::jsonb"))
+        )).select_from(Boundary)\
+          .join(Farm, Farm.id == Boundary.farm_id)\
+          .filter(Farm.active == True)
+
+        geojson = query.scalar()
+
+        if not geojson or not geojson.get("features"):
+            return {"type": "FeatureCollection", "features": []}
+
+        return geojson
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao carregar o GeoJSON geral: {str(e)}")

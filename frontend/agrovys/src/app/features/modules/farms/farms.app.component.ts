@@ -6,32 +6,38 @@ import {
   ModalComponent,
 } from '../../../shared/components/modal/modal.component';
 import { FarmNewComponent } from './components/farm-new/farm-new.component';
-import { LocalStorageUtils } from '../../../core/utils/localstorage';
+import { FarmNewSimpleComponent } from './components/farm-new-simple/farm-new-simple.component';
 import { FarmService } from './services/farm.service';
 import { ListFarmsModel } from './models/farm.model';
-import { finalize, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ClientService } from './services/client.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-farms.app',
   standalone: true,
-  imports: [CommonModule, FarmMapComponent, ModalComponent, FarmNewComponent, FormsModule],
+  imports: [CommonModule, FarmMapComponent, ModalComponent, FarmNewComponent, FarmNewSimpleComponent, FormsModule],
   templateUrl: './farms.app.component.html',
   styleUrl: './farms.app.component.scss',
 })
 export class FarmsAppComponent {
   @ViewChild('newFarm') newFarmComponent!: FarmNewComponent;
+  @ViewChild('newFarmSimple') newFarmSimpleComponent!: FarmNewSimpleComponent;
 
   title = 'Fazendas';
   description = 'Limites, Talhões e Linhas de Orientação';
 
-  isLoadingData = true;
+  isLoadingData = false;
+  isLoadingListFarms = false;
   isLoadingNewFarm = false;
   isVisibleNewFarm = false;
 
+  isLoadingNewFarmSimple = false;
+  isVisibleNewFarmSimple = false;
+
   farms: ListFarmsModel[] = [];
   clients: any[] = [];
+  limitesGeoJson: any = null;
   actionsModal: ModalAction[] = [
     {
       class: 'btn-outline-secondary',
@@ -49,6 +55,23 @@ export class FarmsAppComponent {
     },
   ];
 
+  actionsModalSimple: ModalAction[] = [
+    {
+      class: 'btn-outline-secondary',
+      type: 'closeNewFarmSimple',
+      icon: 'fa fa-xmark',
+      text: 'Fechar',
+      title: 'teste',
+    },
+    {
+      class: 'btn-agrovys-primary',
+      type: 'newFarmSimple',
+      icon: 'fa fa-plus',
+      text: 'Cadastrar',
+      title: 'teste',
+    },
+  ];
+
   constructor(private farmService: FarmService, private clientService: ClientService) { }
 
   ngOnInit(): void {
@@ -59,9 +82,12 @@ export class FarmsAppComponent {
     this.isLoadingData = true;
 
     try {
-      await Promise.all([this.loadFarms(), this.loadClients()]);
-      console.log(this.clients);
-
+      await Promise.all(
+        [
+          this.loadFarms(),
+          this.loadBondaryGeneral()
+          //  this.loadClients()
+        ]);
 
       console.log('Todos os dados foram carregados com sucesso!');
     } catch (error) {
@@ -73,6 +99,15 @@ export class FarmsAppComponent {
 
   async loadClients(): Promise<void> {
     this.clients = await firstValueFrom(this.clientService.getClients());
+  }
+
+  async loadBondaryGeneral(): Promise<void> {
+    try {
+      const geojson = await firstValueFrom(this.farmService.getAllBoundariesGeoJSON());
+      this.limitesGeoJson = geojson;
+    } catch (e) {
+      console.error('Erro ao buscar GeoJSON geral:', e);
+    }
   }
 
   async loadFarms(): Promise<void> {
@@ -106,13 +141,16 @@ export class FarmsAppComponent {
 
   async handleSuccessNewFarm() {
     this.isVisibleNewFarm = false;
-    this.isLoadingData = true;
+    this.isLoadingListFarms = true;
     try {
-      await this.loadFarms();
+      await Promise.all([
+        this.loadFarms(),
+        this.loadBondaryGeneral()
+      ]);
     } catch (error) {
       console.error(error);
     } finally {
-      this.isLoadingData = false;
+      this.isLoadingListFarms = false;
     }
   }
 
@@ -120,47 +158,55 @@ export class FarmsAppComponent {
     return this.farms.some(f => f.selected);
   }
 
+  onSaveNewFarmSimple() {
+    this.newFarmSimpleComponent.submitNewFarm();
+  }
+
+  handleNewFarmSimple() {
+    this.isVisibleNewFarmSimple = !this.isVisibleNewFarmSimple;
+  }
+
+  handleModalActionSimple(actionType: string) {
+    if (actionType === 'closeNewFarmSimple') {
+      this.isVisibleNewFarmSimple = false;
+    } else if (actionType === 'newFarmSimple') {
+      this.onSaveNewFarmSimple();
+    }
+  }
+
+  handleLoadingNewFarmSimple(event: boolean) {
+    this.isLoadingNewFarmSimple = event;
+  }
+
+  async handleSuccessNewFarmSimple() {
+    this.isVisibleNewFarmSimple = false;
+    this.isLoadingListFarms = true;
+    try {
+      await Promise.all([
+        this.loadFarms(),
+        this.loadBondaryGeneral()
+      ]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.isLoadingListFarms = false;
+    }
+  }
+
   archiveSelectedFarms() {
     if (!this.hasSelectedFarms) return;
-    
-    const selectedFarms = this.farms.filter(f => f.selected);
-    console.log('Arquivando fazendas:', selectedFarms);
-    
-    // TODO: Chamar o endpoint de arquivamento na API quando estiver pronto
-    // this.farmService.archiveFarms(selectedFarms).subscribe({
-    //   next: (res) => {
-    //     console.log('Fazendas arquivadas com sucesso');
-    //     this.loadData();
-    //   },
-    //   error: (err) => console.error('Erro ao arquivar:', err)
-    // });
+
+    const selectedFarmIds = this.farms.filter(f => f.selected).map(f => f.id);
+    console.log('Arquivando fazendas (IDs):', selectedFarmIds);
+
+    this.farmService.archiveFarms(selectedFarmIds).subscribe({
+      next: (res) => {
+        console.log('Fazendas arquivadas com sucesso');
+        this.loadData();
+      },
+      error: (err) => console.error('Erro ao arquivar:', err)
+    });
   }
 
-  editFarmName(farm: any) {
-    farm.isEditing = true;
-    farm.tempName = farm.name;
-  }
 
-  cancelEditName(farm: any) {
-    farm.isEditing = false;
-  }
-
-  saveFarmName(farm: any) {
-    farm.isEditing = false;
-    
-    const oldName = farm.name;
-    farm.name = farm.tempName;
-    console.log(`Alterando nome da fazenda de ${oldName} para ${farm.name}`);
-    
-    // TODO: Chamar o endpoint para atualizar o nome da fazenda na API
-    // this.farmService.updateFarmName(farm.agrovys_uuid, farm.name).subscribe({
-    //   next: (res) => {
-    //      console.log('Nome alterado com sucesso na API');
-    //   },
-    //   error: (err) => {
-    //      console.error('Erro ao atualizar nome, revertendo...');
-    //      farm.name = oldName;
-    //   }
-    // });
-  }
 }

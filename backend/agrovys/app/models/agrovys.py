@@ -13,6 +13,7 @@ class Farm(Base):
     agivys_user_id = Column(String(255), nullable=False)
     name = Column(String(100), nullable=False)
     description = Column(String)
+    active = Column(Boolean, default=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
     created_by = Column(String(255), nullable=False)
     updated_at = Column(TIMESTAMP)
