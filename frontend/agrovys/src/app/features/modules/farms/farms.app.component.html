@@ -1,41 +1,34 @@
 <div class="container-fluid h-100 text-start" [ngClass]="{'bg-loading': isLoadingData}">
 
     <div class="row" *ngIf="!isLoadingData">
-        <div class="col-12 d-flex align-items-center justify-content-between py-2">
+        <div class="col-12 d-flex align-items-center justify-content-between py-2 px-3">
 
-            <div class="title text-secondary fw-bold d-flex align-items-center h5 w-100 overflow-hidden">
-                <span class="text-slice" title="Limites, Talhões e Linhas de Orientação">Limites, Talhões e Linhas de
-                    Orientação</span>
+            <div class="d-flex flex-column overflow-hidden">
+                <h5 class="fw-bold text-dark mb-0 text-slice">Fazendas</h5>
+                <span class="text-muted text-small text-slice">Limites, Talhões e Linhas de Orientação</span>
             </div>
 
-            <div class="actions text-secondary d-none d-md-flex align-items-center justify-content-end gap-2">
-                <div class="btn btn-agrovys-secondary d-flex align-items-center overflow-hidden" title="Exportar">
-                    <div class="fa fa-download flex-shrink-0"></div>
-                    <div class="d-none d-sm-block overflow-hidden w-100">
-                        <span class="text-slice">&nbsp;Exportar</span>
-                    </div>
+            <div class="actions d-none d-md-flex align-items-center justify-content-end gap-2">
+                <div class="btn btn-sm btn-agrovys-secondary d-flex align-items-center overflow-hidden" title="Exportar"
+                    [ngClass]="{'disabled': !hasSelectedFarms}" (click)="handleExport()">
+                    <i class="fa fa-download flex-shrink-0"></i>
+                    <span class="d-none d-lg-inline ms-2 text-slice">Exportar</span>
                 </div>
-                <div class="btn btn-agrovys-secondary d-flex align-items-center overflow-hidden" title="Arquivar"
-                    (click)="archiveSelectedFarms()">
-                    <div class="fa fa-archive flex-shrink-0"></div>
-                    <div class="d-none d-sm-block overflow-hidden w-100">
-                        <span class="text-slice">&nbsp;Arquivar</span>
-                    </div>
+                <div class="btn btn-sm btn-agrovys-secondary d-flex align-items-center overflow-hidden" title="Arquivar"
+                    [ngClass]="{'disabled': !hasSelectedFarms}" (click)="archiveSelectedFarms()">
+                    <i class="fa fa-archive flex-shrink-0"></i>
+                    <span class="d-none d-lg-inline ms-2 text-slice">Arquivar</span>
                 </div>
-                <div class="btn btn-agrovys-primary d-flex align-items-center overflow-hidden" title="Importar Fazenda"
-                    (click)="handleNewFarm()">
-                    <div class="fa fa-upload flex-shrink-0"></div>
-                    <div class="d-none d-sm-block overflow-hidden w-100">
-                        <span class="text-slice">&nbsp;Importar Fazenda</span>
-                    </div>
+                <div class="btn btn-sm btn-agrovys-primary d-flex align-items-center overflow-hidden"
+                    title="Importar Fazenda" (click)="handleNewFarm()">
+                    <i class="fa fa-upload flex-shrink-0"></i>
+                    <span class="d-none d-lg-inline ms-2 text-slice">Importar</span>
                 </div>
-                <div class="btn btn-agrovys-primary d-flex align-items-center overflow-hidden" title="Criar Fazenda"
-                    (click)="handleNewFarmSimple()">
-                    <div class="fa fa-plus flex-shrink-0"></div>
-                    <div class="d-none d-sm-block overflow-hidden w-100">
-                        <span class="text-slice">&nbsp;Criar Fazenda</span>
-                    </div>
-                </div>
+                <!-- <div class="btn btn-sm btn-agrovys-primary d-flex align-items-center overflow-hidden"
+                    title="Criar Fazenda" (click)="handleNewFarmSimple()">
+                    <i class="fa fa-plus flex-shrink-0"></i>
+                    <span class="d-none d-lg-inline ms-2 text-slice">Criar</span>
+                </div> -->
             </div>
 
         </div>
@@ -60,103 +53,115 @@
             </div>
 
             <div class="list-farms mb-2" [ngClass]="{'bg-loading': isLoadingListFarms}">
+                <div style="height: 80vh;" *ngIf="isLoadingListFarms">&nbsp;</div>
                 <div class="accordion" id="accordionFarms" *ngIf="!isLoadingListFarms">
-                    <div class="accordion-item" *ngFor="let farm of farms; let i = index">
-                        <h2 class="accordion-header d-flex align-items-center position-relative"
-                            [id]="'panelsStayOpen-heading' + i">
-                            <input class="form-check-input ms-3 me-2 my-0" type="checkbox" [(ngModel)]="farm.selected"
-                                style="z-index: 10;" (click)="$event.stopPropagation()">
-                            <button class="accordion-button collapsed ps-1" type="button" data-bs-toggle="collapse"
-                                [attr.data-bs-target]="'#panelsStayOpen-collapse' + i" aria-expanded="false"
-                                [attr.aria-controls]="'panelsStayOpen-collapse' + i">
-                                <div class="d-flex w-100 flex-column me-3">
-                                    <span class="fw-bold">{{ farm.name }}</span>
-                                    <span>{{ farm.area ? (farm.area + ' ha') : '' }}</span>
-                                </div>
-                            </button>
-                        </h2>
-                        <div [id]="'panelsStayOpen-collapse' + i" class="accordion-collapse collapse"
-                            [attr.aria-labelledby]="'panelsStayOpen-heading' + i">
-                            <div class="accordion-body">
-                                <nav>
-                                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                        <button class="nav-link active" id="nav-fields-tab" data-bs-toggle="tab"
-                                            data-bs-target="#nav-fields" type="button" role="tab"
-                                            aria-controls="nav-fields" aria-selected="true">Talhões</button>
-                                        <button class="nav-link" id="nav-guidance-tab" data-bs-toggle="tab"
-                                            data-bs-target="#nav-guidance" type="button" role="tab"
-                                            aria-controls="nav-guidance" aria-selected="false">Linhas</button>
-                                        <button class="nav-link" id="nav-info-tab" data-bs-toggle="tab"
-                                            data-bs-target="#nav-info" type="button" role="tab" aria-controls="nav-info"
-                                            aria-selected="false">Informações</button>
+                    <div *ngIf="farms.length > 0">
+                        <div class="accordion-item" *ngFor="let farm of farms; let i = index">
+                            <h2 class="accordion-header d-flex align-items-center position-relative"
+                                [id]="'panelsStayOpen-heading' + i">
+                                <input class="form-check-input ms-3 me-2 my-0" type="checkbox"
+                                    [(ngModel)]="farm.selected" style="z-index: 10;" (click)="$event.stopPropagation()">
+                                <button class="accordion-button collapsed ps-1" type="button" data-bs-toggle="collapse"
+                                    [attr.data-bs-target]="'#panelsStayOpen-collapse' + i" aria-expanded="false"
+                                    [attr.aria-controls]="'panelsStayOpen-collapse' + i" (click)="onToggleFarm(farm)">
+                                    <div class="d-flex w-100 flex-column me-3">
+                                        <span class="fw-bold">{{ farm.name }}</span>
+                                        <span>{{ farm.area ? (farm.area + ' ha') : '' }}</span>
                                     </div>
-                                </nav>
-                                <div class="tab-content border border-top-0" id="nav-tabContent">
-                                    <div class="tab-pane fade show active p-2" id="nav-fields" role="tabpanel"
-                                        aria-labelledby="nav-fields-tab">
-                                        <ul class="list-group">
-                                            <li class="list-group-item text-small d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary">1</span>
-                                                <span>2 ha</span>
-                                            </li>
-                                            <li class="list-group-item text-small d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary">2</span>
-                                                <span>2 ha</span>
-                                            </li>
-                                            <li class="list-group-item text-small d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary">3</span>
-                                                <span>2 ha</span>
-                                            </li>
-                                            <li class="list-group-item text-small d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary">4</span>
-                                                <span>2 ha</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="tab-pane fade p-2" id="nav-guidance" role="tabpanel"
-                                        aria-labelledby="nav-guidance-tab">
-                                        <ul class="list-group">
-                                            <li class="list-group-item text-small d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary text-uppercase">tipo 1</span>
-                                                <span>COLHEITA</span>
-                                            </li>
-                                            <li class="list-group-item text-small d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary text-uppercase">tipo 2</span>
-                                                <span>TRANSBORDO</span>
-                                            </li>
-                                            <li class="list-group-item text-small d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary text-uppercase">tipo 3</span>
-                                                <span>HERBICIDA</span>
-                                            </li>
-                                            <li class="list-group-item text-small d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary text-uppercase">tipo 4</span>
-                                                <span>VINHAÇA</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="tab-pane fade p-2" id="nav-info" role="tabpanel"
-                                        aria-labelledby="nav-info-tab">
-                                        <div class="row">
-                                            <div class="col-12 py-2 d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary">Criado em: </span>
-                                                <!-- <span>{{ farm.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</span> -->
+                                </button>
+                            </h2>
+                            <div [id]="'panelsStayOpen-collapse' + i" class="accordion-collapse collapse"
+                                [attr.aria-labelledby]="'panelsStayOpen-heading' + i">
+                                <div class="accordion-body">
+                                    <nav>
+                                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                            <button class="nav-link active" id="nav-fields-tab" data-bs-toggle="tab"
+                                                data-bs-target="#nav-fields" type="button" role="tab"
+                                                aria-controls="nav-fields" aria-selected="true">Talhões</button>
+                                            <button class="nav-link" id="nav-guidance-tab" data-bs-toggle="tab"
+                                                data-bs-target="#nav-guidance" type="button" role="tab"
+                                                aria-controls="nav-guidance" aria-selected="false">Linhas</button>
+                                            <!-- <button class="nav-link" id="nav-info-tab" data-bs-toggle="tab"
+                                                data-bs-target="#nav-info" type="button" role="tab"
+                                                aria-controls="nav-info" aria-selected="false">Informações</button> -->
+                                        </div>
+                                    </nav>
+                                    <div class="tab-content border border-top-0" id="nav-tabContent">
+                                        <div class="tab-pane fade show active p-2" id="nav-fields" role="tabpanel"
+                                            aria-labelledby="nav-fields-tab">
+
+                                            <div *ngIf="farm.isLoadingBoundaries"
+                                                class="d-flex justify-content-center py-3">
+                                                <div class="spinner-border spinner-border-sm text-primary"
+                                                    role="status">
+                                                    <span class="visually-hidden">Carregando...</span>
+                                                </div>
                                             </div>
-                                            <div class="col-12 py-2 d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary">Criado por: </span>
-                                                <!-- <span>{{ farm.createdBy }}</span> -->
-                                            </div>
-                                            <div class="col-12 py-2 d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary">Última atualização: </span>
-                                                <!-- <span>{{ farm.updatedAt | date:'dd/MM/yyyy HH:mm:ss' }}</span> -->
-                                            </div>
-                                            <div class="col-12 py-2 d-flex justify-content-between">
-                                                <span class="fw-bold text-secondary">Última atualização por: </span>
-                                                <!-- <span>{{ farm.updatedBy }}</span> -->
+
+                                            <ul class="list-group" *ngIf="!farm.isLoadingBoundaries">
+                                                <li class="list-group-item text-small d-flex justify-content-between"
+                                                    *ngFor="let boundary of farm.boundaries">
+                                                    <span class="fw-bold text-secondary text-truncate me-2">Talhão: {{
+                                                        boundary.name }}</span>
+                                                    <span class="flex-shrink-0">{{ boundary.area | number:'1.2-2' }}
+                                                        ha</span>
+                                                </li>
+                                                <li class="list-group-item text-small text-center text-muted"
+                                                    *ngIf="!farm.boundaries || farm.boundaries.length === 0">
+                                                    Nenhum talhão encontrado.
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="tab-pane fade p-2" id="nav-guidance" role="tabpanel"
+                                            aria-labelledby="nav-guidance-tab">
+                                            <ul class="list-group">
+                                                <li class="list-group-item text-small d-flex justify-content-between">
+                                                    <span class="fw-bold text-secondary text-uppercase">tipo 1</span>
+                                                    <span>COLHEITA</span>
+                                                </li>
+                                                <li class="list-group-item text-small d-flex justify-content-between">
+                                                    <span class="fw-bold text-secondary text-uppercase">tipo 2</span>
+                                                    <span>TRANSBORDO</span>
+                                                </li>
+                                                <li class="list-group-item text-small d-flex justify-content-between">
+                                                    <span class="fw-bold text-secondary text-uppercase">tipo 3</span>
+                                                    <span>HERBICIDA</span>
+                                                </li>
+                                                <li class="list-group-item text-small d-flex justify-content-between">
+                                                    <span class="fw-bold text-secondary text-uppercase">tipo 4</span>
+                                                    <span>VINHAÇA</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="tab-pane fade p-2" id="nav-info" role="tabpanel"
+                                            aria-labelledby="nav-info-tab">
+                                            <div class="row">
+                                                <div class="col-12 py-2 d-flex justify-content-between">
+                                                    <span class="fw-bold text-secondary">Criado em: </span>
+                                                    <!-- <span>{{ farm.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</span> -->
+                                                </div>
+                                                <div class="col-12 py-2 d-flex justify-content-between">
+                                                    <span class="fw-bold text-secondary">Criado por: </span>
+                                                    <!-- <span>{{ farm.createdBy }}</span> -->
+                                                </div>
+                                                <div class="col-12 py-2 d-flex justify-content-between">
+                                                    <span class="fw-bold text-secondary">Última atualização: </span>
+                                                    <!-- <span>{{ farm.updatedAt | date:'dd/MM/yyyy HH:mm:ss' }}</span> -->
+                                                </div>
+                                                <div class="col-12 py-2 d-flex justify-content-between">
+                                                    <span class="fw-bold text-secondary">Última atualização por: </span>
+                                                    <!-- <span>{{ farm.updatedBy }}</span> -->
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div *ngIf="farms.length === 0">
+                        <div class="alert alert-info" role="alert">
+                            Nenhuma fazenda encontrada.
                         </div>
                     </div>
                 </div>
@@ -191,5 +196,15 @@
     <ng-template>
         <app-farm-new-simple #newFarmSimple (loadingEmit)="handleLoadingNewFarmSimple($event)"
             (successEmit)="handleSuccessNewFarmSimple()"></app-farm-new-simple>
+    </ng-template>
+</app-modal>
+
+<app-modal *ngIf="isVisibleExport" [isVisible]="isVisibleExport" [size]="'md'" [title]="'Exportar Fazenda'"
+    [description]="'Selecione o tipo de exportação'" [styleTextTitle]="'bg-secondary-subtle'" [iconTitle]="''"
+    [isActionsDisabled]="!isExportTypeSelected" [customActions]="actionsModalExport"
+    (actionClick)="handleModalAction($event)" (close)="isVisibleExport = false">
+    <ng-template>
+        <app-farm-export #farmExport [selectedFarms]="getSelectedFarms()"
+            (statusExport)="handleStatusExport($event)"></app-farm-export>
     </ng-template>
 </app-modal>

@@ -17,6 +17,11 @@ export class FarmService extends BaseService {
     return this.http.get<any[]>(url, this.GetAuthHeaderJson());
   }
 
+  getFarmBoundaries(farmId: string): Observable<any[]> {
+    const url = `${this.UrlServiceAgroVysApi}farms/${farmId}/boundaries`;
+    return this.http.get<any[]>(url, this.GetAuthHeaderJson());
+  }
+
   uploadBoundary(formData: FormData): Observable<any> {
     const url = `${this.UrlServiceAgroVysApi}farms/upload-boundary/`;
     return this.http.post(url, formData, this.GetAuthHeaderFormJson());
@@ -54,4 +59,18 @@ export class FarmService extends BaseService {
     return this.http.post(url, formData, this.GetAuthHeaderFormJson());
   }
 
+  exportFarmsGeoJSON(farmIds: string[]): Observable<any> {
+    const ids = farmIds.join(',');
+    const url = `${this.UrlServiceAgroVysApi}farms/export/geojson?farm_ids=${ids}`;
+    return this.http.get<any>(url, this.GetAuthHeaderJson());
+  }
+
+  exportFarmsKML(farmIds: string[]): Observable<any> {
+    const ids = farmIds.join(',');
+    const url = `${this.UrlServiceAgroVysApi}farms/export/kml?farm_ids=${ids}`;
+    return this.http.get(url, { ...this.GetAuthHeaderJson(), responseType: 'text' as 'json' });
+  }
+
 }
+
+

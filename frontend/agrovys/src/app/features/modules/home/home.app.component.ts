@@ -1,12 +1,13 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'home-app-root',
   templateUrl: './home.app.component.html',
   styleUrls: ['./home.app.component.scss', '../../../app.component.scss'],
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, DecimalPipe],
 })
 export class HomeAppComponent implements OnInit, OnDestroy {
   title = 'Página Inicial';

@@ -1,37 +1,46 @@
+$agrovys-color: #245625;
+$agrovys-color-secondary: #afe75c;
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.nav-scroll {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 .nav-item {
   cursor: pointer;
-  transition:
-    color 0.2s ease,
-    background-color 0.2s ease;
-  padding: 0 1rem;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  padding: 0 1.25rem;
+  border-bottom: 2px solid transparent;
+  color: #6c757d;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 
-  /* 👇 ADICIONE ESTE BLOCO AQUI 👇 */
-  /* Este é o estilo que o Angular vai ativar via routerLinkActive */
   &.active {
-    background-color: lightgray;
-    /* Escolha a cor de destaque que preferir */
-    color: rgb(30, 30, 30);
-    font-weight: bold;
+    background-color: rgba($agrovys-color, 0.06);
+    color: $agrovys-color;
+    font-weight: 700;
+    border-bottom-color: $agrovys-color;
   }
 
-  &:hover {
-    background-color: gray !important;
-    color: rgb(30, 30, 30);
-    cursor: pointer;
-    transform: translateY(-1px) !important;
+  &:hover:not(.active) {
+    background-color: rgba($agrovys-color, 0.04);
+    color: $agrovys-color;
   }
 
-  /* Isso aqui é só para o clique do mouse (quando o botão está pressionado) */
   &:active {
-    background-color: gray !important;
-    transform: scale(0.97) !important;
-    color: rgb(30, 30, 30);
+    transform: scale(0.98) !important;
   }
 }
 
 span,
 i {
-
   :host-context(.screen-small) & {
     font-size: x-small;
   }
@@ -47,4 +56,4 @@ i {
   :host-context(.screen-x-large) & {
     font-size: smaller;
   }
-}
+}

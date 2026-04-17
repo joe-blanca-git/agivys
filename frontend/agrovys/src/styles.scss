@@ -5,6 +5,10 @@
   margin: 0;
   min-height: 100%;
   height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f9fb;
 }
 
 // colors
@@ -204,6 +208,103 @@ h6,
   cursor: pointer;
 }
 
+// ===============================
+// CARD AGROVYS (Identidade Visual)
+// ===============================
+.card-agrovys {
+  border: 1px solid #e8ecf0;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .card-header-agrovys {
+    background: linear-gradient(135deg, $agrovys-color 0%, lighten($agrovys-color, 8%) 100%);
+    color: #fff;
+    padding: 1rem 1.25rem;
+    border-bottom: none;
+    font-weight: 600;
+  }
+}
+
+// ===============================
+// BADGE AGROVYS
+// ===============================
+.badge-agrovys {
+  background-color: rgba($agrovys-color, 0.1);
+  color: $agrovys-color;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 0.35em 0.65em;
+}
+
+.badge-agrovys-secondary {
+  background-color: rgba($agrovys-color-secondary, 0.2);
+  color: darken($agrovys-color-secondary, 25%);
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 0.35em 0.65em;
+}
+
+// ===============================
+// MODAL AGROVYS
+// ===============================
+.bg-modal {
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+
+  .modal-header {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1.25rem 1.5rem;
+
+    .modal-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .modal-description {
+      color: #6c757d;
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 1rem 1.5rem;
+    gap: 0.5rem;
+  }
+}
+
+// ===============================
+// SCROLLBAR CUSTOMIZADA
+// ===============================
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
+  border-radius: 3px;
+
+  &:hover {
+    background: #a0a0a0;
+  }
+}
+
 .btn-agrovys-primary {
   background-color: $agrovys-color !important;
   color: #fff !important;
@@ -239,7 +340,8 @@ h6,
 
 .btn-agrovys-secondary {
   background-color: $agrovys-color-secondary !important;
-  color: #fff;
+  color: $agrovys-color !important;
+  font-weight: 600 !important;
   transition: all 0.2s ease !important;
 
   &:hover {
@@ -250,6 +352,19 @@ h6,
   &:active {
     background-color: darken($agrovys-color-secondary, 15%) !important;
     transform: scale(0.97) !important;
+  }
+}
+
+// Estado disabled para todos os botões Agrovys
+.btn-agrovys-primary,
+.btn-agrovys-secondary,
+.btn-agrovys-outline-primary {
+  &.disabled,
+  &:disabled {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    transform: none !important;
   }
 }
 

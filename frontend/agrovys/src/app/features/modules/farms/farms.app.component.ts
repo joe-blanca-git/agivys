@@ -12,17 +12,19 @@ import { ListFarmsModel } from './models/farm.model';
 import { firstValueFrom } from 'rxjs';
 import { ClientService } from './services/client.service';
 import { FormsModule } from '@angular/forms';
+import { FarmExportComponent } from "./components/farm-export/farm-export.component";
 
 @Component({
   selector: 'app-farms.app',
   standalone: true,
-  imports: [CommonModule, FarmMapComponent, ModalComponent, FarmNewComponent, FarmNewSimpleComponent, FormsModule],
+  imports: [CommonModule, FarmMapComponent, ModalComponent, FarmNewComponent, FarmNewSimpleComponent, FormsModule, FarmExportComponent],
   templateUrl: './farms.app.component.html',
   styleUrl: './farms.app.component.scss',
 })
 export class FarmsAppComponent {
   @ViewChild('newFarm') newFarmComponent!: FarmNewComponent;
   @ViewChild('newFarmSimple') newFarmSimpleComponent!: FarmNewSimpleComponent;
+  @ViewChild('farmExport') farmExportComponent!: FarmExportComponent;
 
   title = 'Fazendas';
   description = 'Limites, Talhões e Linhas de Orientação';
@@ -38,37 +40,39 @@ export class FarmsAppComponent {
   farms: ListFarmsModel[] = [];
   clients: any[] = [];
   limitesGeoJson: any = null;
+
+  isVisibleExport = false;
+  isExportTypeSelected = false;
+
   actionsModal: ModalAction[] = [
-    {
-      class: 'btn-outline-secondary',
-      type: 'closeNewFarm',
-      icon: 'fa fa-xmark',
-      text: 'Fechar',
-      title: 'teste',
-    },
     {
       class: 'btn-agrovys-primary',
       type: 'newFarm',
       icon: 'fa fa-plus',
       text: 'Cadastrar Fazenda',
-      title: 'teste',
+      title: 'Cadastrar Fazenda',
     },
   ];
 
   actionsModalSimple: ModalAction[] = [
-    {
-      class: 'btn-outline-secondary',
-      type: 'closeNewFarmSimple',
-      icon: 'fa fa-xmark',
-      text: 'Fechar',
-      title: 'teste',
-    },
+
     {
       class: 'btn-agrovys-primary',
       type: 'newFarmSimple',
       icon: 'fa fa-plus',
       text: 'Cadastrar',
-      title: 'teste',
+      title: 'Cadastrar',
+    },
+  ];
+
+  actionsModalExport: ModalAction[] = [
+
+    {
+      class: 'btn-agrovys-primary',
+      type: 'export',
+      icon: 'fa fa-download',
+      text: 'Exportar',
+      title: 'Exportar',
     },
   ];
 
@@ -132,6 +136,10 @@ export class FarmsAppComponent {
       this.isVisibleNewFarm = false;
     } else if (actionType === 'newFarm') {
       this.onSaveNewFarm();
+    } else if (actionType === 'closeExport') {
+      this.isVisibleExport = false;
+    } else if (actionType === 'export') {
+      this.farmExportComponent.exportFarms();
     }
   }
 
@@ -142,6 +150,7 @@ export class FarmsAppComponent {
   async handleSuccessNewFarm() {
     this.isVisibleNewFarm = false;
     this.isLoadingListFarms = true;
+    console.log(this.isLoadingListFarms);
     try {
       await Promise.all([
         this.loadFarms(),
@@ -151,6 +160,7 @@ export class FarmsAppComponent {
       console.error(error);
     } finally {
       this.isLoadingListFarms = false;
+      console.log(this.isLoadingListFarms);
     }
   }
 
@@ -196,17 +206,56 @@ export class FarmsAppComponent {
   archiveSelectedFarms() {
     if (!this.hasSelectedFarms) return;
 
+    this.isLoadingListFarms = true;
     const selectedFarmIds = this.farms.filter(f => f.selected).map(f => f.id);
-    console.log('Arquivando fazendas (IDs):', selectedFarmIds);
 
     this.farmService.archiveFarms(selectedFarmIds).subscribe({
-      next: (res) => {
-        console.log('Fazendas arquivadas com sucesso');
-        this.loadData();
+      next: async (res) => {
+        try {
+          await Promise.all([
+            this.loadFarms(),
+            this.loadBondaryGeneral()
+          ]);
+        } catch (error) {
+          console.error('Erro ao recarregar dados após arquivamento:', error);
+        } finally {
+          this.isLoadingListFarms = false;
+        }
       },
-      error: (err) => console.error('Erro ao arquivar:', err)
+      error: (err) => {
+        console.error('Erro ao arquivar:', err);
+        this.isLoadingListFarms = false;
+      }
     });
   }
 
+  async onToggleFarm(farm: ListFarmsModel) {
+    if (farm.boundaries && farm.boundaries.length > 0) return;
+
+    farm.isLoadingBoundaries = true;
+    try {
+      const boundaries = await firstValueFrom(this.farmService.getFarmBoundaries(farm.id));
+      farm.boundaries = boundaries;
+    } catch (e) {
+      console.error('Erro ao carregar talhões:', e);
+    } finally {
+      farm.isLoadingBoundaries = false;
+    }
+  }
+
+  handleExport() {
+    if (!this.hasSelectedFarms) return;
+    this.isExportTypeSelected = false;
+    this.isVisibleExport = true;
+  }
+
+  handleStatusExport(event: boolean) {
+    this.isExportTypeSelected = event;
+  }
+
+
+  getSelectedFarms(): ListFarmsModel[] {
+    return this.farms.filter(f => f.selected);
+  }
 
 }

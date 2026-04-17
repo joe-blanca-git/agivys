@@ -612,6 +612,7 @@ input, textarea, select { font-family: inherit; }
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
+  margin-top: 20px;
 }
 
 .feature-card {
@@ -640,6 +641,44 @@ input, textarea, select { font-family: inherit; }
   transform: translateY(-5px);
 }
 .feature-card:hover::after { transform: scaleX(1); }
+
+
+
+
+
+
+.feature-card-img {
+  position: relative;
+  background: var(--surface-base);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  padding: 2.25rem;
+  transition: var(--transition-base);
+  overflow: hidden;
+  display: flex;
+}
+.feature-card-img::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--grad-brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+.feature-card-img:hover {
+  border-color: var(--color-green-border);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-5px);
+}
+.feature-card-img:hover::after { transform: scaleX(1); }
+
+
+
+
+
 
 .feature-card__icon-wrap {
   width: 50px;

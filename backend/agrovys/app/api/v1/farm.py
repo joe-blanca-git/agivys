@@ -1,9 +1,10 @@
 import os
 import json
+import uuid
 import tempfile
 from typing import List
 from pydantic import BaseModel
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, Response
 import geopandas as gpd
 from shapely.geometry import mapping
 from sqlalchemy.orm import Session
@@ -14,6 +15,33 @@ from app.core.database import get_db
 from app.models.agrovys import Farm, Boundary
 
 router = APIRouter(prefix="/farms", tags=["Farms"])
+
+class BoundarySummary(BaseModel):
+    id: str
+    name: str
+    area: float
+
+@router.get("/{farm_id}/boundaries", response_model=List[BoundarySummary], summary="Retorna os talhões de uma fazenda (apenas id, nome e área)", dependencies=[Depends(verify_jwt_token)])
+def get_farm_boundaries(
+    farm_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Retorna apenas o id, nome e área dos talhões de uma fazenda específica.
+    """
+    results = db.query(
+        Boundary.id,
+        Boundary.name,
+        Boundary.area_ha
+    ).filter(Boundary.farm_id == farm_id).all()
+
+    return [
+        BoundarySummary(
+            id=str(row.id),
+            name=row.name,
+            area=float(row.area_ha) if row.area_ha else 0.0
+        ) for row in results
+    ]
 
 @router.post("/upload-boundary/", summary="Recebe Arquivos ShapeFile", dependencies=[Depends(verify_jwt_token)])
 async def upload_boundary(files: List[UploadFile] = File(...)):
@@ -152,8 +180,10 @@ async def cadastrar_fazenda(
 
             novo_talhao = Boundary(
                 farm_id=nova_fazenda.id,
-                field_id=str(row.get('id_talhao', index)), # Pega da tabela de atributos ou usa o index
-                name=str(row.get('nome_talha', f"Talhão {index}")),
+                # Prioriza COD_TALHAO, depois id_talhao, e por fim usa o índice + 1
+                field_id=str(row.get('COD_TALHAO') or row.get('id_talhao') or (index + 1)),
+                # Prioriza COD_TALHAO, depois nome_talha, e por fim usa "Talhão X"
+                name=str(row.get('COD_TALHAO') or row.get('nome_talha') or f"Talhão {index + 1}"),
                 geom=f"SRID=4326;{geom_wkt}", # Padrão do PostGIS via GeoAlchemy2
                 geojson_data=mapping(row.geometry), # GeoJSON puro e leve para o Angular
                 area_ha=round(row['area_calculada_ha'], 2),
@@ -297,3 +327,84 @@ def get_boundaries_geojson(db: Session = Depends(get_db)):
         return geojson
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao carregar o GeoJSON geral: {str(e)}")
+
+@router.get("/export/geojson", summary="Exporta talhões em GeoJSON", dependencies=[Depends(verify_jwt_token)])
+def export_boundaries_geojson(
+    farm_ids: str,
+    db: Session = Depends(get_db)
+):
+    try:
+        # Converte a string de IDs para uma lista de UUIDs
+        id_list = [uuid.UUID(fid.strip()) for fid in farm_ids.split(",") if fid.strip()]
+        
+        feature_expr = func.jsonb_build_object(
+            'type', 'Feature',
+            'properties', func.jsonb_build_object(
+                'farm_name', Farm.name,
+                'field_id', Boundary.field_id,
+                'name', Boundary.name,
+                'area_ha', Boundary.area_ha,
+                'crop_year', Boundary.crop_year
+            ),
+            'geometry', Boundary.geojson_data
+        )
+
+        query = db.query(func.jsonb_build_object(
+            'type', 'FeatureCollection',
+            'features', func.coalesce(func.jsonb_agg(feature_expr), text("'[]'::jsonb"))
+        )).select_from(Boundary)\
+          .join(Farm, Farm.id == Boundary.farm_id)\
+          .filter(Farm.id.in_(id_list))
+
+        geojson = query.scalar()
+
+        if not geojson or not geojson.get("features"):
+            return {"type": "FeatureCollection", "features": []}
+
+        return geojson
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao exportar GeoJSON: {str(e)}")
+@router.get("/export/kml", summary="Exporta talhões em KML", dependencies=[Depends(verify_jwt_token)])
+def export_boundaries_kml(
+    farm_ids: str,
+    db: Session = Depends(get_db)
+):
+    try:
+        id_list = [uuid.UUID(fid.strip()) for fid in farm_ids.split(",") if fid.strip()]
+        
+        results = db.query(Boundary, Farm.name.label('farm_name'))\
+            .join(Farm, Farm.id == Boundary.farm_id)\
+            .filter(Farm.id.in_(id_list)).all()
+
+        kml_header = """<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Exportação Agrovys</name>
+"""
+        kml_footer = """  </Document>
+</kml>"""
+        
+        placemarks = []
+        for boundary, farm_name in results:
+            geom = boundary.geojson_data
+            coords_xml = ""
+            
+            if geom['type'] == 'Polygon':
+                coords_xml = f"          <Polygon><outerBoundaryIs><LinearRing><coordinates>{' '.join([f'{p[0]},{p[1]},0' for p in geom['coordinates'][0]])}</coordinates></LinearRing></outerBoundaryIs></Polygon>"
+            elif geom['type'] == 'MultiPolygon':
+                polygons_xml = ""
+                for poly in geom['coordinates']:
+                    polygons_xml += f"          <Polygon><outerBoundaryIs><LinearRing><coordinates>{' '.join([f'{p[0]},{p[1]},0' for p in poly[0]])}</coordinates></LinearRing></outerBoundaryIs></Polygon>"
+                coords_xml = f"          <MultiGeometry>{polygons_xml}</MultiGeometry>"
+
+            placemarks.append(f"""    <Placemark>
+      <name>{farm_name} - {boundary.name}</name>
+      <description>Área: {boundary.area_ha} ha / Safra: {boundary.crop_year}</description>
+{coords_xml}
+    </Placemark>""")
+
+        kml_content = kml_header + "\n".join(placemarks) + kml_footer
+        
+        return Response(content=kml_content, media_type="application/vnd.google-earth.kml+xml")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao exportar KML: {str(e)}")

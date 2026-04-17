@@ -5,7 +5,7 @@ export class FarmSimpleCreateModel {
     agivys_user_id!: string;
 }
 
-export class ListFarmsModel{
+export class ListFarmsModel {
     id!: string;
     area!: number;
     description!: string;
@@ -14,4 +14,12 @@ export class ListFarmsModel{
     selected?: boolean;
     isEditing?: boolean;
     tempName?: string;
+    boundaries?: BoundarySummaryModel[];
+    isLoadingBoundaries?: boolean;
+}
+
+export interface BoundarySummaryModel {
+    id: string;
+    name: string;
+    area: number;
 }
