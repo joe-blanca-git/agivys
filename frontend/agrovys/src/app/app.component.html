@@ -4,7 +4,7 @@
   </ng-container>
 
   <nz-layout *ngIf="!isPublicRoute">
-    
+
     <!-- <nz-sider
       *ngIf="!isMobile"
       nzTheme="light"
@@ -22,18 +22,11 @@
       <app-sider-menu [collapsed]="isVisibleMenu"></app-sider-menu>
     </nz-sider> -->
 
-    <nz-drawer
-      *ngIf="isMobile"
-      nzWidth="200"
-      [nzVisible]="isVisibleMenu"
-      nzPlacement="left" 
-      [nzTitle]="''"
-      [nzClosable]="false"
-      (nzOnClose)="isVisibleMenu = false"
-    >
+    <nz-drawer *ngIf="isMobile" nzWidth="200" [nzVisible]="isVisibleMenu" nzPlacement="left" [nzTitle]="''"
+      [nzClosable]="false" (nzOnClose)="isVisibleMenu = false">
       <ng-container *nzDrawerContent>
         <div class="mb-4 text-center">
-           <img src="images/logo/logo-agrovys.png" height="60" />
+          <img src="images/logo/logo-agrovys.png" height="60" />
         </div>
         <app-sider-menu [collapsed]="false"></app-sider-menu>
       </ng-container>
@@ -46,17 +39,21 @@
       <nz-header class="bg-light border p-0 d-none d-sm-block" style="height: 5vh;">
         <app-header-menu></app-header-menu>
       </nz-header>
+      <nz-header class="bg-light border p-0" style="height: 5vh;"
+        [ngClass]="{'d-none d-sm-block': isVisibleAlert, 'd-none': !isVisibleAlert}">
+        <app-alert-page (statusAlert)="getStatusAlert($event)"></app-alert-page>
+      </nz-header>
 
-      <nz-content class="p-3">
+      <nz-content class="content">
         <!-- <div class="card border-0 bg-transparent mb-3">
           <p-breadcrumb [model]="items" [home]="home"></p-breadcrumb>
         </div> -->
         <router-outlet></router-outlet>
       </nz-content>
 
-      <nz-footer class="text-center">
+      <!-- <nz-footer class="text-center">
           <span>Copyright © 2026 Agrovys MEI. Todos os direitos são reservados.</span>
-      </nz-footer>
+      </nz-footer> -->
     </nz-layout>
   </nz-layout>
 </div>

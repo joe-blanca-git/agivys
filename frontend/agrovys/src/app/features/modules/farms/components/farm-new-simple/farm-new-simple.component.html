@@ -1,0 +1,45 @@
+<div class="new-farm-simple" [ngClass]="{'bg-loading': isLoading}">
+  <div class="row h-100" *ngIf="!isLoading">
+    <div class="col-12 pb-0">
+
+      <form class="text-start">
+        <div class="row">
+
+          <div class="col-12 col-md-4 mb-3">
+            <label for="cropYear" class="form-label fw-bold">Ano Safra</label>
+            <input class="form-control" list="datalistOptions" id="cropYear" name="cropYear"
+              placeholder="Informe o ano..." [(ngModel)]="selectedYear">
+
+            <datalist id="datalistOptions">
+              <option *ngFor="let year of listYears" [value]="year"></option>
+            </datalist>
+          </div>
+
+          <div class="col-12 col-md-8 mb-3">
+            <label for="clientSelect" class="form-label fw-bold">Cliente</label>
+            <select class="form-select" name="clientSelect" [(ngModel)]="selectedClientUuid"
+              aria-label="Seleção de Empresa">
+              <option [ngValue]="null" disabled>Selecione um Cliente...</option>
+              <option *ngFor="let client of clients" [ngValue]="client.agrovys_uuid">
+                {{ client.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-12 mb-3">
+            <label for="farmName" class="form-label fw-bold">Nome da Fazenda</label>
+            <input name="farmName" class="form-control" type="text" placeholder="Ex: Boa Vista" [(ngModel)]="farmName" required>
+          </div>
+
+          <div class="col-12">
+            <div class="text-danger small mt-2" *ngIf="errorMessage">
+              <i class="fa fa-exclamation-triangle"></i> {{ errorMessage }}
+            </div>
+          </div>
+
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>

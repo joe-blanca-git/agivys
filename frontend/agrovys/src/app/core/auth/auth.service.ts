@@ -91,15 +91,15 @@ export class AuthService extends BaseService {
       );
 
       const now = Date.now();
+      const clockToleranceMs = 5000;
 
-      // exp e nbf vêm em segundos
       if (!payload.exp) return false;
 
       const exp = payload.exp * 1000;
       const nbf = payload.nbf ? payload.nbf * 1000 : null;
+      if (nbf && now < (nbf - clockToleranceMs)) return false;
 
-      if (nbf && now < nbf) return false;
-      if (now >= exp) return false;
+      if (now >= (exp + clockToleranceMs)) return false;
 
       return true;
     } catch {

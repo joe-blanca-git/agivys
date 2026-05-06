@@ -1,0 +1,15 @@
+.warning {
+  background-color: #fffbe6 !important;
+  border-bottom: 1px solid #ffe58f !important;
+  color: #d1a516 !important;
+
+  .close{
+    color: #d1a516 !important;
+  }
+}
+
+.text-selection-none {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+}

@@ -28,6 +28,14 @@ export class AccountService extends BaseService {
       .pipe(map(this.extractData));
   }
 
+  registerCompanyWithAddress(company: any): Observable<any> {
+    const url = `${this.UrlServiceApi}companies/create-with-address`;
+
+    return this.http
+      .post(url, company, this.GetAuthHeaderJson())
+      .pipe(map(this.extractData));
+  }
+
   registerCompanyAddress(companyAddress: any): Observable<any> {
     const url = `${this.UrlServiceLoginV1}addresses`;
 

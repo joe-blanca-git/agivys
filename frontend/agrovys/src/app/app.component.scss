@@ -51,7 +51,8 @@
 }
 
 .content {
+  height: 100%;
+  overflow-y: hidden !important;
 }
 
-@media (max-width: 991px) {
-}
+@media (max-width: 991px) {}

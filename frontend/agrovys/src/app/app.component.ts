@@ -1,6 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostBinding,
+  HostListener,
+  OnInit,
+} from '@angular/core';
+import {
+  NavigationEnd,
+  Router,
+  RouterModule,
+  RouterOutlet,
+} from '@angular/router';
 import { filter } from 'rxjs';
 
 // NG-ZORRO
@@ -19,6 +30,7 @@ import { SiderMenuComponent } from './shared/components/sider-menu/sider-menu.co
 import { HeaderComponent } from './shared/components/header/header.component';
 import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
 import { HeaderMenuComponent } from './shared/components/header-menu/header-menu.component';
+import { AlertPageComponent } from './shared/components/alert-page/alert-page.component';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +48,7 @@ import { HeaderMenuComponent } from './shared/components/header-menu/header-menu
     HeaderComponent,
     HeaderMenuComponent,
     ToastContainerComponent,
+    AlertPageComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -52,21 +65,29 @@ export class AppComponent implements OnInit {
 
   isMobile = false;
   isVisibleMenu = false;
+  isVisibleAlert = true;
   isRouteReady = false;
   isPublicRoute = false;
 
   constructor(
     private screen: ScreenService,
-    private router: Router
+    private router: Router,
   ) {
     this.initNavigationListener();
   }
 
+
   ngOnInit() {
     this.detectMobile();
     this.home = { icon: 'pi pi-home', routerLink: '/' };
-    
+
     this.getUserLocation();
+  }
+
+  getStatusAlert(alerts: number){
+    setTimeout(() => {
+      this.isVisibleAlert = alerts !== 0; 
+    });
   }
 
   private getUserLocation() {
@@ -76,7 +97,7 @@ export class AppComponent implements OnInit {
           const coords = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-            timestamp: new Date().getTime()
+            timestamp: new Date().getTime(),
           };
 
           localStorage.setItem('user_location', JSON.stringify(coords));
@@ -85,10 +106,10 @@ export class AppComponent implements OnInit {
           console.warn('Erro ao obter localização:', error.message);
         },
         {
-          enableHighAccuracy: true, 
-          timeout: 5000,           
-          maximumAge: 0           
-        }
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        },
       );
     } else {
       console.error('Geolocalização não é suportada por este navegador.');
@@ -99,10 +120,14 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        const publicRoutes = ['/auth/login', '/auth/recovery-password', '/auth'];
-        
+        const publicRoutes = [
+          '/auth/login',
+          '/auth/recovery-password',
+          '/auth',
+        ];
+
         this.isPublicRoute = publicRoutes.some((route) =>
-          event.urlAfterRedirects.startsWith(route)
+          event.urlAfterRedirects.startsWith(route),
         );
 
         if (this.isMobile) {
@@ -113,14 +138,12 @@ export class AppComponent implements OnInit {
       });
   }
 
-
   onChangeVisibleMenu(collapsed: boolean) {
     this.isVisibleMenu = collapsed;
   }
 
   @HostListener('window:resize')
   detectMobile(): void {
-
     const mobile = window.matchMedia('(max-width: 768px)').matches;
 
     if (this.isMobile !== mobile) {

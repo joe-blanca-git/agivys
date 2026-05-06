@@ -6,60 +6,98 @@ import {
   ModalComponent,
 } from '../../../shared/components/modal/modal.component';
 import { FarmNewComponent } from './components/farm-new/farm-new.component';
-import { LocalStorageUtils } from '../../../core/utils/localstorage';
+import { FarmNewSimpleComponent } from './components/farm-new-simple/farm-new-simple.component';
 import { FarmService } from './services/farm.service';
 import { ListFarmsModel } from './models/farm.model';
-import { finalize, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
+import { ClientService } from './services/client.service';
+import { FormsModule } from '@angular/forms';
+import { FarmExportComponent } from "./components/farm-export/farm-export.component";
 
 @Component({
   selector: 'app-farms.app',
   standalone: true,
-  imports: [CommonModule, FarmMapComponent, ModalComponent, FarmNewComponent],
+  imports: [CommonModule, FarmMapComponent, ModalComponent, FarmNewComponent, FarmNewSimpleComponent, FormsModule, FarmExportComponent],
   templateUrl: './farms.app.component.html',
   styleUrl: './farms.app.component.scss',
 })
 export class FarmsAppComponent {
   @ViewChild('newFarm') newFarmComponent!: FarmNewComponent;
+  @ViewChild('newFarmSimple') newFarmSimpleComponent!: FarmNewSimpleComponent;
+  @ViewChild('farmExport') farmExportComponent!: FarmExportComponent;
 
   title = 'Fazendas';
-  description = 'Gerenciamento de Limites, Talhões e Linhas de Orientação';
+  description = 'Limites, Talhões e Linhas de Orientação';
 
-  isLoadingData = true;
+  isLoadingData = false;
+  isLoadingListFarms = false;
   isLoadingNewFarm = false;
   isVisibleNewFarm = false;
 
+  isLoadingNewFarmSimple = false;
+  isVisibleNewFarmSimple = false;
+
   farms: ListFarmsModel[] = [];
+  clients: any[] = [];
+  limitesGeoJson: any = null;
+  allLimitesGeoJson: any = null;
+  searchTerm: string = '';
+  selectedCropYear: string = 'Todos';
+  cropYears: string[] = [];
+
+  isVisibleExport = false;
+  isExportTypeSelected = false;
+
   actionsModal: ModalAction[] = [
-    {
-      class: 'btn-outline-secondary',
-      type: 'closeNewFarm',
-      icon: 'fa fa-xmark',
-      text: 'Fechar',
-      title: 'teste',
-    },
     {
       class: 'btn-agrovys-primary',
       type: 'newFarm',
       icon: 'fa fa-plus',
       text: 'Cadastrar Fazenda',
-      title: 'teste',
+      title: 'Cadastrar Fazenda',
     },
   ];
 
-  constructor(private farmService: FarmService) {}
+  actionsModalSimple: ModalAction[] = [
+
+    {
+      class: 'btn-agrovys-primary',
+      type: 'newFarmSimple',
+      icon: 'fa fa-plus',
+      text: 'Cadastrar',
+      title: 'Cadastrar',
+    },
+  ];
+
+  actionsModalExport: ModalAction[] = [
+
+    {
+      class: 'btn-agrovys-primary',
+      type: 'export',
+      icon: 'fa fa-download',
+      text: 'Exportar',
+      title: 'Exportar',
+    },
+  ];
+
+  constructor(private farmService: FarmService, private clientService: ClientService) { }
 
   ngOnInit(): void {
     this.loadData();
   }
 
-async loadData() {
+  async loadData() {
     this.isLoadingData = true;
 
     try {
-      await Promise.all([
-        this.loadFarms(),
-      ]);
-      
+      await Promise.all(
+        [
+          this.loadFarms(),
+          this.loadBondaryGeneral()
+          //  this.loadClients()
+        ]);
+
+      this.updateMapFilters();
       console.log('Todos os dados foram carregados com sucesso!');
     } catch (error) {
       console.error('Erro ao carregar dados da página:', error);
@@ -68,8 +106,81 @@ async loadData() {
     }
   }
 
+  async loadClients(): Promise<void> {
+    this.clients = await firstValueFrom(this.clientService.getClients());
+  }
+
+  async loadBondaryGeneral(): Promise<void> {
+    try {
+      const geojson = await firstValueFrom(this.farmService.getAllBoundariesGeoJSON());
+      this.allLimitesGeoJson = geojson;
+      this.updateMapFilters();
+    } catch (e) {
+      console.error('Erro ao buscar GeoJSON geral:', e);
+    }
+  }
+
+  updateMapFilters() {
+    if (!this.allLimitesGeoJson) return;
+
+    const selectedFarms = this.farms.filter(f => f.selected);
+
+    if (selectedFarms.length > 0) {
+      const selectedNames = selectedFarms.map(f => f.name);
+      this.limitesGeoJson = {
+        ...this.allLimitesGeoJson,
+        features: this.allLimitesGeoJson.features.filter((f: any) =>
+          selectedNames.includes(f.properties.farm_name)
+        )
+      };
+    } else {
+      this.limitesGeoJson = { ...this.allLimitesGeoJson };
+    }
+  }
+
+  toggleSelectAll(event: any) {
+    const isChecked = event.target.checked;
+    this.filteredFarms.forEach(f => f.selected = isChecked);
+    this.updateMapFilters();
+  }
+
+  get isAllSelected(): boolean {
+    const filtered = this.filteredFarms;
+    return filtered.length > 0 && filtered.every(f => f.selected);
+  }
+
+  get filteredFarms(): ListFarmsModel[] {
+    let filtered = this.farms;
+
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(f => f.name.toLowerCase().includes(term));
+    }
+
+    if (this.selectedCropYear && this.selectedCropYear !== 'Todos') {
+      filtered = filtered.filter(f => f.cropYear === this.selectedCropYear);
+    }
+
+    return filtered;
+  }
+
   async loadFarms(): Promise<void> {
-    this.farms = await firstValueFrom(this.farmService.getFarmsList());
+    const farms = await firstValueFrom(this.farmService.getFarmsList());
+    this.farms = farms.sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+    );
+
+    // Extrair anos de safra únicos
+    const years = this.farms
+      .map(f => f.cropYear)
+      .filter((year, index, self) => year && self.indexOf(year) === index) as string[];
+
+    this.cropYears = ['Todos', ...years.sort().reverse()];
+  }
+
+  onSelectCropYear(year: string) {
+    this.selectedCropYear = year;
+    this.updateMapFilters();
   }
 
   onSaveNewFarm() {
@@ -89,10 +200,129 @@ async loadData() {
       this.isVisibleNewFarm = false;
     } else if (actionType === 'newFarm') {
       this.onSaveNewFarm();
+    } else if (actionType === 'closeExport') {
+      this.isVisibleExport = false;
+    } else if (actionType === 'export') {
+      this.farmExportComponent.exportFarms();
     }
   }
 
   handleLoadingNewFarm(event: boolean) {
     this.isLoadingNewFarm = event;
   }
+
+  async handleSuccessNewFarm() {
+    this.isVisibleNewFarm = false;
+    this.isLoadingListFarms = true;
+    console.log(this.isLoadingListFarms);
+    try {
+      await Promise.all([
+        this.loadFarms(),
+        this.loadBondaryGeneral()
+      ]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.isLoadingListFarms = false;
+      console.log(this.isLoadingListFarms);
+    }
+  }
+
+  get hasSelectedFarms(): boolean {
+    return this.farms.some(f => f.selected);
+  }
+
+  onSaveNewFarmSimple() {
+    this.newFarmSimpleComponent.submitNewFarm();
+  }
+
+  handleNewFarmSimple() {
+    this.isVisibleNewFarmSimple = !this.isVisibleNewFarmSimple;
+  }
+
+  handleModalActionSimple(actionType: string) {
+    if (actionType === 'closeNewFarmSimple') {
+      this.isVisibleNewFarmSimple = false;
+    } else if (actionType === 'newFarmSimple') {
+      this.onSaveNewFarmSimple();
+    }
+  }
+
+  handleLoadingNewFarmSimple(event: boolean) {
+    this.isLoadingNewFarmSimple = event;
+  }
+
+  async handleSuccessNewFarmSimple() {
+    this.isVisibleNewFarmSimple = false;
+    this.isLoadingListFarms = true;
+    try {
+      await Promise.all([
+        this.loadFarms(),
+        this.loadBondaryGeneral()
+      ]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.isLoadingListFarms = false;
+    }
+  }
+
+  archiveSelectedFarms() {
+    if (!this.hasSelectedFarms) return;
+
+    this.isLoadingListFarms = true;
+    const selectedFarmIds = this.farms.filter(f => f.selected).map(f => f.id);
+
+    this.farmService.archiveFarms(selectedFarmIds).subscribe({
+      next: async (res) => {
+        try {
+          await Promise.all([
+            this.loadFarms(),
+            this.loadBondaryGeneral()
+          ]);
+        } catch (error) {
+          console.error('Erro ao recarregar dados após arquivamento:', error);
+        } finally {
+          this.isLoadingListFarms = false;
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao arquivar:', err);
+        this.isLoadingListFarms = false;
+      }
+    });
+  }
+
+  async onToggleFarm(farm: ListFarmsModel) {
+    farm.selectedTab = 'fields';
+    if (farm.boundaries && farm.boundaries.length > 0) return;
+
+    farm.isLoadingBoundaries = true;
+    try {
+      const boundaries = await firstValueFrom(this.farmService.getFarmBoundaries(farm.id));
+      farm.boundaries = boundaries.sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+      );
+    } catch (e) {
+      console.error('Erro ao carregar talhões:', e);
+    } finally {
+      farm.isLoadingBoundaries = false;
+    }
+  }
+
+  handleExport() {
+    if (!this.hasSelectedFarms) return;
+    this.isExportTypeSelected = false;
+    this.isVisibleExport = true;
+  }
+
+  handleStatusExport(event: boolean) {
+    this.isExportTypeSelected = event;
+  }
+
+
+  getSelectedFarms(): ListFarmsModel[] {
+    return this.farms.filter(f => f.selected);
+  }
+
 }

@@ -27,6 +27,9 @@ export class AuthGuardService {
 
     // //verifica se token é válido
     if (isLoggedIn && !this.authService.isTokenValid()) {
+      console.log(isLoggedIn);
+      console.log(this.authService.isTokenValid());
+      
       this.authService.logOut();
       this.router.navigate(['/auth/login']);
       return false;

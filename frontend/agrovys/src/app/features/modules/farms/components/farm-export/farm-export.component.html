@@ -1,0 +1,92 @@
+<div [ngClass]="{ 'bg-loading': isLoadingExport }">
+    <div class="load-panel" *ngIf="isLoadingExport">
+
+    </div>
+
+    <!-- Opções de Exportação -->
+    <div class="row g-3 py-3 border-bottom mb-3" *ngIf="!isLoadingExport">
+        <div class="col-3 text-center">
+            <div class="export-option" [class.active]="selectedExportType === 'geojson'"
+                (click)="selectType('geojson')">
+                <div class="icon-wrapper">
+                    <img src="/assets/export-icons/9.png" alt="GEOJson" class="export-icon">
+                </div>
+                <span class="export-label">GEOJson</span>
+            </div>
+        </div>
+        <div class="col-3 text-center">
+            <div class="export-option" [class.active]="selectedExportType === 'kml'" (click)="selectType('kml')">
+                <div class="icon-wrapper">
+                    <img src="/assets/export-icons/10.png" alt="KML" class="export-icon">
+                </div>
+                <span class="export-label">KML</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configurações Extra -->
+    <div class="row mb-4" *ngIf="selectedFarms.length > 1 && !isLoadingExport">
+        <div class="col-12 px-4">
+            <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3 border">
+                <div class="d-flex align-items-center">
+                    <i class="fa fa-files-o text-primary me-3" style="font-size: 1.2rem;"></i>
+                    <div>
+                        <h6 class="m-0 fw-bold" style="font-size: 0.9rem;">Organização de Arquivos</h6>
+                        <p class="m-0 text-muted" style="font-size: 0.75rem;">
+                            {{ isSeparateFiles ? 'Baixar um arquivo por fazenda' : 'Baixar todas as fazendas em um único
+                            arquivo' }}
+                        </p>
+                    </div>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input custom-switch" type="checkbox" role="switch" id="separateFilesSwitch"
+                        [(ngModel)]="isSeparateFiles" style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                    <label class="form-check-label ms-2 small fw-bold text-secondary" for="separateFilesSwitch">
+                        Arquivos Separados
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Fazendas Selecionadas -->
+    <div class="row text-start" *ngIf="!isLoadingExport">
+        <div class="col-12 mb-3 d-flex justify-content-between align-items-center px-4">
+            <h6 class="fw-bold text-secondary text-uppercase m-0" style="letter-spacing: 0.5px; font-size: 0.75rem;">
+                Fazendas Selecionadas</h6>
+            <span class="text-muted small">{{ selectedFarms.length }} item(s)</span>
+        </div>
+
+        <div class="col-12 px-4 mb-3">
+            <div class="farm-list-container overflow-auto" style="max-height: 200px; scrollbar-width: thin;">
+                <div class="list-group list-group-flush border-top border-bottom">
+                    <div *ngFor="let farm of selectedFarms"
+                        class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-light bg-transparent">
+                        <div class="d-flex align-items-center overflow-hidden">
+                            <div class="bg-light text-secondary rounded-3 me-3 d-flex align-items-center justify-content-center"
+                                style="width: 40px; height: 40px; flex-shrink: 0; border: 1px solid #eee;">
+                                <i class="fa fa-map" style="font-size: 1.1rem;"></i>
+                            </div>
+                            <div class="d-flex flex-column overflow-hidden">
+                                <span class="fw-semibold text-dark text-truncate">{{ farm.name }}</span>
+                                <span class="text-muted" style="font-size: 0.7rem;">ID: {{ farm.id }} • {{ farm.cropYear
+                                    ||
+                                    '2026' }}</span>
+                            </div>
+                        </div>
+                        <div class="text-end flex-shrink-0 ms-2">
+                            <span class="fw-bold text-secondary" style="font-size: 0.85rem;">{{ farm.area ? (farm.area +
+                                '
+                                ha') : '0.00 ha' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="selectedFarms.length === 0" class="text-center py-5 text-muted">
+                    <i class="fa fa-map-o mb-3 d-block opacity-25" style="font-size: 2.5rem;"></i>
+                    <p class="small">Nenhuma fazenda disponível para exportação.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -22,8 +22,10 @@ export const errorInterceptor: HttpInterceptorFn = (
 
   return next(req).pipe(
     catchError((err: any) => {
-
+      
+      
       if (err instanceof HttpErrorResponse) {
+
         if (err.status === 400) {
           //erro de senha menor ou maior que o permitido.
           if (err.error.errors.Senha) {
@@ -41,7 +43,7 @@ export const errorInterceptor: HttpInterceptorFn = (
           const message = err.error.message ? err.error.message : err.error.detail;
           toastService.error(message, 5000);
 
-          localStorageUtil.clearLocaleUserData();
+          // localStorageUtil.clearLocaleUserData();
           router.navigate(['/auth/login']);
         }
 

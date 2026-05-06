@@ -1,0 +1,8 @@
+@for (alert of messages; track alert) {
+  @if (alert.show) {
+    <div class="d-flex align-items-center justify-content-between h-100 px-5" [ngClass]="alert.type"  style="height: 4vh;">
+        <span class="text-small text-selection-none" [innerHtml]="alert.text"></span>
+        <button class="btn close btn-sm" (click)="closeAlertById(alert.id)">X</button>
+    </div>
+  }
+}
