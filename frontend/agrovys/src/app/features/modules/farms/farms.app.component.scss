@@ -10,3 +10,43 @@
         border-color: rgba(0, 0, 0, 0.125) !important;
     }
 }
+
+.dropdown-item {
+    &:hover {
+        background-color: rgba(36, 86, 37, 0.05) !important;
+        color: #245625 !important;
+    }
+    &.active, &:active {
+        background-color: #245625 !important;
+        color: #fff !important;
+    }
+}
+
+.list-farms {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .accordion {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-bottom: 2rem;
+
+        /* Estilo para o scrollbar */
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        &::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+    }
+}

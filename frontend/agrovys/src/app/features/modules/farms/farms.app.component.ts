@@ -40,6 +40,10 @@ export class FarmsAppComponent {
   farms: ListFarmsModel[] = [];
   clients: any[] = [];
   limitesGeoJson: any = null;
+  allLimitesGeoJson: any = null;
+  searchTerm: string = '';
+  selectedCropYear: string = 'Todos';
+  cropYears: string[] = [];
 
   isVisibleExport = false;
   isExportTypeSelected = false;
@@ -93,6 +97,7 @@ export class FarmsAppComponent {
           //  this.loadClients()
         ]);
 
+      this.updateMapFilters();
       console.log('Todos os dados foram carregados com sucesso!');
     } catch (error) {
       console.error('Erro ao carregar dados da página:', error);
@@ -108,15 +113,74 @@ export class FarmsAppComponent {
   async loadBondaryGeneral(): Promise<void> {
     try {
       const geojson = await firstValueFrom(this.farmService.getAllBoundariesGeoJSON());
-      this.limitesGeoJson = geojson;
+      this.allLimitesGeoJson = geojson;
+      this.updateMapFilters();
     } catch (e) {
       console.error('Erro ao buscar GeoJSON geral:', e);
     }
   }
 
+  updateMapFilters() {
+    if (!this.allLimitesGeoJson) return;
+
+    const selectedFarms = this.farms.filter(f => f.selected);
+
+    if (selectedFarms.length > 0) {
+      const selectedNames = selectedFarms.map(f => f.name);
+      this.limitesGeoJson = {
+        ...this.allLimitesGeoJson,
+        features: this.allLimitesGeoJson.features.filter((f: any) =>
+          selectedNames.includes(f.properties.farm_name)
+        )
+      };
+    } else {
+      this.limitesGeoJson = { ...this.allLimitesGeoJson };
+    }
+  }
+
+  toggleSelectAll(event: any) {
+    const isChecked = event.target.checked;
+    this.filteredFarms.forEach(f => f.selected = isChecked);
+    this.updateMapFilters();
+  }
+
+  get isAllSelected(): boolean {
+    const filtered = this.filteredFarms;
+    return filtered.length > 0 && filtered.every(f => f.selected);
+  }
+
+  get filteredFarms(): ListFarmsModel[] {
+    let filtered = this.farms;
+
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(f => f.name.toLowerCase().includes(term));
+    }
+
+    if (this.selectedCropYear && this.selectedCropYear !== 'Todos') {
+      filtered = filtered.filter(f => f.cropYear === this.selectedCropYear);
+    }
+
+    return filtered;
+  }
+
   async loadFarms(): Promise<void> {
     const farms = await firstValueFrom(this.farmService.getFarmsList());
-    this.farms = farms.sort((a, b) => a.name.localeCompare(b.name));
+    this.farms = farms.sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+    );
+
+    // Extrair anos de safra únicos
+    const years = this.farms
+      .map(f => f.cropYear)
+      .filter((year, index, self) => year && self.indexOf(year) === index) as string[];
+
+    this.cropYears = ['Todos', ...years.sort().reverse()];
+  }
+
+  onSelectCropYear(year: string) {
+    this.selectedCropYear = year;
+    this.updateMapFilters();
   }
 
   onSaveNewFarm() {
@@ -230,12 +294,15 @@ export class FarmsAppComponent {
   }
 
   async onToggleFarm(farm: ListFarmsModel) {
+    farm.selectedTab = 'fields';
     if (farm.boundaries && farm.boundaries.length > 0) return;
 
     farm.isLoadingBoundaries = true;
     try {
       const boundaries = await firstValueFrom(this.farmService.getFarmBoundaries(farm.id));
-      farm.boundaries = boundaries;
+      farm.boundaries = boundaries.sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+      );
     } catch (e) {
       console.error('Erro ao carregar talhões:', e);
     } finally {

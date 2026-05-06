@@ -109,7 +109,7 @@ export class FarmNewComponent implements OnInit {
     const farmName = this.farmName;
     const clientUnitId = _clientUnitId;
     const agivysUserId = user.id;
-    const cropYear = '2026';
+    const cropYear = String(this.selectedYear);
 
     const farmForm = {
       name: farmName,

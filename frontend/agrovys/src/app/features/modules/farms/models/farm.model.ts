@@ -11,6 +11,8 @@ export class ListFarmsModel {
     description!: string;
     lastUpdate!: Date;
     name!: string;
+    cropYear?: string;
+    selectedTab?: 'fields' | 'guidance';
     selected?: boolean;
     isEditing?: boolean;
     tempName?: string;

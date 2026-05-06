@@ -9,6 +9,7 @@ using AgiVysSystem.Api.Interfaces;
 using AgiVysSystem.Api.Service;
 using Asp.Versioning;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.HttpOverrides;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -82,6 +83,16 @@ builder.Services.AddSwaggerGen(c =>
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     c.IncludeXmlComments(xmlPath);
+});
+
+// Configuração para Proxy Reverso (Nginx/Subfolders)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // Importante: Como o Nginx está na mesma máquina ou rede confiável, limpamos as redes conhecidas 
+    // para que ele aceite os headers de qualquer proxy (ou você pode configurar IPs específicos)
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 // Banco de Dados
@@ -192,6 +203,8 @@ builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+
 // ==========================================
 // 3. PIPELINE (ORDEM DE EXECUÇÃO)
 // ==========================================
@@ -211,8 +224,24 @@ if (app.Environment.IsDevelopment())
  
 }
 
-app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwagger(c =>
+{
+    c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
+    {
+        if (httpReq.Headers.ContainsKey("X-Forwarded-Prefix"))
+        {
+            var prefix = httpReq.Headers["X-Forwarded-Prefix"];
+            swaggerDoc.Servers = new List<OpenApiServer> 
+            { 
+                new OpenApiServer { Url = $"{httpReq.Scheme}://{httpReq.Host}{prefix}" } 
+            };
+        }
+    });
+});
+app.UseSwaggerUI(c => 
+{
+    c.SwaggerEndpoint("v1/swagger.json", "AgiVysSystem API v1");
+});
 
 app.Urls.Add("http://0.0.0.0:5000");
 

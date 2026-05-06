@@ -107,7 +107,7 @@ async def cadastrar_fazenda(
     name: str = Form(...),
     client_unit_id: str = Form(...),
     agivys_user_id: str = Form(...),
-    crop_year: str = Form("2024/2025"),
+    crop_year: str = Form(...),
     files: List[UploadFile] = File(...),
     db: Session = Depends(get_db)
 ):
@@ -223,7 +223,8 @@ def list_farms(
         Farm.name,
         Farm.description,
         func.coalesce(Farm.updated_at, Farm.created_at).label('last_update'),
-        func.sum(Boundary.area_ha).label('total_area')
+        func.sum(Boundary.area_ha).label('total_area'),
+        func.max(Boundary.crop_year).label('crop_year')
     ).outerjoin(Boundary, Farm.id == Boundary.farm_id)\
      .filter(Farm.active == True)\
      .group_by(Farm.id)\
@@ -237,7 +238,8 @@ def list_farms(
             "name": row.name,
             "description": row.description or "Sem descrição",
             "area": round(float(row.total_area), 2) if row.total_area else 0.0,
-            "lastUpdate": row.last_update.isoformat() if row.last_update else None
+            "lastUpdate": row.last_update.isoformat() if row.last_update else None,
+            "cropYear": row.crop_year
         })
 
     return farms_list

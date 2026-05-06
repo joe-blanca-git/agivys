@@ -1,4 +1,5 @@
-<div class="container-fluid h-100 text-start" [ngClass]="{'bg-loading': isLoadingData}">
+<div class="container-fluid h-100 text-start d-flex flex-column overflow-hidden"
+    [ngClass]="{'bg-loading': isLoadingData}">
 
     <div class="row" *ngIf="!isLoadingData">
         <div class="col-12 d-flex align-items-center justify-content-between py-2 px-3">
@@ -34,33 +35,59 @@
         </div>
     </div>
 
-    <div class="row h-100" *ngIf="!isLoadingData">
+    <div class="row flex-grow-1 overflow-hidden" *ngIf="!isLoadingData">
 
-        <div class="col-12 col-sm-4 col-md-3 p-0">
+        <div class="col-12 col-sm-4 col-md-3 p-0 d-flex flex-column h-100">
 
             <div class="filter d-flex align-items-center justify-content-center px-2 py-1 gap-2 mb-2">
                 <div class="input-group">
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa fa-magnifying-glass" aria-hidden="true"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="Pesquisar" aria-label="pesquisar"
-                        aria-describedby="basic-addon1" />
+                    <input type="text" class="form-control" placeholder="Pesquisar Fazendas" aria-label="pesquisar"
+                        aria-describedby="basic-addon1" [(ngModel)]="searchTerm" />
                 </div>
-
+                <!-- 
                 <div class="btn btn-sm btn-agrovys-outline-primary">
                     <div class="fa fa-filter"></div>
-                </div>
+                </div> -->
             </div>
 
-            <div class="list-farms mb-2" [ngClass]="{'bg-loading': isLoadingListFarms}">
+            <div class="list-farms" [ngClass]="{'bg-loading': isLoadingListFarms}">
+
                 <div style="height: 80vh;" *ngIf="isLoadingListFarms">&nbsp;</div>
-                <div class="accordion" id="accordionFarms" *ngIf="!isLoadingListFarms">
-                    <div *ngIf="farms.length > 0">
-                        <div class="accordion-item" *ngFor="let farm of farms; let i = index">
+
+                <div class="px-3 py-2 border-bottom" *ngIf="!isLoadingListFarms && cropYears.length > 1">
+                    <div class="dropdown">
+                        <label class="text-muted text-x-small fw-bold d-block mb-1">Ano Safra</label>
+                        <button
+                            class="btn btn-sm btn-agrovys-outline-primary dropdown-toggle d-flex align-items-center justify-content-between"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>{{ selectedCropYear }}</span>
+                        </button>
+                        <ul class="dropdown-menu shadow-sm border-0">
+                            <li *ngFor="let year of cropYears">
+                                <a class="dropdown-item text-small cursor-pointer" (click)="onSelectCropYear(year)">{{
+                                    year }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="px-3 py-2 d-flex align-items-center gap-2 border-bottom"
+                    *ngIf="!isLoadingListFarms && filteredFarms.length > 0">
+                    <input class="form-check-input my-0" type="checkbox" [checked]="isAllSelected"
+                        (change)="toggleSelectAll($event)">
+                    <span class="text-muted text-small fw-bold">Selecionar Todas</span>
+                </div>
+                <div class="accordion rounded-0" id="accordionFarms" *ngIf="!isLoadingListFarms">
+                    <div *ngIf="filteredFarms.length > 0">
+                        <div class="accordion-item rounded-0 border-top-0"
+                            *ngFor="let farm of filteredFarms; let i = index">
                             <h2 class="accordion-header d-flex align-items-center position-relative"
                                 [id]="'panelsStayOpen-heading' + i">
                                 <input class="form-check-input ms-3 me-2 my-0" type="checkbox"
-                                    [(ngModel)]="farm.selected" style="z-index: 10;" (click)="$event.stopPropagation()">
+                                    [(ngModel)]="farm.selected" (change)="updateMapFilters()" style="z-index: 10;"
+                                    (click)="$event.stopPropagation()">
                                 <button class="accordion-button collapsed ps-1" type="button" data-bs-toggle="collapse"
                                     [attr.data-bs-target]="'#panelsStayOpen-collapse' + i" aria-expanded="false"
                                     [attr.aria-controls]="'panelsStayOpen-collapse' + i" (click)="onToggleFarm(farm)">
@@ -71,24 +98,32 @@
                                 </button>
                             </h2>
                             <div [id]="'panelsStayOpen-collapse' + i" class="accordion-collapse collapse"
-                                [attr.aria-labelledby]="'panelsStayOpen-heading' + i">
+                                [attr.aria-labelledby]="'panelsStayOpen-heading' + i" data-bs-parent="#accordionFarms">
                                 <div class="accordion-body">
                                     <nav>
-                                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                            <button class="nav-link active" id="nav-fields-tab" data-bs-toggle="tab"
-                                                data-bs-target="#nav-fields" type="button" role="tab"
-                                                aria-controls="nav-fields" aria-selected="true">Talhões</button>
-                                            <button class="nav-link" id="nav-guidance-tab" data-bs-toggle="tab"
-                                                data-bs-target="#nav-guidance" type="button" role="tab"
-                                                aria-controls="nav-guidance" aria-selected="false">Linhas</button>
-                                            <!-- <button class="nav-link" id="nav-info-tab" data-bs-toggle="tab"
-                                                data-bs-target="#nav-info" type="button" role="tab"
-                                                aria-controls="nav-info" aria-selected="false">Informações</button> -->
+                                        <div class="nav nav-tabs" [id]="'nav-tab-' + i" role="tablist">
+                                            <button class="nav-link" [id]="'nav-fields-tab-' + i"
+                                                [class.active]="farm.selectedTab !== 'guidance'" data-bs-toggle="tab"
+                                                [attr.data-bs-target]="'#nav-fields-' + i" type="button" role="tab"
+                                                [attr.aria-controls]="'nav-fields-' + i"
+                                                [attr.aria-selected]="farm.selectedTab !== 'guidance'"
+                                                (click)="farm.selectedTab = 'fields'">Talhões</button>
+                                            <button class="nav-link" [id]="'nav-guidance-tab-' + i"
+                                                [class.active]="farm.selectedTab === 'guidance'" data-bs-toggle="tab"
+                                                [attr.data-bs-target]="'#nav-guidance-' + i" type="button" role="tab"
+                                                [attr.aria-controls]="'nav-guidance-' + i"
+                                                [attr.aria-selected]="farm.selectedTab === 'guidance'"
+                                                (click)="farm.selectedTab = 'guidance'">Linhas</button>
+                                            <!-- <button class="nav-link" [id]="'nav-info-tab-' + i" data-bs-toggle="tab"
+                                                [attr.data-bs-target]="'#nav-info-' + i" type="button" role="tab"
+                                                [attr.aria-controls]="'nav-info-' + i" aria-selected="false">Informações</button> -->
                                         </div>
                                     </nav>
-                                    <div class="tab-content border border-top-0" id="nav-tabContent">
-                                        <div class="tab-pane fade show active p-2" id="nav-fields" role="tabpanel"
-                                            aria-labelledby="nav-fields-tab">
+                                    <div class="tab-content border border-top-0" [id]="'nav-tabContent-' + i">
+                                        <div class="tab-pane fade p-2"
+                                            [class.show]="farm.selectedTab !== 'guidance'"
+                                            [class.active]="farm.selectedTab !== 'guidance'" [id]="'nav-fields-' + i"
+                                            role="tabpanel" [attr.aria-labelledby]="'nav-fields-tab-' + i">
 
                                             <div *ngIf="farm.isLoadingBoundaries"
                                                 class="d-flex justify-content-center py-3">
@@ -112,8 +147,10 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                        <div class="tab-pane fade p-2" id="nav-guidance" role="tabpanel"
-                                            aria-labelledby="nav-guidance-tab">
+                                        <div class="tab-pane fade p-2"
+                                            [class.show]="farm.selectedTab === 'guidance'"
+                                            [class.active]="farm.selectedTab === 'guidance'" [id]="'nav-guidance-' + i"
+                                            role="tabpanel" [attr.aria-labelledby]="'nav-guidance-tab-' + i">
                                             <ul class="list-group">
                                                 <li class="list-group-item text-small d-flex justify-content-between">
                                                     <span class="fw-bold text-secondary text-uppercase">tipo 1</span>
@@ -133,8 +170,8 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                        <div class="tab-pane fade p-2" id="nav-info" role="tabpanel"
-                                            aria-labelledby="nav-info-tab">
+                                        <div class="tab-pane fade p-2" [id]="'nav-info-' + i" role="tabpanel"
+                                            [attr.aria-labelledby]="'nav-info-tab-' + i">
                                             <div class="row">
                                                 <div class="col-12 py-2 d-flex justify-content-between">
                                                     <span class="fw-bold text-secondary">Criado em: </span>
@@ -159,8 +196,8 @@
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="farms.length === 0">
-                        <div class="alert alert-info" role="alert">
+                    <div *ngIf="filteredFarms.length === 0">
+                        <div class="alert alert-info mx-3" role="alert">
                             Nenhuma fazenda encontrada.
                         </div>
                     </div>
