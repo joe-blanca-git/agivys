@@ -6,6 +6,7 @@ using AgiVysSystem.Api.DTOs;
 using AgiVysSystem.Api.Models.User;
 using AgiVysSystem.Api.Models.People;
 using AgiVysSystem.Api.Models.Company;
+using AgiVysSystem.Api.Models.Configuration;
 using AgiVysSystem.Api.Interfaces;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
@@ -109,8 +110,14 @@ public class AuthController : ControllerBase
         var roles = await _userManager.GetRolesAsync(user);
         var primaryRole = roles.FirstOrDefault() ?? "NoRole";
 
+        // Busca os sistemas vinculados
+        var systemIds = await _context.UserSystems
+            .Where(us => us.UserId == user.Id)
+            .Select(us => us.SystemId)
+            .ToListAsync();
+
         // Geração do Token JWT (4 horas)
-        var token = GenerateJwtToken(user, primaryRole);
+        var token = GenerateJwtToken(user, roles);
 
         return Ok(new
         {
@@ -122,11 +129,8 @@ public class AuthController : ControllerBase
                 email = user.Email,
                 companyId = company?.Id,
                 companyName = company?.Name,
-                role = new 
-                { 
-                    name = "UserType", 
-                    value = primaryRole 
-                }
+                systemIds = systemIds,
+                roles = roles
             },
             person = new
             {
@@ -137,19 +141,25 @@ public class AuthController : ControllerBase
         });
     }
 
-    private string GenerateJwtToken(User user, string role)
+    private string GenerateJwtToken(User user, IEnumerable<string> roles)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
         var key = Encoding.ASCII.GetBytes(jwtSettings["Key"] ?? "");
 
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email ?? "")
+        };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email ?? ""),
-                new Claim(ClaimTypes.Role, role)
-            }),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddHours(4),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             Issuer = jwtSettings["Issuer"],
@@ -229,7 +239,19 @@ public class AuthController : ControllerBase
             _context.AddressPeople.Add(initialAddress);
             await _context.SaveChangesAsync();
 
-            // 6. E-mail de Boas-vindas (Template atualizado para AgiVysSystem)
+            // 6. Vincular ao Sistema (UserSystem)
+            if (model.SystemId.HasValue)
+            {
+                var userSystem = new UserSystem
+                {
+                    UserId = user.Id,
+                    SystemId = model.SystemId.Value
+                };
+                _context.UserSystems.Add(userSystem);
+                await _context.SaveChangesAsync();
+            }
+
+            // 7. E-mail de Boas-vindas (Template atualizado para AgiVysSystem)
             var welcomeMessage = $@"
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
                 <div style='background-color: #1a1a1a; padding: 20px; text-align: center;'>

@@ -420,5 +420,17 @@
         <member name="M:AgiVysSystem.Migrations.AddFinancialAsaasTables.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:AgiVysSystem.Migrations.AddUserSystemTable">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddUserSystemTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddUserSystemTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddUserSystemTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>

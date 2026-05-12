@@ -97,8 +97,9 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 // Banco de Dados
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 36)); 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, serverVersion));
 
 // Identity
 builder.Services.AddIdentity<User, IdentityRole<int>>(options => {
@@ -144,16 +145,19 @@ builder.Services.AddAuthentication(options =>
         {
             var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
             
-            // Procura qualquer claim que tenha "role" no nome (curta ou longa)
-            var roleClaim = claimsIdentity?.Claims.FirstOrDefault(c => 
-                c.Type == "role" || c.Type == ClaimTypes.Role);
+            // Procura todas as claims que tenham "role" no nome (curta ou longa)
+            var roleClaims = claimsIdentity?.Claims.Where(c => 
+                c.Type == "role" || c.Type == ClaimTypes.Role).ToList();
 
-            if (roleClaim != null)
+            if (roleClaims != null && roleClaims.Any())
             {
-                // Se achou, garante que ela exista como ClaimTypes.Role
-                if (!claimsIdentity.HasClaim(ClaimTypes.Role, roleClaim.Value))
+                foreach (var rc in roleClaims)
                 {
-                    claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, roleClaim.Value));
+                    // Garante que cada uma exista como ClaimTypes.Role (padrão do .NET)
+                    if (!claimsIdentity.HasClaim(ClaimTypes.Role, rc.Value))
+                    {
+                        claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, rc.Value));
+                    }
                 }
             }
             else 

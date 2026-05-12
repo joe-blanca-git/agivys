@@ -16,5 +16,8 @@ public record RegisterDto(
     string Complement,
     string Neighborhood,
     string City,
-    string State
+    string State,
+
+    // Relacionamento com Sistema
+    int? SystemId = null
 );

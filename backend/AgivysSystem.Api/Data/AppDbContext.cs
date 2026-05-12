@@ -21,6 +21,7 @@ public class AppDbContext : IdentityDbContext<AgiVysSystem.Api.Models.User.User,
     public DbSet<Company> Companies { get; set; }
     public DbSet<CompanyAddress> CompanyAddresses { get; set; }
     public DbSet<AddressPerson> AddressPeople { get; set; }
+    public DbSet<UserSystem> UserSystems { get; set; }
 
     public DbSet<AgiVysSystem.Api.Models.Order.Order> Orders { get; set; }
     public DbSet<AgiVysSystem.Api.Models.Order.OrderItem> OrderItems { get; set; }
@@ -58,5 +59,15 @@ public class AppDbContext : IdentityDbContext<AgiVysSystem.Api.Models.User.User,
         builder.Entity<Company>()
             .HasIndex(c => c.Cnpj)
             .IsUnique();
+
+        builder.Entity<UserSystem>()
+            .HasOne(us => us.User)
+            .WithMany()
+            .HasForeignKey(us => us.UserId);
+
+        builder.Entity<UserSystem>()
+            .HasOne(us => us.System)
+            .WithMany()
+            .HasForeignKey(us => us.SystemId);
     }
 }
