@@ -99,18 +99,12 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "E-mail ou senha incorretos." });
         }
 
-        // Busca os dados da Pessoa vinculada
         var person = await _context.People.FirstOrDefaultAsync(p => p.Id == user.PersonId);
-
-        // Busca os dados da Empresa vinculada
         var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserOwnerId == user.Id);
         
-        // Busca as Roles do usuário
         var roles = await _userManager.GetRolesAsync(user);
-        var primaryRole = roles.FirstOrDefault() ?? "NoRole";
 
-        // Geração do Token JWT (4 horas)
-        var token = GenerateJwtToken(user, primaryRole);
+        var token = GenerateJwtToken(user, roles);
 
         return Ok(new
         {
@@ -122,11 +116,11 @@ public class AuthController : ControllerBase
                 email = user.Email,
                 companyId = company?.Id,
                 companyName = company?.Name,
-                role = new 
+                roles = roles.Select(r => new 
                 { 
                     name = "UserType", 
-                    value = primaryRole 
-                }
+                    value = r 
+                }).ToList()
             },
             person = new
             {
