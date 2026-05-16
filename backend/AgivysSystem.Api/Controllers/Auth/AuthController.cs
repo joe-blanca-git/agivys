@@ -131,34 +131,33 @@ public class AuthController : ControllerBase
         });
     }
 
-    private string GenerateJwtToken(IdentityUser user, IEnumerable<string> roles)
+   private string GenerateJwtToken(AgiVysSystem.Api.Models.User.User user, IEnumerable<string> roles)
+{
+    var claims = new List<Claim>
     {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Email, user.Email)
-        };
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email!)
+    };
 
-        // Adiciona todas as roles como claims individuais no token
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expires = DateTime.UtcNow.AddHours(4);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: expires,
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+    foreach (var role in roles)
+    {
+        claims.Add(new Claim(ClaimTypes.Role, role));
     }
+
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    var expires = DateTime.UtcNow.AddHours(4);
+
+    var token = new JwtSecurityToken(
+        issuer: _configuration["Jwt:Issuer"],
+        audience: _configuration["Jwt:Audience"],
+        claims: claims,
+        expires: expires,
+        signingCredentials: creds
+    );
+
+    return new JwtSecurityTokenHandler().WriteToken(token);
+}
 
     /// <summary>
     /// Realiza o cadastro de um novo usuário do tipo Proprietário no sistema.
