@@ -37,6 +37,72 @@ O projeto segue uma arquitetura em camadas simplificada dentro de um único proj
 - Utiliza **JWT (JSON Web Tokens)** para stateless authentication.
 - **Identity Framework** gerencia usuários (`User`), roles e permissões.
 - Os tokens contêm claims de permissão que são validadas via atributos `[Authorize(Roles = "...")]`.
+- O cadastro de usuário exige `idSystem` no endpoint de registro e esse valor é gravado no usuário.
+- O login inclui `idSystem` no payload JWT e também na resposta JSON para suportar validações multi-sistema/multi-tenant.
+
+#### Exemplo de registro
+```http
+POST /api/v1/Auth/register
+Content-Type: application/json
+
+{
+  "idSystem": 1,
+  "name": "João Silva",
+  "document": "12345678909",
+  "email": "joao@exemplo.com",
+  "password": "SenhaForte123!",
+  "birthDate": "1990-01-01T00:00:00",
+  "addressDescription": "Principal",
+  "zipCode": "12345000",
+  "street": "Rua Exemplo",
+  "number": "100",
+  "complement": "Sala 1",
+  "neighborhood": "Centro",
+  "city": "São Paulo",
+  "state": "SP"
+}
+```
+
+Resposta de sucesso:
+```json
+{
+  "message": "Usuário cadastrado com sucesso!"
+}
+```
+
+#### Exemplo de login
+```http
+POST /api/v1/Auth/login
+Content-Type: application/json
+
+{
+  "email": "joao@exemplo.com",
+  "password": "SenhaForte123!"
+}
+```
+
+Resposta de sucesso:
+```json
+{
+  "token": "<JWT_TOKEN>",
+  "expiration": "2026-05-27T14:00:00Z",
+  "user": {
+    "id": 1,
+    "email": "joao@exemplo.com",
+    "companyId": null,
+    "companyName": null,
+    "idSystem": 1,
+    "roles": [
+      { "name": "UserType", "value": "Owner" }
+    ]
+  },
+  "person": {
+    "id": 1,
+    "name": "João Silva",
+    "email": "joao@exemplo.com"
+  }
+}
+```
 
 ### 2. Banco de Dados e Mapeamento
 - **EF Core (Code-First):** As entidades em `Models/` definem o schema.

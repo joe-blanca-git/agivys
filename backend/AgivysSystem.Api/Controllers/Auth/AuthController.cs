@@ -88,7 +88,7 @@ public class AuthController : ControllerBase
     /// <response code="200">Login realizado com sucesso.</response>
     /// <response code="401">E-mail ou senha incorretos.</response>
     [HttpPost("login")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
@@ -101,34 +101,36 @@ public class AuthController : ControllerBase
 
         var person = await _context.People.FirstOrDefaultAsync(p => p.Id == user.PersonId);
         var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserOwnerId == user.Id);
-        
         var roles = await _userManager.GetRolesAsync(user);
 
         var token = GenerateJwtToken(user, roles);
 
-        return Ok(new
+        var response = new LoginResponseDto
         {
-            token,
-            expiration = DateTime.UtcNow.AddHours(4),
-            user = new
+            Token = token,
+            Expiration = DateTime.UtcNow.AddHours(4),
+            User = new AuthUserDto
             {
-                id = user.Id,
-                email = user.Email,
-                companyId = company?.Id,
-                companyName = company?.Name,
-                roles = roles.Select(r => new 
-                { 
-                    name = "UserType", 
-                    value = r 
+                Id = user.Id,
+                Email = user.Email!,
+                CompanyId = company?.Id,
+                CompanyName = company?.Name,
+                IdSystem = user.AppSystemId,
+                Roles = roles.Select(r => new AuthUserRoleDto
+                {
+                    Name = "UserType",
+                    Value = r
                 }).ToList()
             },
-            person = new
+            Person = new AuthPersonDto
             {
-                id = person?.Id,
-                name = person?.Name,
-                email = person?.Email
+                Id = person?.Id,
+                Name = person?.Name,
+                Email = person?.Email
             }
-        });
+        };
+
+        return Ok(response);
     }
 
    private string GenerateJwtToken(AgiVysSystem.Api.Models.User.User user, IEnumerable<string> roles)
@@ -139,9 +141,9 @@ public class AuthController : ControllerBase
         new Claim(ClaimTypes.Email, user.Email!)
     };
 
-    foreach (var role in roles)
+    if (user.AppSystemId.HasValue)
     {
-        claims.Add(new Claim(ClaimTypes.Role, role));
+        claims.Add(new Claim("idSystem", user.AppSystemId.Value.ToString()));
     }
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
@@ -180,6 +182,10 @@ public class AuthController : ControllerBase
         if (documentExists)
             return BadRequest(new { message = "Dados Inválidos! Verifique seu documento." });
 
+        var systemExists = await _context.AppSystems.AnyAsync(s => s.Id == model.IdSystem);
+        if (!systemExists)
+            return BadRequest(new { message = "Dados inválidos! idSystem não corresponde a um sistema válido." });
+
         // 2. Criar a Pessoa (People)
         var person = new Person
         {
@@ -197,7 +203,8 @@ public class AuthController : ControllerBase
         {
             UserName = model.Email,
             Email = model.Email,
-            PersonId = person.Id
+            PersonId = person.Id,
+            AppSystemId = model.IdSystem
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
