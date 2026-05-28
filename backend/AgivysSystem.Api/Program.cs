@@ -89,8 +89,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    // Importante: Como o Nginx está na mesma máquina ou rede confiável, limpamos as redes conhecidas 
-    // para que ele aceite os headers de qualquer proxy (ou você pode configurar IPs específicos)
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
 });
@@ -133,7 +131,6 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero,
         
-        // MUDANÇA AQUI: Voltando para o padrão que o Authorize(Roles) entende nativamente
         RoleClaimType = ClaimTypes.Role, 
         NameClaimType = ClaimTypes.NameIdentifier
     };
@@ -144,13 +141,11 @@ builder.Services.AddAuthentication(options =>
         {
             var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
             
-            // Procura qualquer claim que tenha "role" no nome (curta ou longa)
             var roleClaim = claimsIdentity?.Claims.FirstOrDefault(c => 
                 c.Type == "role" || c.Type == ClaimTypes.Role);
 
             if (roleClaim != null)
             {
-                // Se achou, garante que ela exista como ClaimTypes.Role
                 if (!claimsIdentity.HasClaim(ClaimTypes.Role, roleClaim.Value))
                 {
                     claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, roleClaim.Value));
@@ -189,13 +184,19 @@ builder.Services.AddApiVersioning(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
+// ==========================================
+// CONFIGURAÇÃO RESTRITA DE CORS
+// ==========================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("MainPolicy", policy =>
     {
-        policy.AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowAnyOrigin();
+        policy.WithOrigins(
+                "http://localhost:4200", 
+                "https://joederblanca.com.br"
+              )
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
@@ -203,11 +204,15 @@ builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true
 
 var app = builder.Build();
 
-app.UseForwardedHeaders();
-
 // ==========================================
 // 3. PIPELINE (ORDEM DE EXECUÇÃO)
 // ==========================================
+
+// ATENÇÃO: Avisa a API que ela está rodando numa subpasta do domínio
+// (Certifique-se de que o nome confere com a URL que o Angular está chamando)
+app.UsePathBase("/agivys"); 
+
+app.UseForwardedHeaders();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -245,7 +250,8 @@ app.UseSwaggerUI(c =>
 
 app.Urls.Add("http://0.0.0.0:5000");
 
-app.UseHttpsRedirection();
+// COMENTADO: Pois o NGINX já trata o certificado SSL na porta 443 
+// app.UseHttpsRedirection();
 
 app.UseCors("MainPolicy");
 
