@@ -3460,19 +3460,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\joeder-blanca\\.nuget\\packages\\": {}
+    "/root/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\joeder-blanca\\Documents\\projetos-joe\\git\\agivys\\backend\\AgivysSystem.Api\\AgiVysSystem.csproj",
+      "projectUniqueName": "/src/AgiVysSystem.csproj",
       "projectName": "AgiVysSystem",
-      "projectPath": "C:\\Users\\joeder-blanca\\Documents\\projetos-joe\\git\\agivys\\backend\\AgivysSystem.Api\\AgiVysSystem.csproj",
-      "packagesPath": "C:\\Users\\joeder-blanca\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\joeder-blanca\\Documents\\projetos-joe\\git\\agivys\\backend\\AgivysSystem.Api\\obj\\",
+      "projectPath": "/src/AgiVysSystem.csproj",
+      "packagesPath": "/root/.nuget/packages/",
+      "outputPath": "/src/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\joeder-blanca\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/root/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -3567,7 +3567,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.422/PortableRuntimeIdentifierGraph.json"
       }
     }
   },
@@ -3576,7 +3576,7 @@
       "code": "NU1902",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "O pacote 'MailKit' 4.15.1 tem uma moderado vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-9j88-vvj5-vhgr",
+      "message": "Package 'MailKit' 4.15.1 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-9j88-vvj5-vhgr",
       "libraryId": "MailKit",
       "targetGraphs": [
         "net8.0"

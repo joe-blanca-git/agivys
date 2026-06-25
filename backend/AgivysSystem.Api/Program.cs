@@ -208,9 +208,9 @@ var app = builder.Build();
 // 3. PIPELINE (ORDEM DE EXECUÇÃO)
 // ==========================================
 
-// ATENÇÃO: Avisa a API que ela está rodando numa subpasta do domínio
-// (Certifique-se de que o nome confere com a URL que o Angular está chamando)
-app.UsePathBase("/agivys"); 
+// COMENTADO: Isso estava gerando conflito de rota com o Nginx.
+// O Nginx já gerencia a subpasta /agivys-api/ e manda a rota limpa para o Kestrel.
+// app.UsePathBase("/agivys"); 
 
 app.UseForwardedHeaders();
 
@@ -224,25 +224,19 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-if (app.Environment.IsDevelopment())
-{
- 
-}
-
+// BLOCO DO SWAGGER CORRIGIDO E DEFINITIVO
 app.UseSwagger(c =>
 {
     c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
     {
-        if (httpReq.Headers.ContainsKey("X-Forwarded-Prefix"))
+        swaggerDoc.Servers = new List<OpenApiServer>
         {
-            var prefix = httpReq.Headers["X-Forwarded-Prefix"];
-            swaggerDoc.Servers = new List<OpenApiServer> 
-            { 
-                new OpenApiServer { Url = $"{httpReq.Scheme}://{httpReq.Host}{prefix}" } 
-            };
-        }
+            // Força o Nginx a montar a URL de request perfeitamente
+            new OpenApiServer { Url = "https://joederblanca.com.br/agivys-api" }
+        };
     });
 });
+
 app.UseSwaggerUI(c => 
 {
     c.SwaggerEndpoint("v1/swagger.json", "AgiVysSystem API v1");
@@ -250,7 +244,7 @@ app.UseSwaggerUI(c =>
 
 app.Urls.Add("http://0.0.0.0:5000");
 
-// COMENTADO: Pois o NGINX já trata o certificado SSL na porta 443 
+// COMENTADO: O NGINX já trata o certificado SSL na porta 443 
 // app.UseHttpsRedirection();
 
 app.UseCors("MainPolicy");
