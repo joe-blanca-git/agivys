@@ -146,6 +146,12 @@ public class AuthController : ControllerBase
         claims.Add(new Claim("idSystem", user.AppSystemId.Value.ToString()));
     }
 
+    // Adiciona as roles como claims individuais no token
+    foreach (var role in roles)
+    {
+        claims.Add(new Claim(ClaimTypes.Role, role));
+    }
+
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
     var expires = DateTime.UtcNow.AddHours(4);
