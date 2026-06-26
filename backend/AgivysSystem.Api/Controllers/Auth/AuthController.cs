@@ -442,7 +442,10 @@ public class AuthController : ControllerBase
         }
 
         // Em vez de retornar result.Errors direto, retornamos sua mensagem padronizada
-        return BadRequest(new { message = "Dados inválidos." });
+        //return BadRequest(new { message = "Dados inválidos." });
+
+        var erros = result.Errors.Select(e => e.Description).ToList();
+        return BadRequest(new { message = "Erro ao resetar senha.", detalhes = erros });
     }
 
     // --- MÉTODOS DE GESTÃO DE ENDEREÇOS PESSOAIS ---
