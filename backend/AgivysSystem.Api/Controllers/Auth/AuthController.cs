@@ -391,13 +391,13 @@ public class AuthController : ControllerBase
 
         var resetMessage = $@"
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
-            <div style='background-color: #1a1a1a; padding: 20px; text-align: center;'>
-                <h1 style='color: #ffffff; margin: 0; font-size: 24px;'>Bit System</h1>
+            <div style='background-color: #4451c4ff; padding: 20px; text-align: center;'>
+                <h1 style='color: #ffffff; margin: 0; font-size: 24px;'>Sistemas Agivys</h1>
             </div>
             <div style='padding: 30px; color: #333; line-height: 1.6;'>
                 <h2 style='color: #1a1a1a;'>Recuperação de Senha</h2>
                 <p>Olá, {user.UserName}!</p>
-                <p>Recebemos uma solicitação para redefinir a sua senha no <strong>Bit System</strong>.</p>
+                <p>Recebemos uma solicitação para redefinir a sua senha no <strong>Sistemas Agivys</strong>.</p>
                 <p>Este link é válido por <strong>2 horas</strong>. Se você não solicitou esta alteração, ignore este e-mail.</p>
                 
                 <div style='margin: 30px 0; text-align: center;'>
@@ -408,11 +408,11 @@ public class AuthController : ControllerBase
                 <p style='font-size: 12px; color: #777;'>Por segurança, nunca compartilhe este link com ninguém.</p>
             </div>
             <div style='background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #999;'>
-                &copy; {DateTime.Now.Year} Bit System - Todos os direitos reservados.
+                &copy; {DateTime.Now.Year} Sistemas Agivys - Todos os direitos reservados.
             </div>
         </div>";
 
-        await _emailService.SendEmailAsync(user.Email!, "Recuperação de Senha - Bit System", resetMessage);
+        await _emailService.SendEmailAsync(user.Email!, "Recuperação de Senha - Sistemas Agivys", resetMessage);
 
         return Ok(new { message = "Link de recuperação enviado com sucesso." });
     }
@@ -442,10 +442,10 @@ public class AuthController : ControllerBase
             return Ok(new { message = "Senha atualizada com sucesso!" });
         }
 
-        return BadRequest(new { message = "Dados inválidos." });
+        //return BadRequest(new { message = "Dados inválidos." });
 
         // var erros = result.Errors.Select(e => e.Description).ToList();
-        // return BadRequest(new { message = "Erro ao resetar senha.", detalhes = erros });
+        return BadRequest(new { message = "Erro ao resetar senha.", detalhes = erros });
     }
 
     // --- MÉTODOS DE GESTÃO DE ENDEREÇOS PESSOAIS ---
