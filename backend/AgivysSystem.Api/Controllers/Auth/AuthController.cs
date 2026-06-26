@@ -271,6 +271,91 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Realiza o cadastro de um novo usuário do tipo Proprietário a partir de sistemas.
+    /// </summary>
+    /// <param name="model">A Senha deve conter letras, números e ao menos um caractere especial.</param>
+    /// <returns>Retorna uma mensagem de sucesso ou uma lista de erros de validação.</returns>
+    /// <response code="200">Usuário Cadastrado com Sucesso!</response>
+    /// <response code="400">Dados inválidos.</response>
+    [HttpPost("register-system-user")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RegisterSystemUser([FromBody] RegisterSystemUserDto model)
+    {
+        // 1. Validações de existência
+        var userExists = await _userManager.FindByEmailAsync(model.Email);
+        if (userExists != null)
+            return BadRequest(new { message = "Dados Inválidos! Verifique seu E-mail." });
+
+        var systemExists = await _context.AppSystems.AnyAsync(s => s.Id == model.IdSystem);
+        if (!systemExists)
+            return BadRequest(new { message = "Dados inválidos! idSystem não corresponde a um sistema válido." });
+
+        // Gera um documento fictício único para contornar a obrigatoriedade do banco de dados (que também é chave única)
+        var generatedDocument = "SYS" + Guid.NewGuid().ToString("N").Substring(0, 11);
+
+        // 2. Criar a Pessoa (People)
+        var person = new Person
+        {
+            Name = model.Name,
+            Document = generatedDocument,
+            Email = model.Email,
+            BirthDate = model.BirthDate
+        };
+
+        _context.People.Add(person);
+        await _context.SaveChangesAsync(); // Gerar ID da Person
+
+        // 3. Criar o Usuário vinculado à Pessoa
+        var user = new User
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            PersonId = person.Id,
+            AppSystemId = model.IdSystem
+        };
+
+        var result = await _userManager.CreateAsync(user, model.Password);
+
+        if (result.Succeeded)
+        {
+            // 4. Atribuir a Role "Owner"
+            await _userManager.AddToRoleAsync(user, "Owner");
+
+            // Atualiza a Person com o UserId gerado
+            person.UserId = user.Id;
+            await _context.SaveChangesAsync();
+
+            // 5. E-mail de Boas-vindas (Sem dados de endereço)
+            var welcomeMessage = $@"
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
+                <div style='background-color: #1a1a1a; padding: 20px; text-align: center;'>
+                    <h1 style='color: #ffffff; margin: 0; font-size: 24px;'>AgiVys System</h1>
+                </div>
+                <div style='padding: 30px; color: #333; line-height: 1.6;'>
+                    <h2 style='color: #1a1a1a;'>Olá, {model.Name}!</h2>
+                    <p>Seja muito bem-vindo ao <strong>AgiVys System</strong>. Seu cadastro foi realizado com sucesso.</p>
+                    <div style='margin: 30px 0; text-align: center;'>
+                        <a href='https://agivyssystem.com.br/login' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Acessar Painel</a>
+                    </div>
+                    <hr style='border: 0; border-top: 1px solid #eee;' />
+                    <p style='font-size: 12px; color: #777;'>&copy; {DateTime.Now.Year} AgiVys System.</p>
+                </div>
+            </div>";
+
+            //await _emailService.SendEmailAsync(model.Email, "Bem-vindo ao AgiVys System", welcomeMessage);
+
+            return Ok(new { message = "Usuário cadastrado com sucesso!" });
+        }
+
+        // Caso a criação do User falhe (ex: senha fraca), removemos a Person para evitar lixo no banco
+        _context.People.Remove(person);
+        await _context.SaveChangesAsync();
+
+        return BadRequest(result.Errors);
+    }
+
+    /// <summary>
     /// Atualiza os dados pessoais do usuário autenticado.
     /// </summary>
     /// <response code="200">Dados atualizados com sucesso.</response>
