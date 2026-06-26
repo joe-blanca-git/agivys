@@ -385,9 +385,11 @@ public class AuthController : ControllerBase
         // Gera o Token de recuperação (Identity gera um token seguro)
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         
+        // Codifica o token em Base64Url para evitar problemas com caracteres especiais (+, =) em URLs
+        var encodedToken = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
         // Link para o seu Frontend (Exemplo: React/Angular)
-        // O token precisa ser codificado para URL para não quebrar caracteres especiais
-        var callbackUrl = $"https://seufrotend.com.br/reset-password?token={Uri.EscapeDataString(token)}&email={user.Email}";
+        var callbackUrl = $"https://seufrotend.com.br/reset-password?token={encodedToken}&email={user.Email}";
 
         var resetMessage = $@"
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
@@ -431,11 +433,18 @@ public class AuthController : ControllerBase
         if (user == null) 
             return BadRequest(new { message = "Dados inválidos." });
 
-        // Decodifica o token caso ele venha da URL (evita o erro que tivemos antes)
-        //string decodedToken = System.Net.WebUtility.UrlDecode(model.Token);
-        //var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
+        // Decodifica o token do formato Base64Url
+        string decodedToken;
+        try
+        {
+            decodedToken = Encoding.UTF8.GetString(Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlDecode(model.Token));
+        }
+        catch (FormatException)
+        {
+            return BadRequest(new { message = "Token inválido ou mal formatado." });
+        }
 
-        var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+        var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
 
         if (result.Succeeded)
         {
