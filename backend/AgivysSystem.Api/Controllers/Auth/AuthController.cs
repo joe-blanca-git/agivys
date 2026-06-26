@@ -432,20 +432,20 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Dados inválidos." });
 
         // Decodifica o token caso ele venha da URL (evita o erro que tivemos antes)
-        string decodedToken = System.Net.WebUtility.UrlDecode(model.Token);
+        //string decodedToken = System.Net.WebUtility.UrlDecode(model.Token);
+        //var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
 
-        var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
+        var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
 
         if (result.Succeeded)
         {
             return Ok(new { message = "Senha atualizada com sucesso!" });
         }
 
-        // Em vez de retornar result.Errors direto, retornamos sua mensagem padronizada
-        //return BadRequest(new { message = "Dados inválidos." });
+        return BadRequest(new { message = "Dados inválidos." });
 
-        var erros = result.Errors.Select(e => e.Description).ToList();
-        return BadRequest(new { message = "Erro ao resetar senha.", detalhes = erros });
+        // var erros = result.Errors.Select(e => e.Description).ToList();
+        // return BadRequest(new { message = "Erro ao resetar senha.", detalhes = erros });
     }
 
     // --- MÉTODOS DE GESTÃO DE ENDEREÇOS PESSOAIS ---
