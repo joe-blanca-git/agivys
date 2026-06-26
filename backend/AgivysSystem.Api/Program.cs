@@ -225,27 +225,15 @@ using (var scope = app.Services.CreateScope())
 }
 
 // BLOCO DO SWAGGER CORRIGIDO E DEFINITIVO
-// BLOCO DO SWAGGER INTELIGENTE (Local e Produção)
 app.UseSwagger(c =>
 {
     c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
     {
-        // Se a requisição vier do localhost (seu PC), usa a URL local normal
-        if (httpReq.Host.Host == "localhost" || httpReq.Host.Host == "127.0.0.1")
+        swaggerDoc.Servers = new List<OpenApiServer>
         {
-            swaggerDoc.Servers = new List<OpenApiServer> 
-            { 
-                new OpenApiServer { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}" } 
-            };
-        }
-        else
-        {
-            // Se estiver na VPS, força o Nginx a montar a URL de request com a subpasta
-            swaggerDoc.Servers = new List<OpenApiServer>
-            {
-                new OpenApiServer { Url = "https://joederblanca.com.br/agivys-api" }
-            };
-        }
+            // Força o Nginx a montar a URL de request perfeitamente
+            new OpenApiServer { Url = "https://joederblanca.com.br/agivys-api" }
+        };
     });
 });
 
