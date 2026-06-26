@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/src/AgiVysSystem.csproj": {}
+    "C:\\Users\\joeder-blanca\\Documents\\projetos-joe\\git\\agivys\\backend\\AgivysSystem.Api\\AgiVysSystem.csproj": {}
   },
   "projects": {
-    "/src/AgiVysSystem.csproj": {
+    "C:\\Users\\joeder-blanca\\Documents\\projetos-joe\\git\\agivys\\backend\\AgivysSystem.Api\\AgiVysSystem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/src/AgiVysSystem.csproj",
+        "projectUniqueName": "C:\\Users\\joeder-blanca\\Documents\\projetos-joe\\git\\agivys\\backend\\AgivysSystem.Api\\AgiVysSystem.csproj",
         "projectName": "AgiVysSystem",
-        "projectPath": "/src/AgiVysSystem.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/src/obj/",
+        "projectPath": "C:\\Users\\joeder-blanca\\Documents\\projetos-joe\\git\\agivys\\backend\\AgivysSystem.Api\\AgiVysSystem.csproj",
+        "packagesPath": "C:\\Users\\joeder-blanca\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\joeder-blanca\\Documents\\projetos-joe\\git\\agivys\\backend\\AgivysSystem.Api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\joeder-blanca\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -109,7 +109,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.422/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

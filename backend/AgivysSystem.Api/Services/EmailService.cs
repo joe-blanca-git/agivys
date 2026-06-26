@@ -1,5 +1,6 @@
-using MailKit.Net.Smtp;
-using MimeKit;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using AgiVysSystem.Api.Interfaces;
 
@@ -8,40 +9,39 @@ namespace AgiVysSystem.Api.Service;
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _config;
+    private readonly HttpClient _httpClient;
 
-    public EmailService(IConfiguration config)
+    public EmailService(IConfiguration config, HttpClient httpClient)
     {
         _config = config;
+        _httpClient = httpClient;
     }
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
-        var emailSettings = _config.GetSection("EmailSettings");
-        
-        var message = new MimeMessage();
-        
-        var senderName = emailSettings["SenderName"] ?? "Bit System";
-        var senderEmail = emailSettings["SenderEmail"] ?? string.Empty;
-        message.From.Add(new MailboxAddress(senderName, senderEmail));
+        var apiKey = _config["EmailSettings:ApiKey"];
+        var senderName = _config["EmailSettings:SenderName"] ?? "AgiVys System";
+        var senderEmail = _config["EmailSettings:SenderEmail"] ?? "noreply@joederblanca.com.br";
 
-        message.To.Add(new MailboxAddress("", email));
-        message.Subject = subject;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
-        var bodyBuilder = new BodyBuilder { HtmlBody = htmlMessage };
-        message.Body = bodyBuilder.ToMessageBody();
+        var payload = new
+        {
+            from = $"{senderName} <{senderEmail}>",
+            to = new[] { email },
+            subject = subject,
+            html = htmlMessage
+        };
 
-        using var client = new SmtpClient();
-        
-        var smtpPort = emailSettings["SmtpPort"] ?? "587";
+        var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
-        await client.ConnectAsync(
-            emailSettings["SmtpServer"], 
-            int.Parse(smtpPort), 
-            MailKit.Security.SecureSocketOptions.Auto
-        );
+        var response = await _httpClient.PostAsync("https://api.resend.com/emails", content);
 
-        await client.AuthenticateAsync(senderEmail, emailSettings["SmtpPassword"]);
-        await client.SendAsync(message);
-        await client.DisconnectAsync(true);
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"\n[ERRO RESEND] Falha ao enviar e-mail: {error}");
+            throw new Exception($"Erro no envio de e-mail via Resend: {error}");
+        }
     }
 }

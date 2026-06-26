@@ -165,7 +165,7 @@ builder.Services.AddAuthentication(options =>
 // 2. INJEÇÕES DE DEPENDÊNCIA (RESTITUÍDAS)
 // ==========================================
 
-builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHttpClient<IEmailService, EmailService>();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 {
@@ -225,15 +225,27 @@ using (var scope = app.Services.CreateScope())
 }
 
 // BLOCO DO SWAGGER CORRIGIDO E DEFINITIVO
+// BLOCO DO SWAGGER INTELIGENTE (Local e Produção)
 app.UseSwagger(c =>
 {
     c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
     {
-        swaggerDoc.Servers = new List<OpenApiServer>
+        // Se a requisição vier do localhost (seu PC), usa a URL local normal
+        if (httpReq.Host.Host == "localhost" || httpReq.Host.Host == "127.0.0.1")
         {
-            // Força o Nginx a montar a URL de request perfeitamente
-            new OpenApiServer { Url = "https://joederblanca.com.br/agivys-api" }
-        };
+            swaggerDoc.Servers = new List<OpenApiServer> 
+            { 
+                new OpenApiServer { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}" } 
+            };
+        }
+        else
+        {
+            // Se estiver na VPS, força o Nginx a montar a URL de request com a subpasta
+            swaggerDoc.Servers = new List<OpenApiServer>
+            {
+                new OpenApiServer { Url = "https://joederblanca.com.br/agivys-api" }
+            };
+        }
     });
 });
 
