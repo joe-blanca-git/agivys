@@ -444,7 +444,7 @@ public class AuthController : ControllerBase
 
         //return BadRequest(new { message = "Dados inválidos." });
 
-        // var erros = result.Errors.Select(e => e.Description).ToList();
+        var erros = result.Errors.Select(e => e.Description).ToList();
         return BadRequest(new { message = "Erro ao resetar senha.", detalhes = erros });
     }
 
