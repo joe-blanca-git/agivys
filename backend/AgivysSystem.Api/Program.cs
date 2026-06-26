@@ -19,7 +19,6 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. CONFIGURAÇÕES INICIAIS
 // ==========================================
 
-// Limpa mapeamento para não dar conflito com Claims curtas
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddHttpClient<AgiVysSystem.Api.Services.External.AsaasService>(client =>
@@ -207,11 +206,6 @@ var app = builder.Build();
 // ==========================================
 // 3. PIPELINE (ORDEM DE EXECUÇÃO)
 // ==========================================
-
-// COMENTADO: Isso estava gerando conflito de rota com o Nginx.
-// O Nginx já gerencia a subpasta /agivys-api/ e manda a rota limpa para o Kestrel.
-// app.UsePathBase("/agivys"); 
-
 app.UseForwardedHeaders();
 
 using (var scope = app.Services.CreateScope())
@@ -224,14 +218,12 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// BLOCO DO SWAGGER CORRIGIDO E DEFINITIVO
 app.UseSwagger(c =>
 {
     c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
     {
         swaggerDoc.Servers = new List<OpenApiServer>
         {
-            // Força o Nginx a montar a URL de request perfeitamente
             new OpenApiServer { Url = "https://joederblanca.com.br/agivys-api" }
         };
     });
@@ -244,8 +236,6 @@ app.UseSwaggerUI(c =>
 
 app.Urls.Add("http://0.0.0.0:5000");
 
-// COMENTADO: O NGINX já trata o certificado SSL na porta 443 
-// app.UseHttpsRedirection();
 
 app.UseCors("MainPolicy");
 
