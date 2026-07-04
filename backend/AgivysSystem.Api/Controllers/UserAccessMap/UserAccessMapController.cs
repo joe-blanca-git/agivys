@@ -102,4 +102,33 @@ public class UserAccessMapController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    /// <summary>
+    /// Obtém os mapas de acesso (Sistemas, Menus e Submenus) do usuário a partir do cookie da sessão (HttpOnly).
+    /// Evita acesso ao banco de dados para ganho extremo de performance.
+    /// </summary>
+    /// <response code="200">Retorna os acessos do usuário.</response>
+    /// <response code="401">Não autenticado ou cookie ausente.</response>
+    [HttpGet("session")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public IActionResult GetUserAccessMapFromSession()
+    {
+        if (Request.Cookies.TryGetValue("MedNext_Menu", out var encodedMap))
+        {
+            try
+            {
+                var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encodedMap));
+                var map = System.Text.Json.JsonSerializer.Deserialize<List<UserAccessMapResponseDto>>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return Ok(map);
+            }
+            catch
+            {
+                return Unauthorized(new { message = "Sessão de menu inválida." });
+            }
+        }
+
+        return Unauthorized(new { message = "Cookie de menu não encontrado." });
+    }
 }

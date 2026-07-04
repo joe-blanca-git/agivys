@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,13 +29,20 @@ public class AuthController : ControllerBase
     private readonly AppDbContext _context;
     private readonly IConfiguration _configuration;
     private readonly IEmailService _emailService;
+    private readonly IUserAccessMapService _userAccessMapService;
 
-    public AuthController(UserManager<User> userManager, AppDbContext context, IConfiguration configuration, IEmailService emailService)
+    public AuthController(
+        UserManager<User> userManager, 
+        AppDbContext context, 
+        IConfiguration configuration, 
+        IEmailService emailService,
+        IUserAccessMapService userAccessMapService)
     {
         _userManager = userManager;
         _context = context;
         _configuration = configuration;
         _emailService = emailService;
+        _userAccessMapService = userAccessMapService;
     }
 
     [HttpPost("validate-token")]
@@ -130,7 +138,38 @@ public class AuthController : ControllerBase
             }
         };
 
+        // Obter mapa de acesso e salvar no Cookie HttpOnly
+        var accessMap = await _userAccessMapService.GetUserAccessMapAsync(user.Id);
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        var accessMapJson = JsonSerializer.Serialize(accessMap, options);
+        var encodedMap = Convert.ToBase64String(Encoding.UTF8.GetBytes(accessMapJson));
+
+        Response.Cookies.Append("MedNext_Menu", encodedMap, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true, // Ideal em HTTPS
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddHours(4)
+        });
+
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Realiza o logout do usuário e limpa os cookies de sessão.
+    /// </summary>
+    /// <response code="200">Logout realizado com sucesso.</response>
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("MedNext_Menu", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax
+        });
+        return Ok(new { message = "Logout realizado com sucesso." });
     }
 
    private string GenerateJwtToken(AgiVysSystem.Api.Models.User.User user, IEnumerable<string> roles)
