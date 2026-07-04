@@ -73,6 +73,7 @@ public class UserAccessMapService : IUserAccessMapService
                     MenuId = uam.MenuId,
                     MenuName = uam.Menu!.Name,
                     Icon = uam.Menu.Icon,
+                    Route = uam.Menu.Route,
                     Submenus = uam.Menu.Submenus.Select(s => new UserAccessMapResponseDto.SubmenuDto
                     {
                         SubmenuId = s.Id,

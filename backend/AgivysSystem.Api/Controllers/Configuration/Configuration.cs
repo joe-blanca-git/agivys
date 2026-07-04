@@ -126,6 +126,7 @@ public class AppSystemController : ControllerBase
             {
                 Name = dto.Menu.Name,
                 Icon = dto.Menu.Icon,
+                Route = dto.Menu.Route,
                 AppSystemId = dto.SystemId
             };
 

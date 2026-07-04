@@ -11,6 +11,7 @@ public class UserAccessMapResponseDto
         public int MenuId { get; set; }
         public string MenuName { get; set; } = string.Empty;
         public string? Icon { get; set; }
+        public string? Route { get; set; }
         public List<SubmenuDto> Submenus { get; set; } = new();
     }
 
