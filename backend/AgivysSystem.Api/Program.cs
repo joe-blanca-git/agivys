@@ -195,7 +195,8 @@ builder.Services.AddCors(options =>
                 "https://joederblanca.com.br"
               )
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 

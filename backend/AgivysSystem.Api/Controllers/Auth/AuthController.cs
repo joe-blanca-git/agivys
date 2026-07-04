@@ -147,8 +147,8 @@ public class AuthController : ControllerBase
         Response.Cookies.Append("MedNext_Menu", encodedMap, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true, // Ideal em HTTPS
-            SameSite = SameSiteMode.Lax,
+            Secure = true, // Obrigatório para SameSite=None
+            SameSite = SameSiteMode.None,
             Expires = DateTime.UtcNow.AddHours(4)
         });
 
@@ -167,7 +167,7 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Lax
+            SameSite = SameSiteMode.None
         });
         return Ok(new { message = "Logout realizado com sucesso." });
     }
