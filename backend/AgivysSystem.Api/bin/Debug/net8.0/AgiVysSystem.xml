@@ -29,6 +29,15 @@
             <response code="200">Usuário Cadastrado com Sucesso!</response>
             <response code="400">Dados inválidos.</response>
         </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.RegisterSystemUser(AgiVysSystem.Api.DTOs.RegisterSystemUserDto)">
+            <summary>
+            Realiza o cadastro de um novo usuário do tipo Proprietário a partir de sistemas.
+            </summary>
+            <param name="model">A Senha deve conter letras, números e ao menos um caractere especial.</param>
+            <returns>Retorna uma mensagem de sucesso ou uma lista de erros de validação.</returns>
+            <response code="200">Usuário Cadastrado com Sucesso!</response>
+            <response code="400">Dados inválidos.</response>
+        </member>
         <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.UpdatePerson(AgiVysSystem.Api.DTOs.UpdatePersonDto)">
             <summary>
             Atualiza os dados pessoais do usuário autenticado.
@@ -253,6 +262,31 @@
             Remove um plano e todos os seus vínculos de permissão.
             </summary>
             <param name="id">ID do plano a ser removido.</param>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.UserAccessMap.UserAccessMapController.AddUserAccessMap(AgiVysSystem.Api.DTOs.UserAccessMap.UserAccessMapDto)">
+            <summary>
+            Vincula um usuário a um menu.
+            </summary>
+            <response code="200">Vínculo criado com sucesso.</response>
+            <response code="400">Erro nos dados enviados.</response>
+            <response code="401">Não autenticado.</response>
+            <response code="403">Sem permissão (Owner necessário).</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.UserAccessMap.UserAccessMapController.RemoveUserAccessMap(AgiVysSystem.Api.DTOs.UserAccessMap.UserAccessMapDto)">
+            <summary>
+            Remove o vínculo de um usuário com um menu.
+            </summary>
+            <response code="200">Vínculo removido com sucesso.</response>
+            <response code="400">Erro nos dados enviados.</response>
+            <response code="401">Não autenticado.</response>
+            <response code="403">Sem permissão (Owner necessário).</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.UserAccessMap.UserAccessMapController.GetUserAccessMap">
+            <summary>
+            Obtém os mapas de acesso (Sistemas, Menus e Submenus) do usuário logado.
+            </summary>
+            <response code="200">Retorna os acessos do usuário.</response>
+            <response code="401">Não autenticado.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Services.External.AsaasService.CreateCustomerAsync(AgiVysSystem.Api.DTOs.External.Asaas.AsaasCustomerRequest)">
             <summary>

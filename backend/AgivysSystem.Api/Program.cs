@@ -165,7 +165,7 @@ builder.Services.AddAuthentication(options =>
 // ==========================================
 
 builder.Services.AddHttpClient<IEmailService, EmailService>();
-
+builder.Services.AddScoped<IUserAccessMapService, AgiVysSystem.Api.Services.UserAccessMapService>();
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 {
     options.TokenLifespan = TimeSpan.FromHours(2);

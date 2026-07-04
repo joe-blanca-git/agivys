@@ -6,6 +6,7 @@ using AgiVysSystem.Api.Models.Configuration;
 using AgiVysSystem.Api.Models.Company;
 using AgiVysSystem.Api.Models.Companies;
 using AgiVysSystem.Api.Models.Financial;
+using AgiVysSystem.Api.Models.User;
 
 namespace AgiVysSystem.Api.Data;
 
@@ -21,6 +22,7 @@ public class AppDbContext : IdentityDbContext<AgiVysSystem.Api.Models.User.User,
     public DbSet<Company> Companies { get; set; }
     public DbSet<CompanyAddress> CompanyAddresses { get; set; }
     public DbSet<AddressPerson> AddressPeople { get; set; }
+    public DbSet<UserAccessMap> UserAccessMaps { get; set; }
 
     public DbSet<AgiVysSystem.Api.Models.Order.Order> Orders { get; set; }
     public DbSet<AgiVysSystem.Api.Models.Order.OrderItem> OrderItems { get; set; }
