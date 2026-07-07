@@ -20,6 +20,12 @@
             <response code="200">Login realizado com sucesso.</response>
             <response code="401">E-mail ou senha incorretos.</response>
         </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.Logout">
+            <summary>
+            Realiza o logout do usuário e limpa os cookies de sessão.
+            </summary>
+            <response code="200">Logout realizado com sucesso.</response>
+        </member>
         <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.Register(AgiVysSystem.Api.DTOs.RegisterDto)">
             <summary>
             Realiza o cadastro de um novo usuário do tipo Proprietário no sistema.
@@ -287,6 +293,14 @@
             </summary>
             <response code="200">Retorna os acessos do usuário.</response>
             <response code="401">Não autenticado.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.UserAccessMap.UserAccessMapController.GetUserAccessMapFromSession">
+            <summary>
+            Obtém os mapas de acesso (Sistemas, Menus e Submenus) do usuário a partir do cookie da sessão (HttpOnly).
+            Evita acesso ao banco de dados para ganho extremo de performance.
+            </summary>
+            <response code="200">Retorna os acessos do usuário.</response>
+            <response code="401">Não autenticado ou cookie ausente.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Services.External.AsaasService.CreateCustomerAsync(AgiVysSystem.Api.DTOs.External.Asaas.AsaasCustomerRequest)">
             <summary>

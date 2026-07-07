@@ -111,7 +111,7 @@ public class AuthController : ControllerBase
         var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserOwnerId == user.Id);
         var roles = await _userManager.GetRolesAsync(user);
 
-        var token = GenerateJwtToken(user, roles);
+        var token = GenerateJwtToken(user, roles, person?.Name);
 
         var response = new LoginResponseDto
         {
@@ -172,13 +172,19 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Logout realizado com sucesso." });
     }
 
-   private string GenerateJwtToken(AgiVysSystem.Api.Models.User.User user, IEnumerable<string> roles)
+   private string GenerateJwtToken(AgiVysSystem.Api.Models.User.User user, IEnumerable<string> roles, string? personName)
 {
     var claims = new List<Claim>
     {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(ClaimTypes.Email, user.Email!)
     };
+
+    if (!string.IsNullOrWhiteSpace(personName))
+    {
+        claims.Add(new Claim("name", personName));
+        claims.Add(new Claim(ClaimTypes.Name, personName));
+    }
 
     if (user.AppSystemId.HasValue)
     {
