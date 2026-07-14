@@ -107,6 +107,9 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "E-mail ou senha incorretos." });
         }
 
+        // Carregamento eficiente das coleções N:N
+        await _context.Entry(user).Collection(u => u.UserSystems).Query().Include(us => us.AppSystem).LoadAsync();
+
         var person = await _context.People.FirstOrDefaultAsync(p => p.Id == user.PersonId);
         var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserOwnerId == user.Id);
         var roles = await _userManager.GetRolesAsync(user);
@@ -123,7 +126,6 @@ public class AuthController : ControllerBase
                 Email = user.Email!,
                 CompanyId = company?.Id,
                 CompanyName = company?.Name,
-                IdSystem = user.AppSystemId,
                 Roles = roles.Select(r => new AuthUserRoleDto
                 {
                     Name = "UserType",
@@ -135,7 +137,9 @@ public class AuthController : ControllerBase
                 Id = person?.Id,
                 Name = person?.Name,
                 Email = person?.Email
-            }
+            },
+            SystemIds = user.UserSystems.Select(us => us.AppSystemId).ToList(),
+            SystemNames = user.UserSystems.Select(us => us.AppSystem.Name).ToList()
         };
 
         // Obter mapa de acesso e salvar no Cookie HttpOnly
@@ -186,9 +190,9 @@ public class AuthController : ControllerBase
         claims.Add(new Claim(ClaimTypes.Name, personName));
     }
 
-    if (user.AppSystemId.HasValue)
+    foreach (var us in user.UserSystems)
     {
-        claims.Add(new Claim("idSystem", user.AppSystemId.Value.ToString()));
+        claims.Add(new Claim("idSystem", us.AppSystemId.ToString()));
     }
 
     // Adiciona as roles como claims individuais no token
@@ -254,14 +258,21 @@ public class AuthController : ControllerBase
         {
             UserName = model.Email,
             Email = model.Email,
-            PersonId = person.Id,
-            AppSystemId = model.IdSystem
+            PersonId = person.Id
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
         {
+            // Criar relacionamento N:N
+            var userSystem = new UserSystem
+            {
+                UserId = user.Id,
+                AppSystemId = model.IdSystem
+            };
+            _context.UserSystems.Add(userSystem);
+
             // 4. Atribuir a Role "Owner"
             await _userManager.AddToRoleAsync(user, "Owner");
 
@@ -356,14 +367,21 @@ public class AuthController : ControllerBase
         {
             UserName = model.Email,
             Email = model.Email,
-            PersonId = person.Id,
-            AppSystemId = model.IdSystem
+            PersonId = person.Id
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
         {
+            // Criar relacionamento N:N
+            var userSystem = new UserSystem
+            {
+                UserId = user.Id,
+                AppSystemId = model.IdSystem
+            };
+            _context.UserSystems.Add(userSystem);
+
             // 4. Atribuir a Role "Owner"
             await _userManager.AddToRoleAsync(user, "Owner");
 

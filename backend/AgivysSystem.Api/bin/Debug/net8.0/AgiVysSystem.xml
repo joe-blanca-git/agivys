@@ -302,16 +302,6 @@
             <response code="200">Retorna os acessos do usuário.</response>
             <response code="401">Não autenticado ou cookie ausente.</response>
         </member>
-        <member name="M:AgiVysSystem.Api.Services.External.AsaasService.CreateCustomerAsync(AgiVysSystem.Api.DTOs.External.Asaas.AsaasCustomerRequest)">
-            <summary>
-            Cria um novo cliente no Asaas e retorna o ID (cus_...)
-            </summary>
-        </member>
-        <member name="M:AgiVysSystem.Api.Services.External.AsaasService.CreateSubscriptionAsync(AgiVysSystem.Api.DTOs.External.Asaas.AsaasSubscriptionRequest)">
-            <summary>
-            Cria uma assinatura recorrente no cartão de crédito
-            </summary>
-        </member>
         <member name="T:AgiVysSystem.Migrations.InitialIdentity">
             <inheritdoc />
         </member>

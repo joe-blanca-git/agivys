@@ -5,7 +5,6 @@ using AgiVysSystem.Api.Models.People;
 using AgiVysSystem.Api.Models.Configuration;
 using AgiVysSystem.Api.Models.Company;
 using AgiVysSystem.Api.Models.Companies;
-using AgiVysSystem.Api.Models.Financial;
 using AgiVysSystem.Api.Models.User;
 
 namespace AgiVysSystem.Api.Data;
@@ -26,7 +25,7 @@ public class AppDbContext : IdentityDbContext<AgiVysSystem.Api.Models.User.User,
 
     public DbSet<AgiVysSystem.Api.Models.Order.Order> Orders { get; set; }
     public DbSet<AgiVysSystem.Api.Models.Order.OrderItem> OrderItems { get; set; }
-    public DbSet<Payment> Payments { get; set; }
+    public DbSet<UserSystem> UserSystems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {   
@@ -34,8 +33,21 @@ public class AppDbContext : IdentityDbContext<AgiVysSystem.Api.Models.User.User,
         
         builder.Entity<AgiVysSystem.Api.Models.Order.Order>().Property(p => p.TotalValue).HasPrecision(18, 2);
         builder.Entity<AgiVysSystem.Api.Models.Order.OrderItem>().Property(p => p.Value).HasPrecision(18, 2);
-        builder.Entity<Payment>().Property(p => p.Value).HasPrecision(18, 2);
-        builder.Entity<Payment>().Property(p => p.NetValue).HasPrecision(18, 2);
+
+        builder.Entity<UserSystem>()
+            .HasKey(us => new { us.UserId, us.AppSystemId });
+
+        builder.Entity<UserSystem>()
+            .HasOne(us => us.User)
+            .WithMany(u => u.UserSystems)
+            .HasForeignKey(us => us.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<UserSystem>()
+            .HasOne(us => us.AppSystem)
+            .WithMany()
+            .HasForeignKey(us => us.AppSystemId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Person>()
             .HasIndex(p => p.Document)

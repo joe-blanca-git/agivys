@@ -6,6 +6,8 @@ public class LoginResponseDto
     public DateTime Expiration { get; set; }
     public AuthUserDto User { get; set; } = new AuthUserDto();
     public AuthPersonDto Person { get; set; } = new AuthPersonDto();
+    public List<int> SystemIds { get; set; } = new();
+    public List<string> SystemNames { get; set; } = new();
 }
 
 public class AuthUserDto
@@ -14,7 +16,6 @@ public class AuthUserDto
     public string Email { get; set; } = string.Empty;
     public int? CompanyId { get; set; }
     public string? CompanyName { get; set; }
-    public int? IdSystem { get; set; }
     public List<AuthUserRoleDto> Roles { get; set; } = new();
 }
 

@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AgiVysSystem.Api.Models.People;
-using AgiVysSystem.Api.Models.Financial;
 
 namespace AgiVysSystem.Api.Models.Order;
 

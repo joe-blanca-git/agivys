@@ -15,14 +15,8 @@ public class User : IdentityUser<int>
 
     public int? PersonId { get; set; }
 
-    public int? AppSystemId { get; set; }
-
-    [StringLength(100)]
-    public string? AsaasCustomerId { get; set; }
-
     [ForeignKey("PersonId")]
     public Person? Person { get; set; }
 
-    [ForeignKey("AppSystemId")]
-    public AppSystem? AppSystem { get; set; }
+    public virtual ICollection<UserSystem> UserSystems { get; set; } = new List<UserSystem>();
 }
