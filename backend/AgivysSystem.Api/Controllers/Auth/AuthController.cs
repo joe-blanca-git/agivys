@@ -605,6 +605,39 @@ public class AuthController : ControllerBase
         return BadRequest(new { message = "Erro ao resetar senha.", detalhes = erros });
     }
 
+    /// <summary>
+    /// Altera a senha do usuário autenticado.
+    /// </summary>
+    /// <param name="model">Recebe a senha atual e a nova senha.</param>
+    /// <response code="200">Senha alterada com sucesso.</response>
+    /// <response code="400">Senha atual incorreta ou erro de validação.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    [Authorize]
+    [HttpPost("change-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto model)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId)) 
+            return Unauthorized();
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) 
+            return Unauthorized(new { message = "Usuário não encontrado." });
+
+        var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+        if (result.Succeeded)
+        {
+            return Ok(new { message = "Senha alterada com sucesso!" });
+        }
+
+        var erros = result.Errors.Select(e => e.Description).ToList();
+        return BadRequest(new { message = "Erro ao alterar a senha.", detalhes = erros });
+    }
+
     // --- MÉTODOS DE GESTÃO DE ENDEREÇOS PESSOAIS ---
 
     /// <summary>

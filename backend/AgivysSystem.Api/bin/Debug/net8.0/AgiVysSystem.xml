@@ -84,6 +84,15 @@
             <response code="200">Senha alterada com sucesso.</response>
             <response code="400">Dados inválidos.</response>
         </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.ChangePassword(AgiVysSystem.Api.DTOs.ChangePasswordDto)">
+            <summary>
+            Altera a senha do usuário autenticado.
+            </summary>
+            <param name="model">Recebe a senha atual e a nova senha.</param>
+            <response code="200">Senha alterada com sucesso.</response>
+            <response code="400">Senha atual incorreta ou erro de validação.</response>
+            <response code="401">Usuário não autenticado.</response>
+        </member>
         <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.GetMyAddresses">
             <summary>
             Lista todos os endereços vinculados ao perfil do usuário autenticado.
