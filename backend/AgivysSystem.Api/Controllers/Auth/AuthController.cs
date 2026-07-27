@@ -356,7 +356,8 @@ public class AuthController : ControllerBase
             Name = model.Name,
             Document = generatedDocument,
             Email = model.Email,
-            BirthDate = model.BirthDate
+            BirthDate = model.BirthDate,
+            Phone = model.Phone
         };
 
         _context.People.Add(person);
@@ -367,8 +368,7 @@ public class AuthController : ControllerBase
         {
             UserName = model.Email,
             Email = model.Email,
-            PersonId = person.Id,
-            PhoneNumber = model.Phone
+            PersonId = person.Id
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
@@ -450,6 +450,8 @@ public class AuthController : ControllerBase
             person.Name = model.Name;
             person.BirthDate = model.BirthDate;
             person.Email = model.Email;
+            person.Phone = model.Phone;
+            person.Document = model.Document;
 
             // ATUALIZA O LOGIN (Identity)
             if (user != null)
