@@ -367,7 +367,8 @@ public class AuthController : ControllerBase
         {
             UserName = model.Email,
             Email = model.Email,
-            PersonId = person.Id
+            PersonId = person.Id,
+            PhoneNumber = model.Phone
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);

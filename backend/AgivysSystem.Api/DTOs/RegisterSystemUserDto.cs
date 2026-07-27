@@ -21,4 +21,7 @@ public record RegisterSystemUserDto
 
     [Required(ErrorMessage = "Data de nascimento é obrigatória.")]
     public DateTime BirthDate { get; init; }
+
+    [Required(ErrorMessage = "Telefone é obrigatório.")]
+    public string Phone { get; init; } = string.Empty;
 }
