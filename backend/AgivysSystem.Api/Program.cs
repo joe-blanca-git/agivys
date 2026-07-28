@@ -180,7 +180,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "http://localhost:4200", 
-                "https://joederblanca.com.br"
+                "https://joederblanca.com.br",
+                "https://portaltheos.com.br"
               )
               .AllowAnyHeader()
               .AllowAnyMethod()
