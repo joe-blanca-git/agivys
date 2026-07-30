@@ -80,6 +80,39 @@ public class AppSystemController : ControllerBase
     }
 
     /// <summary>
+    /// Atualiza os dados de um sistema existente.
+    /// </summary>
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateAppSystemDto dto)
+    {
+        if (id != dto.Id) return BadRequest(new { message = "ID da rota não confere com o ID do payload." });
+
+        try
+        {
+            var system = await _context.AppSystems.FindAsync(id);
+            if (system == null) return NotFound(new { message = "Sistema não encontrado." });
+
+            var exists = await _context.AppSystems.AnyAsync(s => s.Name.ToLower() == dto.Name.ToLower() && s.Id != id);
+            if (exists) return BadRequest(new { message = "Já existe outro sistema cadastrado com este nome." });
+
+            system.Name = dto.Name;
+            system.Description = dto.Description;
+            system.BackgroundColor = dto.BackgroundColor;
+            system.TextColor = dto.TextColor;
+            system.Domain = dto.Domain;
+
+            _context.AppSystems.Update(system);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Sistema atualizado com sucesso!" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Erro ao atualizar o sistema.", details = ex.Message });
+        }
+    }
+
+    /// <summary>
     /// Exclui um sistema e seus vínculos em cascata.
     /// </summary>
     [HttpDelete("{id}")]

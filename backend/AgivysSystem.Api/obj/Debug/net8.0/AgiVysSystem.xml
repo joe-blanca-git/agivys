@@ -533,5 +533,17 @@
         <member name="M:AgiVysSystem.Migrations.AddIntegrationsTables.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:AgiVysSystem.Migrations.AddBrandingToAppSystem">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddBrandingToAppSystem.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddBrandingToAppSystem.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddBrandingToAppSystem.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>
