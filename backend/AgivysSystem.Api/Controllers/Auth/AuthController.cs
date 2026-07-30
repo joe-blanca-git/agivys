@@ -237,8 +237,8 @@ public class AuthController : ControllerBase
         if (documentExists)
             return BadRequest(new { message = "Dados Inválidos! Verifique seu documento." });
 
-        var systemExists = await _context.AppSystems.AnyAsync(s => s.Id == model.IdSystem);
-        if (!systemExists)
+        var system = await _context.AppSystems.FindAsync(model.IdSystem);
+        if (system == null)
             return BadRequest(new { message = "Dados inválidos! idSystem não corresponde a um sistema válido." });
 
         // 2. Criar a Pessoa (People)
@@ -296,21 +296,27 @@ public class AuthController : ControllerBase
             _context.AddressPeople.Add(initialAddress);
             await _context.SaveChangesAsync();
 
-            // 6. E-mail de Boas-vindas (Template atualizado para AgiVysSystem)
+            // 6. E-mail de Boas-vindas
+            var sysName = system.Name;
+            var sysBgColor = system.BackgroundColor ?? "#1a1a1a";
+            var sysTxtColor = system.TextColor ?? "#ffffff";
+            var sysDomain = system.Domain ?? "agivyssystem.com.br";
+            var sysUrl = $"https://{sysDomain}/login";
+
             var welcomeMessage = $@"
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
-                <div style='background-color: #1a1a1a; padding: 20px; text-align: center;'>
-                    <h1 style='color: #ffffff; margin: 0; font-size: 24px;'>AgiVys System</h1>
+                <div style='background-color: {sysBgColor}; padding: 20px; text-align: center;'>
+                    <h1 style='color: {sysTxtColor}; margin: 0; font-size: 24px;'>{sysName}</h1>
                 </div>
                 <div style='padding: 30px; color: #333; line-height: 1.6;'>
                     <h2 style='color: #1a1a1a;'>Olá, {model.Name}!</h2>
-                    <p>Seja muito bem-vindo ao <strong>AgiVys System</strong>. Seu cadastro foi realizado com sucesso.</p>
+                    <p>Seja muito bem-vindo ao <strong>{sysName}</strong>. Seu cadastro foi realizado com sucesso.</p>
                     <p>Seu endereço principal em <strong>{model.City}/{model.State}</strong> também já foi configurado.</p>
                     <div style='margin: 30px 0; text-align: center;'>
-                        <a href='https://agivyssystem.com.br/login' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Acessar Painel</a>
+                        <a href='{sysUrl}' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Acessar Painel</a>
                     </div>
                     <hr style='border: 0; border-top: 1px solid #eee;' />
-                    <p style='font-size: 12px; color: #777;'>&copy; {DateTime.Now.Year} AgiVys System.</p>
+                    <p style='font-size: 12px; color: #777;'>&copy; {DateTime.Now.Year} {sysName}.</p>
                 </div>
             </div>";
 
@@ -343,8 +349,8 @@ public class AuthController : ControllerBase
         if (userExists != null)
             return BadRequest(new { message = "Dados Inválidos! Verifique seu E-mail." });
 
-        var systemExists = await _context.AppSystems.AnyAsync(s => s.Id == model.IdSystem);
-        if (!systemExists)
+        var system = await _context.AppSystems.FindAsync(model.IdSystem);
+        if (system == null)
             return BadRequest(new { message = "Dados inválidos! idSystem não corresponde a um sistema válido." });
 
         // Gera um documento fictício único para contornar a obrigatoriedade do banco de dados (que também é chave única)
@@ -391,19 +397,25 @@ public class AuthController : ControllerBase
             await _context.SaveChangesAsync();
 
             // 5. E-mail de Boas-vindas (Sem dados de endereço)
+            var sysName = system.Name;
+            var sysBgColor = system.BackgroundColor ?? "#1a1a1a";
+            var sysTxtColor = system.TextColor ?? "#ffffff";
+            var sysDomain = system.Domain ?? "agivyssystem.com.br";
+            var sysUrl = $"https://{sysDomain}/login";
+
             var welcomeMessage = $@"
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
-                <div style='background-color: #1a1a1a; padding: 20px; text-align: center;'>
-                    <h1 style='color: #ffffff; margin: 0; font-size: 24px;'>AgiVys System</h1>
+                <div style='background-color: {sysBgColor}; padding: 20px; text-align: center;'>
+                    <h1 style='color: {sysTxtColor}; margin: 0; font-size: 24px;'>{sysName}</h1>
                 </div>
                 <div style='padding: 30px; color: #333; line-height: 1.6;'>
                     <h2 style='color: #1a1a1a;'>Olá, {model.Name}!</h2>
-                    <p>Seja muito bem-vindo ao <strong>AgiVys System</strong>. Seu cadastro foi realizado com sucesso.</p>
+                    <p>Seja muito bem-vindo ao <strong>{sysName}</strong>. Seu cadastro foi realizado com sucesso.</p>
                     <div style='margin: 30px 0; text-align: center;'>
-                        <a href='https://agivyssystem.com.br/login' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Acessar Painel</a>
+                        <a href='{sysUrl}' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Acessar Painel</a>
                     </div>
                     <hr style='border: 0; border-top: 1px solid #eee;' />
-                    <p style='font-size: 12px; color: #777;'>&copy; {DateTime.Now.Year} AgiVys System.</p>
+                    <p style='font-size: 12px; color: #777;'>&copy; {DateTime.Now.Year} {sysName}.</p>
                 </div>
             </div>";
 
@@ -539,18 +551,25 @@ public class AuthController : ControllerBase
         // Codifica o token em Base64Url para evitar problemas com caracteres especiais (+, =) em URLs
         var encodedToken = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-        // Link para o seu Frontend (Exemplo: React/Angular)
-        var callbackUrl = $"https://seufrotend.com.br/reset-password?token={encodedToken}&email={user.Email}";
+        // Puxar as configurações do sistema para o template (fallback seguro caso IdSystem seja nulo)
+        var system = model.IdSystem.HasValue ? await _context.AppSystems.FindAsync(model.IdSystem.Value) : null;
+        var sysName = system?.Name ?? "Sistemas Agivys";
+        var sysBgColor = system?.BackgroundColor ?? "#4451c4ff";
+        var sysTxtColor = system?.TextColor ?? "#ffffff";
+        var sysDomain = system?.Domain ?? "agivyssystem.com.br";
+
+        // Link para o Frontend usando o domínio do sistema
+        var callbackUrl = $"https://{sysDomain}/reset-password?token={encodedToken}&email={user.Email}";
 
         var resetMessage = $@"
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
-            <div style='background-color: #4451c4ff; padding: 20px; text-align: center;'>
-                <h1 style='color: #ffffff; margin: 0; font-size: 24px;'>Sistemas Agivys</h1>
+            <div style='background-color: {sysBgColor}; padding: 20px; text-align: center;'>
+                <h1 style='color: {sysTxtColor}; margin: 0; font-size: 24px;'>{sysName}</h1>
             </div>
             <div style='padding: 30px; color: #333; line-height: 1.6;'>
                 <h2 style='color: #1a1a1a;'>Recuperação de Senha</h2>
                 <p>Olá, {user.UserName}!</p>
-                <p>Recebemos uma solicitação para redefinir a sua senha no <strong>Sistemas Agivys</strong>.</p>
+                <p>Recebemos uma solicitação para redefinir a sua senha no <strong>{sysName}</strong>.</p>
                 <p>Este link é válido por <strong>2 horas</strong>. Se você não solicitou esta alteração, ignore este e-mail.</p>
                 
                 <div style='margin: 30px 0; text-align: center;'>
@@ -565,7 +584,7 @@ public class AuthController : ControllerBase
             </div>
         </div>";
 
-        await _emailService.SendEmailAsync(user.Email!, "Recuperação de Senha - Sistemas Agivys", resetMessage, model.IdSystem);
+        await _emailService.SendEmailAsync(user.Email!, $"Recuperação de Senha - {sysName}", resetMessage, model.IdSystem);
 
         return Ok(new { message = "Link de recuperação enviado com sucesso." });
     }
