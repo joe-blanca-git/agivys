@@ -401,7 +401,7 @@ public class AuthController : ControllerBase
             var sysBgColor = system.BackgroundColor ?? "#1a1a1a";
             var sysTxtColor = system.TextColor ?? "#ffffff";
             var sysDomain = system.Domain ?? "agivyssystem.com.br";
-            var sysUrl = $"https://{sysDomain}/login";
+            var sysUrl = $"https://{sysDomain}/portal-pat/auth/login";
 
             var welcomeMessage = $@"
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
