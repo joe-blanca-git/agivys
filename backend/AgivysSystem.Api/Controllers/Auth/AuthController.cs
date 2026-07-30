@@ -559,7 +559,7 @@ public class AuthController : ControllerBase
         var sysDomain = system?.Domain ?? "agivyssystem.com.br";
 
         // Link para o Frontend usando o domínio do sistema
-        var callbackUrl = $"https://{sysDomain}/reset-password?token={encodedToken}&email={user.Email}";
+        var callbackUrl = $"https://{sysDomain}/portal-pat/auth/reset-password?key={encodedToken}&email={user.Email}";
 
         var resetMessage = $@"
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
