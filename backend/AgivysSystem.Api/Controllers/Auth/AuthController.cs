@@ -314,7 +314,7 @@ public class AuthController : ControllerBase
                 </div>
             </div>";
 
-            //await _emailService.SendEmailAsync(model.Email, "Bem-vindo ao AgiVys System", welcomeMessage);
+            await _emailService.SendEmailAsync(model.Email, "Bem-vindo ao AgiVys System", welcomeMessage, model.IdSystem);
 
             return Ok(new { message = "Usuário cadastrado com sucesso!" });
         }
@@ -407,7 +407,7 @@ public class AuthController : ControllerBase
                 </div>
             </div>";
 
-            //await _emailService.SendEmailAsync(model.Email, "Bem-vindo ao AgiVys System", welcomeMessage);
+            await _emailService.SendEmailAsync(model.Email, "Bem-vindo ao AgiVys System", welcomeMessage, model.IdSystem);
 
             return Ok(new { message = "Usuário cadastrado com sucesso!" });
         }
@@ -565,7 +565,7 @@ public class AuthController : ControllerBase
             </div>
         </div>";
 
-        await _emailService.SendEmailAsync(user.Email!, "Recuperação de Senha - Sistemas Agivys", resetMessage);
+        await _emailService.SendEmailAsync(user.Email!, "Recuperação de Senha - Sistemas Agivys", resetMessage, model.IdSystem);
 
         return Ok(new { message = "Link de recuperação enviado com sucesso." });
     }

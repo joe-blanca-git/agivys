@@ -1,1 +1,1 @@
-public class ForgotPasswordDto { public required string Email { get; set; } }
+public class ForgotPasswordDto { public required string Email { get; set; } public int? IdSystem { get; set; } }

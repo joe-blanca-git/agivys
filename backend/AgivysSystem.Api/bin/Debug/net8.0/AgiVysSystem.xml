@@ -278,6 +278,36 @@
             </summary>
             <param name="id">ID do plano a ser removido.</param>
         </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.GetAll">
+            <summary>
+            Lista todas as integrações cadastradas.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.GetBySystem(System.Int32)">
+            <summary>
+            Lista integrações vinculadas a um sistema específico.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.GetById(System.Int32)">
+            <summary>
+            Busca uma integração específica pelo ID.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.Create(AgiVysSystem.Api.DTOs.CreateIntegrationDto)">
+            <summary>
+            Cria uma nova integração e seus parâmetros.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.Update(System.Int32,AgiVysSystem.Api.DTOs.UpdateIntegrationDto)">
+            <summary>
+            Atualiza os dados de uma integração e sincroniza seus parâmetros.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.Delete(System.Int32)">
+            <summary>
+            Exclui uma integração (os parâmetros são removidos em cascata automaticamente).
+            </summary>
+        </member>
         <member name="M:AgiVysSystem.Api.Controllers.UserAccessMap.UserAccessMapController.AddUserAccessMap(AgiVysSystem.Api.DTOs.UserAccessMap.UserAccessMapDto)">
             <summary>
             Vincula um usuário a um menu.
@@ -489,6 +519,18 @@
             <inheritdoc />
         </member>
         <member name="M:AgiVysSystem.Migrations.AddUserSystemTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:AgiVysSystem.Migrations.AddIntegrationsTables">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddIntegrationsTables.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddIntegrationsTables.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.AddIntegrationsTables.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
     </members>
