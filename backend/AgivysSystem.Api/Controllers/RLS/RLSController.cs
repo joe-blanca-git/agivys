@@ -14,7 +14,7 @@ namespace AgiVysSystem.Api.Controllers.RLS;
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "dev,admin")]
 public class RLSController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
