@@ -178,11 +178,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("MainPolicy", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:4200", 
-                "https://joederblanca.com.br",
-                "https://portaltheos.com.br"
-              )
+        policy.SetIsOriginAllowed(origin => 
+                new Uri(origin).Host.EndsWith("joederblanca.com.br") || 
+                new Uri(origin).Host.EndsWith("portaltheos.com.br") || 
+                new Uri(origin).Host == "localhost" ||
+                new Uri(origin).Host == "127.0.0.1")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
