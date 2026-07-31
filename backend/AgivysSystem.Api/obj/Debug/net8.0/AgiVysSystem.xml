@@ -220,6 +220,11 @@
             <response code="200">Retorna a lista de sistemas.</response>
             <response code="500">Erro interno no servidor.</response>
         </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.Update(System.Int32,AgiVysSystem.Api.Dtos.UpdateAppSystemDto)">
+            <summary>
+            Atualiza os dados de um sistema existente.
+            </summary>
+        </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.Delete(System.Int32)">
             <summary>
             Exclui um sistema e seus vínculos em cascata.
@@ -307,6 +312,31 @@
             <summary>
             Exclui uma integração (os parâmetros são removidos em cascata automaticamente).
             </summary>
+        </member>
+        <member name="T:AgiVysSystem.Api.Controllers.RLS.RLSController">
+            <summary>
+            Controlador responsável pelo gerenciamento de Roles (Role Level Security).
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.RLS.RLSController.GetRoles">
+            <summary>
+            Retorna a lista de todas as roles cadastradas.
+            </summary>
+            <returns>Lista com Id e Name das roles</returns>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.RLS.RLSController.AssignRole(AgiVysSystem.Api.DTOs.RLS.AssignRoleRequestDto)">
+            <summary>
+            Vincula um usuário a uma role.
+            </summary>
+            <param name="dto">Dados para vincular a role</param>
+            <returns>Mensagem de sucesso ou erro</returns>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.RLS.RLSController.RemoveRole(AgiVysSystem.Api.DTOs.RLS.RemoveRoleRequestDto)">
+            <summary>
+            Remove uma role de um usuário.
+            </summary>
+            <param name="dto">Dados para remover a role</param>
+            <returns>Mensagem de sucesso ou erro</returns>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.UserAccessMap.UserAccessMapController.AddUserAccessMap(AgiVysSystem.Api.DTOs.UserAccessMap.UserAccessMapDto)">
             <summary>
