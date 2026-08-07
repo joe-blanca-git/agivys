@@ -1,225 +1,618 @@
 <!DOCTYPE html>
-<html lang="zxx">
-
+<html lang="pt-br">
 <head>
   <meta charset="utf-8">
-  <title>BIT - Sobre Nós</title>
-
-  <!-- mobile responsive meta -->
+  <title>AGIVYS - Sobre Nós</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <!-- ** Plugins Needed for the Project ** -->
-  <!-- Bootstrap -->
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Plugins Needed for the Project -->
   <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
-  <!-- themefy-icon -->
   <link rel="stylesheet" href="plugins/themify-icons/themify-icons.css">
-  <!-- slick slider -->
-  <link rel="stylesheet" href="plugins/slick/slick.css">
-  <!-- venobox popup -->
-  <link rel="stylesheet" href="plugins/Venobox/venobox.css">
-  <!-- aos -->
   <link rel="stylesheet" href="plugins/aos/aos.css">
 
   <!-- Main Stylesheet -->
   <link href="css/style.css" rel="stylesheet">
+  <!-- Custom Dark Theme -->
+  <link href="css/custom-dark.css" rel="stylesheet">
   
   <!--Favicon-->
   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-
-</head>
-
-<body>
   
+  <style>
+      /* Styles specific to about page */
+      .about-hero-illustration {
+          position: relative;
+          width: 100%;
+          height: 400px;
+      }
+      .ahi-center {
+          position: absolute;
+          top: 50%; left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(0, 255, 136, 0.1);
+          border: 1px solid var(--neon-green);
+          color: var(--neon-green);
+          padding: 15px 30px;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 1.2rem;
+          z-index: 2;
+          box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+      }
+      .ahi-node {
+          position: absolute;
+          background: var(--card-bg);
+          border: 1px solid var(--border-color);
+          color: var(--text-secondary);
+          padding: 8px 15px;
+          border-radius: 6px;
+          font-size: 0.8rem;
+          z-index: 2;
+      }
+      .ahi-node-1 { top: 10%; left: 50%; transform: translateX(-50%); }
+      .ahi-node-2 { top: 25%; right: 10%; }
+      .ahi-node-3 { top: 50%; right: 0; transform: translateY(-50%); }
+      .ahi-node-4 { bottom: 25%; right: 10%; }
+      .ahi-node-5 { bottom: 10%; left: 50%; transform: translateX(-50%); }
+      .ahi-node-6 { bottom: 25%; left: 10%; }
+      .ahi-node-7 { top: 50%; left: 0; transform: translateY(-50%); }
+      .ahi-lines svg {
+          position: absolute;
+          width: 100%; height: 100%;
+          z-index: 1;
+      }
+      .ahi-lines line {
+          stroke: rgba(0, 255, 136, 0.2);
+          stroke-width: 1;
+          stroke-dasharray: 4;
+      }
+      
+      .comparison-section {
+          padding: 100px 0;
+          background-color: var(--dark-navy);
+      }
+      .comparison-box {
+          background: var(--card-bg);
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          padding: 40px;
+          height: 100%;
+      }
+      .comp-title {
+          font-size: 1.2rem;
+          color: var(--text-primary);
+          margin-bottom: 30px;
+          text-align: center;
+      }
+      .comp-bad-flow {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          align-items: center;
+          color: var(--text-secondary);
+      }
+      .comp-bad-flow .comp-item {
+          background: rgba(255,255,255,0.02);
+          border: 1px solid rgba(255,255,255,0.05);
+          padding: 10px 20px;
+          border-radius: 6px;
+          width: 100%;
+          text-align: center;
+          font-size: 0.9rem;
+      }
+      .comp-bad-flow .comp-arrow {
+          font-size: 1.2rem;
+          color: #dc3545;
+      }
+      .comp-good-flow {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          align-items: center;
+      }
+      .comp-good-flow .comp-core {
+          background: rgba(0, 255, 136, 0.1);
+          border: 1px solid var(--neon-green);
+          color: var(--neon-green);
+          padding: 20px;
+          border-radius: 8px;
+          width: 100%;
+          text-align: center;
+          font-weight: 600;
+          font-size: 1.1rem;
+          box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+      }
+      .comp-good-flow .comp-items {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 10px;
+          margin: 15px 0;
+      }
+      .comp-good-flow .comp-sub {
+          background: rgba(255,255,255,0.02);
+          border: 1px solid rgba(255,255,255,0.1);
+          padding: 5px 15px;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          color: var(--text-secondary);
+      }
+      .comp-good-flow .comp-arrow {
+          font-size: 1.5rem;
+          color: var(--neon-green);
+      }
+      .comp-good-flow .comp-product {
+          background: var(--neon-green);
+          color: var(--dark-navy);
+          padding: 15px;
+          border-radius: 8px;
+          width: 100%;
+          text-align: center;
+          font-weight: 700;
+          font-size: 1.1rem;
+      }
+      
+      .vision-illustration {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: var(--card-bg);
+          border: 1px solid var(--border-color);
+          padding: 40px;
+          border-radius: 12px;
+      }
+      .vision-node {
+          text-align: center;
+      }
+      .vision-icon {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          background: rgba(0, 255, 136, 0.1);
+          border: 1px solid var(--neon-green);
+          color: var(--neon-green);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          margin: 0 auto 10px;
+      }
+      .vision-arrow {
+          color: var(--text-secondary);
+          font-size: 1.5rem;
+      }
+      .vision-text {
+          font-size: 0.9rem;
+          color: var(--text-primary);
+          font-weight: 500;
+      }
+  </style>
+</head>
+<body>
 
 <!-- navigation -->
-<section class="fixed-top navigation">
+<section class="fixed-top navigation navbar-custom">
   <div class="container">
-    <nav class="navbar navbar-expand-lg navbar-light">
-      <a class="navbar-brand" href="index.html"><img src="images/logo-bit.png" alt="logo" width="90"></a>
-      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar"
-        aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-lg navbar-dark p-0">
+      <a class="navbar-brand" href="index.html">
+          <img src="images/logo.png" alt="AGIVYS" width="120" style="filter: brightness(0) invert(1);">
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <!-- navbar -->
-      <div class="collapse navbar-collapse text-center" id="navbar">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link page-scroll" href="index.html#feature">Soluções</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="about.html">Sobre Nós</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="service.html">Serviços</a>
-          </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link page-scroll" href="#team">Time</a>
-          </li> -->
-          <!-- <li class="nav-item">
-            <a class="nav-link page-scroll" href="#pricing">Planos</a>
-          </li> -->
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="contact.html">Contato</a>
-          </li> -->
+      <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Início</a></li>
+          <li class="nav-item"><a class="nav-link active" href="about.html" style="color: var(--neon-green) !important;">Sobre Nós</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#solutions">Soluções</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#api">API</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#features">Recursos</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#pricing">Preços</a></li>
+          <li class="nav-item"><a class="nav-link" href="docs.html">Documentação</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contato</a></li>
         </ul>
-        <a href="http://localhost:4200/register" class="btn btn-primary ml-lg-3 primary-shadow">Entrar Agora!</a>
+        <div class="d-flex align-items-center">
+            <a href="http://localhost:4200" class="nav-link text-white mr-3">Entrar</a>
+            <a href="http://localhost:4200/auth/register" class="btn-neon">Teste Grátis</a>
+        </div>
       </div>
     </nav>
   </div>
 </section>
 <!-- /navigation -->
 
-<!-- about us -->
-<section class="section-lg about pb-0">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12">
-        <h2 class="section-title">Sobre Nós</h2>
+<!-- hero area -->
+<section class="hero-section-new">
+  <div class="hero-bg-glow"></div>
+  <div class="container hero-content">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-up">
+        <div class="badge-neon">SOBRE A AGIVYS</div>
+        <h1 class="hero-title">Tecnologia para transformar ideias em <span class="text-neon">produtos digitais.</span></h1>
+        <p class="hero-subtitle">Somos uma empresa de tecnologia focada em desenvolvimento de software e em criar bases tecnológicas que tornam novos produtos mais rápidos de construir, integrar e evoluir.</p>
+        <div class="d-flex flex-wrap gap-3" style="gap: 15px;">
+            <a href="index.html#api" class="btn-neon">Conheça nossa API &rarr;</a>
+            <a href="contact.html" class="btn-outline-neon">Falar com a AGIVYS</a>
+        </div>
       </div>
-      <div class="col-lg-12 mb-100">
-        <p>Somos desenvolvedores de sistemas para pequenas empresas e profissionais autônomos. Desenvolvemos soluções que resolvem problemas do dia a dia de forma ágil, objetiva e fácil de usar.</p>
-        <p>
-          Nossa filosofia é que a tecnologia deve ser uma aliada, não um obstáculo. Entendemos que o dono de uma pequena empresa ou o profissional autônomo precisa gastar seu tempo gerenciando seu negócio, não decifrando um software complicado. Por isso, focamos em criar ferramentas que atacam diretamente a dor do cliente, seja no controle financeiro, na gestão de agenda ou no acompanhamento de estoque. Abandonamos o excesso de funcionalidades e a burocracia desnecessária para entregar sistemas leves, rápidos de implementar e com uma curva de aprendizado quase nula. O objetivo é claro: dar autonomia ao usuário para que ele possa tomar decisões melhores e otimizar suas tarefas diárias com confiança e sem complicação.
-        </p>
-      </div>
-      <div class="col-lg-12">
-        <!-- about video -->
-        <div class="about-video">
-          <img class="img-fluid w-100" src="images/about/video-thumb.jpg" alt="video-thumb">
-          <a class="venobox play-btn" href="https://www.youtube.com/embed/2yoYxetUrWQ" data-vbtype="iframe"><i class="ti-control-play"></i></a>
+      <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+        <!-- Abstract Tech Illustration -->
+        <div class="about-hero-illustration">
+            <div class="ahi-lines">
+                <svg>
+                    <line x1="50%" y1="50%" x2="50%" y2="10%"></line>
+                    <line x1="50%" y1="50%" x2="90%" y2="25%"></line>
+                    <line x1="50%" y1="50%" x2="100%" y2="50%"></line>
+                    <line x1="50%" y1="50%" x2="90%" y2="75%"></line>
+                    <line x1="50%" y1="50%" x2="50%" y2="90%"></line>
+                    <line x1="50%" y1="50%" x2="10%" y2="75%"></line>
+                    <line x1="50%" y1="50%" x2="0%" y2="50%"></line>
+                </svg>
+            </div>
+            <div class="ahi-center">AGIVYS API</div>
+            <div class="ahi-node ahi-node-1">Authentication</div>
+            <div class="ahi-node ahi-node-2">Users</div>
+            <div class="ahi-node ahi-node-3">Roles</div>
+            <div class="ahi-node ahi-node-4">Permissions</div>
+            <div class="ahi-node ahi-node-5">Systems</div>
+            <div class="ahi-node ahi-node-6">Menus</div>
+            <div class="ahi-node ahi-node-7">Plans</div>
         </div>
       </div>
     </div>
   </div>
-  <!-- background shapes -->
-  <img src="images/background-shape/green-dot.png" alt="background-shape" class="about-bg-1 up-down-animation">
-  <img src="images/background-shape/blue-dot.png" alt="background-shape" class="about-bg-2 left-right-animation">
-  <img src="images/background-shape/green-half-cycle.png" alt="background-shape" class="about-bg-3 up-down-animation">
-  <img src="images/background-shape/seo-ball-1.png" alt="background-shape" class="about-bg-4 left-right-animation">
-  <img src="images/background-shape/team-bg-triangle.png" alt="background-shape" class="about-bg-5 up-down-animation">
-  <img src="images/background-shape/service-half-cycle.png" alt="background-shape" class="about-bg-6 left-right-animation">
 </section>
-<!-- /about us -->
 
-<!-- product -->
-<section class="section product" style="background-image: url(images/backgrounds/about-bg.png);">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-title">Nossas Soluções</h2>
-        <p class="mb-100">Aplicações Web integradas a um <br> Sistema de Gerenciamento Completo!</p>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-50 text-center">
-        <a href="#"><img src="images/brands/4.png" alt="product-img" class="rounded w-100 img-fluid"></a>
-        <span>ADMIN</span><br>
-        <small>Gerenciamento</small>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-50 text-center">
-        <a href="#"><img src="images/brands/3.png" alt="product-img" class="rounded w-100 img-fluid"></a>
-        <span>DINNER</span><br>
-        <small>Restaurantes, Bares e Lanchonetes</small>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-50 text-center">
-        <a href="#"><img src="images/brands/2.png" alt="product-img" class="rounded w-100 img-fluid"></a>
-        <span>SERVICE</span><br>
-        <small>Serviços e Agendamentos</small>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-50 text-center">
-        <a href="#"><img src="images/brands/1.png" alt="product-img" class="rounded w-100 img-fluid"></a>
-        <span>SHOP</span><br>
-        <small>E-commerce</small>
-      </div>
-      <!-- <div class="col-12 text-center">
-        <a href="#" class="btn btn-primary">Explore More Product</a>
-      </div> -->
+<!-- Quem Somos -->
+<section class="features-section" style="background-color: var(--darker-navy);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="badge-neon">QUEM SOMOS</div>
+                <h2 class="mb-4">Construímos tecnologia para simplificar o desenvolvimento.</h2>
+                <p class="text-secondary mb-4">A AGIVYS nasceu com o propósito de transformar necessidades de negócio em soluções digitais eficientes. Nosso trabalho combina desenvolvimento de software com uma infraestrutura tecnológica própria, permitindo criar aplicações com mais velocidade, segurança e organização.</p>
+                <p class="text-secondary">Em vez de começar cada novo projeto do zero, desenvolvemos uma base tecnológica reutilizável que concentra recursos essenciais para aplicações modernas. Assim, podemos direcionar nossos esforços para aquilo que realmente diferencia cada produto.</p>
+            </div>
+            <div class="col-lg-5 offset-lg-1" data-aos="fade-left">
+                <div class="feature-card text-center py-5">
+                    <div style="font-size: 2rem; color: var(--text-secondary); margin-bottom: 20px;">IDE</div>
+                    <div style="font-size: 1.5rem; color: rgba(0,255,136,0.3); margin-bottom: 20px;"><i class="ti-arrow-down"></i></div>
+                    <div style="font-size: 2.5rem; color: var(--neon-green); font-weight: 700; margin-bottom: 20px; text-shadow: 0 0 20px rgba(0,255,136,0.3);">AGIVYS API</div>
+                    <div style="font-size: 1.5rem; color: rgba(0,255,136,0.3); margin-bottom: 20px;"><i class="ti-arrow-down"></i></div>
+                    <div style="font-size: 1.8rem; color: var(--text-primary); margin-bottom: 20px;">SISTEMA</div>
+                    <div style="font-size: 1.5rem; color: rgba(0,255,136,0.3); margin-bottom: 20px;"><i class="ti-arrow-down"></i></div>
+                    <div style="font-size: 1.5rem; color: var(--text-secondary);"><i class="ti-user mr-2"></i> Usuários Finais</div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <!-- our vision -->
-<section class="section">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-        <h2 class="section-title">Nossa Visão</h2>
-        <p>Ser a principal referência em soluções tecnológicas para pequenas empresas e profissionais autônomos no Brasil, transformando a gestão de negócios através de ferramentas que se destacam pela simplicidade, agilidade e foco absoluto nos resultados do dia a dia.</p>
-      </div>
-      <div class="col-md-6">
-        <img src="images/about/vision.png" alt="vision" class="img-fluid w-100">
-      </div>
-    </div>
-  </div>
 </section>
-<!-- /our vision -->
 
-<!-- clients -->
-<!-- <section class="section">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-title">Our Clients</h2>
-        <ul class="list-inline text-center">
-          <li class="list-inline-item mx-5 mb-5"><a href="#"><img src="images/clients-logo/client-1.png" alt="clients-logo" class="img-fluid"></a></li>
-          <li class="list-inline-item mx-5 mb-5"><a href="#"><img src="images/clients-logo/client-2.png" alt="clients-logo" class="img-fluid"></a></li>
-          <li class="list-inline-item mx-5 mb-5"><a href="#"><img src="images/clients-logo/client-3.png" alt="clients-logo" class="img-fluid"></a></li>
-          <li class="list-inline-item mx-5 mb-5"><a href="#"><img src="images/clients-logo/client-4.png" alt="clients-logo" class="img-fluid"></a></li>
-          <li class="list-inline-item mx-5 mb-5"><a href="#"><img src="images/clients-logo/client-5.png" alt="clients-logo" class="img-fluid"></a></li>
-          <li class="list-inline-item mx-5 mb-5"><a href="#"><img src="images/clients-logo/client-6.png" alt="clients-logo" class="img-fluid"></a></li>
-          <li class="list-inline-item mx-5 mb-5"><a href="#"><img src="images/clients-logo/client-7.png" alt="clients-logo" class="img-fluid"></a></li>
-          <li class="list-inline-item mx-5 mb-5"><a href="#"><img src="images/clients-logo/client-8.png" alt="clients-logo" class="img-fluid"></a></li>
-        </ul>
-      </div>
+<!-- Nossa Filosofia -->
+<section class="features-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center" data-aos="fade-up">
+                <h2>Tecnologia deve <span class="text-neon">acelerar</span>, não complicar.</h2>
+                <p class="mt-3 text-secondary" style="max-width: 600px; margin: 0 auto;">Boas soluções de software não precisam ser complexas para quem utiliza. A complexidade deve estar na tecnologia, não na experiência do usuário.</p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto"><i class="ti-layout-media-center"></i></div>
+                    <h4>Simplicidade</h4>
+                    <p>Interfaces e experiências pensadas para serem intuitivas.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto"><i class="ti-settings"></i></div>
+                    <h4>Engenharia</h4>
+                    <p>Arquitetura organizada, integração e boas práticas de desenvolvimento.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto"><i class="ti-stats-up"></i></div>
+                    <h4>Evolução</h4>
+                    <p>Uma base tecnológica preparada para acompanhar o crescimento dos produtos.</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</section> -->
-<!-- /clients -->
 </section>
-<!-- /product -->
 
+<!-- Nossa API -->
+<section class="api-section">
+    <div class="container">
+        <div class="row mb-5 text-center">
+            <div class="col-12" data-aos="fade-up">
+                <div class="badge-neon">NOSSO PRINCIPAL PRODUTO TECNOLÓGICO</div>
+                <h2>Uma base pronta para construir o próximo sistema.</h2>
+                <p class="mt-3 text-secondary" style="max-width: 700px; margin: 0 auto;">A API AGIVYS funciona como uma camada tecnológica reutilizável para aplicações que precisam de autenticação, usuários, permissões e gerenciamento de sistemas.</p>
+            </div>
+        </div>
+        <div class="row align-items-center mt-5">
+            <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="code-editor">
+                    <div class="code-header">
+                        <div class="code-tab active">API Reference</div>
+                    </div>
+                    <div class="code-body">
+<span class="code-highlight">POST</span> /api/v1/authentication/login<br><br>
+<span class="code-highlight">POST</span> /api/v1/authentication/register<br><br>
+<span class="code-highlight">GET</span>  /api/v1/users<br><br>
+<span class="code-highlight">GET</span>  /api/v1/systems<br><br>
+<span class="code-highlight">GET</span>  /api/v1/systems/<span class="code-key">{systemId}</span>/menus<br><br>
+<span style="color: #6a9955;">// E muito mais... (Consulte nosso Swagger)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 offset-lg-1" data-aos="fade-left">
+                <ul class="api-list">
+                    <li><i class="ti-check"></i> Autenticação</li>
+                    <li><i class="ti-check"></i> Cadastro de usuários</li>
+                    <li><i class="ti-check"></i> Gerenciamento de usuários</li>
+                    <li><i class="ti-check"></i> Roles e permissões</li>
+                    <li><i class="ti-check"></i> Sistemas</li>
+                    <li><i class="ti-check"></i> Menus e submenus</li>
+                    <li><i class="ti-check"></i> Planos</li>
+                    <li><i class="ti-check"></i> Controle de acesso</li>
+                    <li><i class="ti-check"></i> Validações</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
 
+<!-- Por que uma API White Label? -->
+<section class="comparison-section">
+    <div class="container">
+        <div class="row mb-5 text-center" data-aos="fade-up">
+            <div class="col-12">
+                <h2>Por que começar do zero?</h2>
+                <p class="text-secondary mt-3">Uma base tecnológica pronta pode mudar a velocidade de um projeto.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="100">
+                <div class="comparison-box">
+                    <h3 class="comp-title">SEM UMA BASE<br><span style="font-size: 0.9rem; font-weight: normal; color: var(--text-secondary);">Projeto começa do zero</span></h3>
+                    <div class="comp-bad-flow">
+                        <div class="comp-item">Banco de Dados</div>
+                        <i class="ti-arrow-down comp-arrow"></i>
+                        <div class="comp-item">Usuários</div>
+                        <i class="ti-arrow-down comp-arrow"></i>
+                        <div class="comp-item">Login / Recuperação de senha</div>
+                        <i class="ti-arrow-down comp-arrow"></i>
+                        <div class="comp-item">Permissões e Roles</div>
+                        <i class="ti-arrow-down comp-arrow"></i>
+                        <div class="comp-item">Menus e Controle de acesso</div>
+                        <i class="ti-arrow-down comp-arrow"></i>
+                        <div class="comp-item">Sistema</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="comparison-box" style="border-color: rgba(0, 255, 136, 0.3);">
+                    <h3 class="comp-title text-neon">COM A AGIVYS API<br><span style="font-size: 0.9rem; font-weight: normal; color: var(--text-secondary);">Foco no seu diferencial</span></h3>
+                    <div class="comp-good-flow">
+                        <div class="comp-core">AGIVYS API</div>
+                        <i class="ti-arrow-down comp-arrow"></i>
+                        <div class="comp-items">
+                            <span class="comp-sub">Autenticação</span>
+                            <span class="comp-sub">Usuários</span>
+                            <span class="comp-sub">Permissões</span>
+                            <span class="comp-sub">Sistemas</span>
+                        </div>
+                        <i class="ti-arrow-down comp-arrow"></i>
+                        <div class="comp-product">Seu Produto</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Como enxergamos o desenvolvimento -->
+<section class="steps-section" style="background-color: var(--darker-navy);">
+    <div class="container">
+        <div class="row mb-5 text-center" data-aos="fade-up">
+            <div class="col-12">
+                <h2>Como enxergamos o desenvolvimento</h2>
+            </div>
+        </div>
+        <div class="row position-relative">
+            <div class="step-line d-none d-lg-block"></div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-item">
+                    <div class="step-number">01</div>
+                    <h5 class="text-white">Base</h5>
+                    <p class="text-secondary small">Começamos com uma infraestrutura tecnológica sólida.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-item">
+                    <div class="step-number">02</div>
+                    <h5 class="text-white">Integração</h5>
+                    <p class="text-secondary small">Conectamos a aplicação aos recursos necessários.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="step-item">
+                    <div class="step-number">03</div>
+                    <h5 class="text-white">Produto</h5>
+                    <p class="text-secondary small">Concentramos o desenvolvimento naquilo que realmente diferencia o negócio.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="step-item">
+                    <div class="step-number">04</div>
+                    <h5 class="text-white">Evolução</h5>
+                    <p class="text-secondary small">A aplicação pode crescer sem precisar reconstruir toda sua base.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nossa Visão -->
+<section class="features-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="badge-neon">NOSSA VISÃO</div>
+                <h2 class="mb-4">Construir uma base tecnológica capaz de impulsionar novos produtos digitais.</h2>
+                <p class="text-secondary">Queremos tornar o desenvolvimento de software mais rápido, acessível e escalável, oferecendo tecnologia que permita que empresas e desenvolvedores concentrem seus esforços naquilo que realmente gera valor.</p>
+            </div>
+            <div class="col-lg-6 offset-lg-1" data-aos="fade-left">
+                <div class="vision-illustration flex-wrap">
+                    <div class="vision-node">
+                        <div class="vision-icon"><i class="ti-server"></i></div>
+                        <div class="vision-text">API</div>
+                    </div>
+                    <div class="vision-arrow"><i class="ti-angle-double-right"></i></div>
+                    <div class="vision-node">
+                        <div class="vision-icon"><i class="ti-layout"></i></div>
+                        <div class="vision-text">Aplicação</div>
+                    </div>
+                    <div class="vision-arrow"><i class="ti-angle-double-right"></i></div>
+                    <div class="vision-node">
+                        <div class="vision-icon"><i class="ti-rocket"></i></div>
+                        <div class="vision-text">Produto</div>
+                    </div>
+                    <div class="vision-arrow"><i class="ti-angle-double-right"></i></div>
+                    <div class="vision-node">
+                        <div class="vision-icon"><i class="ti-world"></i></div>
+                        <div class="vision-text">Ecossistema</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nossos Princípios -->
+<section class="features-section" style="background-color: var(--darker-navy);">
+    <div class="container">
+        <div class="row mb-5 text-center" data-aos="fade-up">
+            <div class="col-12">
+                <h2>Nossos Princípios</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ti-desktop"></i></div>
+                    <h4>Tecnologia</h4>
+                    <p>Construímos soluções utilizando tecnologia como ferramenta estratégica.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ti-shield"></i></div>
+                    <h4>Segurança</h4>
+                    <p>Autenticação, autorização e controle de acesso fazem parte da base.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ti-bar-chart"></i></div>
+                    <h4>Escalabilidade</h4>
+                    <p>Projetamos pensando na evolução contínua dos produtos.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ti-heart"></i></div>
+                    <h4>Experiência</h4>
+                    <p>Tecnologia complexa por trás de experiências de uso simples.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="badge-neon">PRONTO PARA CONSTRUIR?</div>
+                <h2 class="mb-4">Comece seu próximo produto com uma base tecnológica pronta.</h2>
+                <p class="text-secondary mb-4">Conheça a API AGIVYS e descubra como acelerar o desenvolvimento da sua próxima aplicação.</p>
+                <div class="d-flex flex-wrap" style="gap: 15px;">
+                    <a href="index.html#api" class="btn-neon">Conhecer a API &rarr;</a>
+                    <a href="http://localhost:4200/auth/register" class="btn-outline-light" style="padding: 10px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">Teste Grátis</a>
+                </div>
+            </div>
+            <div class="col-lg-5 offset-lg-1" data-aos="fade-left">
+                <div class="cta-illustration">
+                    <i class="ti-cloud cta-cloud"></i>
+                    <div class="cta-element ce-1"><i class="ti-server"></i> API</div>
+                    <div class="cta-element ce-2"><i class="ti-lock"></i> Auth</div>
+                    <div class="cta-element ce-3"><i class="ti-user"></i> Users</div>
+                    <div class="cta-element ce-4"><i class="ti-layers"></i> Systems</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- footer -->
-<footer class="footer-section footer" style="background-image: url(images/backgrounds/footer-bg.png);">
+<footer class="footer-custom">
   <div class="container">
     <div class="row">
-      <div class="col-lg-4 text-center text-lg-left mb-4 mb-lg-0">
-        <!-- logo -->
-        <a href="index.html">
-          <img class="img-fluid" src="images/logo-bit.png" width="100" alt="logo">
+      <div class="col-lg-3 mb-5 mb-lg-0">
+        <a href="index.html" class="d-block mb-4">
+          <img class="img-fluid" src="images/logo.png" width="120" alt="AGIVYS" style="filter: brightness(0) invert(1);">
         </a>
+        <p class="text-secondary small">Transformamos ideias em soluções digitais e fornecemos a base tecnológica para você inovar sem limitações.</p>
       </div>
-      <!-- footer menu -->
-      <nav class="col-lg-8 align-self-center mb-5">
-        <ul class="list-inline text-lg-right text-center footer-menu">
-          <li class="list-inline-item active"><a href="index.html">Home</a></li>
-          <li class="list-inline-item"><a class="page-scroll" href="#feature">Soluções</a></li>
-          <li class="list-inline-item"><a href="about.html">Sobre Nós</a></li>
-          <!-- <li class="list-inline-item"><a class="page-scroll" href="#team">Time</a></li> -->
-          <li class="list-inline-item"><a class="page-scroll" href="#pricing">Planos</a></li>
-          <li class="list-inline-item"><a href="contact.html">Contato</a></li>
+      <div class="col-lg-2 offset-lg-1 col-md-4 mb-4 mb-md-0">
+        <h6 class="footer-title">Soluções</h6>
+        <ul class="footer-links">
+          <li><a href="#">Desenvolvimento</a></li>
+          <li><a href="#">API White Label</a></li>
+          <li><a href="#">Integrações</a></li>
+          <li><a href="#">Consultoria</a></li>
         </ul>
-      </nav>
-      <!-- footer social icon -->
-      <nav class="col-12">
-        <ul class="list-inline text-lg-right text-center social-icon">
-          <!-- <li class="list-inline-item">
-            <a class="facebook" href="#"><i class="ti-facebook"></i></a>
-          </li> -->
-          <!-- <li class="list-inline-item">
-            <a class="twitter" href="#"><i class="ti-twitter-alt"></i></a>
-          </li> -->
-          <!-- <li class="list-inline-item">
-            <a class="linkedin" href="#"><i class="ti-linkedin"></i></a>
-          </li> -->
-          <!-- <li class="list-inline-item">
-            <a class="black" href="#"><i class="ti-github"></i></a>
-          </li> -->
+      </div>
+      <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+        <h6 class="footer-title">Recursos</h6>
+        <ul class="footer-links">
+          <li><a href="#">Documentação</a></li>
+          <li><a href="#">Guia de Início</a></li>
+          <li><a href="#">Exemplos</a></li>
+          <li><a href="#">Status da API</a></li>
         </ul>
-      </nav>
+      </div>
+      <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+        <h6 class="footer-title">Empresa</h6>
+        <ul class="footer-links">
+          <li><a href="about.html">Sobre Nós</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="contact.html">Contato</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-4">
+        <h6 class="footer-title">Legal</h6>
+        <ul class="footer-links">
+          <li><a href="#">Termos de Uso</a></li>
+          <li><a href="#">Política de Privacidade</a></li>
+          <li><a href="#">Segurança</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+        <div>&copy; 2026 AGIVYS. Todos os direitos reservados.</div>
+        <div>Feito com <span class="text-neon">&hearts;</span> para desenvolvedores</div>
     </div>
   </div>
 </footer>
@@ -229,14 +622,24 @@
 <script src="plugins/jQuery/jquery.min.js"></script>
 <!-- Bootstrap JS -->
 <script src="plugins/bootstrap/bootstrap.min.js"></script>
-<!-- slick slider -->
-<script src="plugins/slick/slick.min.js"></script>
-<!-- venobox -->
-<script src="plugins/Venobox/venobox.min.js"></script>
 <!-- aos -->
 <script src="plugins/aos/aos.js"></script>
 <!-- Main Script -->
-<script src="js/script.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+    
+    // Navbar scroll effect
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 50) {
+            $('.navbar-custom').css('background', 'rgba(6, 11, 20, 0.95)');
+        } else {
+            $('.navbar-custom').css('background', 'var(--glass-bg)');
+        }
+    });
+</script>
 
 </body>
 </html>

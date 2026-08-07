@@ -59,9 +59,12 @@ builder.Services.AddSwaggerGen(c =>
         var tag = apiDesc.ActionDescriptor.RouteValues["controller"];
         return tag switch
         {
-            "Auth" => "01",
-            "AppSystem" => "02",
-            "People" => "03",
+            "Authentication" => "01",
+            "Address" => "02",
+            "Person" => "03",
+            "RLS" => "04",
+            "AppSystem" => "05",
+            "People" => "06",
             _ => "99" 
         };
     });

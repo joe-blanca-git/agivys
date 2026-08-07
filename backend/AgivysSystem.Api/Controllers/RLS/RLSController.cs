@@ -27,11 +27,21 @@ public class RLSController : ControllerBase
     }
 
     /// <summary>
-    /// Retorna a lista de todas as roles cadastradas.
+    /// Listagem de Regras de Acesso (Roles)
     /// </summary>
-    /// <returns>Lista com Id e Name das roles</returns>
-    [HttpGet("getRoles")]
+    /// <remarks>
+    /// Recupera todas as regras de controle de acesso (Roles) cadastradas no sistema Identity.
+    /// Endpoint restrito a perfis de administração (Admin e Dev).
+    /// </remarks>
+    /// <response code="200">Lista de roles recuperada com sucesso.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada (Role insuficiente).</response>
+    /// <response code="500">Erro interno do servidor.</response>
+    [HttpGet]
     [ProducesResponseType(typeof(List<RoleDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRoles()
     {
         var roles = await _roleManager.Roles
@@ -46,14 +56,26 @@ public class RLSController : ControllerBase
     }
 
     /// <summary>
-    /// Vincula um usuário a uma role.
+    /// Atribuição de Regra (Role) a Usuário
     /// </summary>
-    /// <param name="dto">Dados para vincular a role</param>
-    /// <returns>Mensagem de sucesso ou erro</returns>
-    [HttpPost("postAssignRole")]
+    /// <remarks>
+    /// Vincula uma Regra de Acesso (Role) a um Usuário específico. O vínculo pode ser feito através do `RoleId` numérico ou diretamente pelo `RoleName` textual.
+    /// É verificado previamente se o usuário já possui a regra atribuída para evitar duplicidade.
+    /// </remarks>
+    /// <param name="dto">Objeto contendo o ID do usuário e a identificação da Role (Id ou Nome).</param>
+    /// <response code="200">Regra atribuída ao usuário com sucesso.</response>
+    /// <response code="400">Payload inválido, IDs nulos ou o usuário já possui a Role.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada (Role insuficiente).</response>
+    /// <response code="404">Usuário ou Role informada não localizada na base de dados.</response>
+    /// <response code="500">Erro interno do Identity ao tentar realizar o vínculo.</response>
+    [HttpPost("assignrole")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequestDto dto)
     {
         if (dto.UserId <= 0)
@@ -87,14 +109,26 @@ public class RLSController : ControllerBase
     }
 
     /// <summary>
-    /// Remove uma role de um usuário.
+    /// Remoção de Regra (Role) de um Usuário
     /// </summary>
-    /// <param name="dto">Dados para remover a role</param>
-    /// <returns>Mensagem de sucesso ou erro</returns>
-    [HttpDelete("removeRole")]
+    /// <remarks>
+    /// Desvincula uma Regra de Acesso de um usuário. O vínculo pode ser removido utilizando o `RoleId` numérico ou o `RoleName` textual.
+    /// É verificado previamente se o usuário realmente possui esta regra vinculada.
+    /// </remarks>
+    /// <param name="dto">Objeto contendo o ID do usuário e a identificação da Role (Id ou Nome).</param>
+    /// <response code="200">Regra removida do usuário com sucesso.</response>
+    /// <response code="400">Payload inválido, IDs nulos ou o usuário não possui a Role informada.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada (Role insuficiente).</response>
+    /// <response code="404">Usuário ou Role informada não localizada na base de dados.</response>
+    /// <response code="500">Erro interno do Identity ao tentar desfazer o vínculo.</response>
+    [HttpDelete("removerole")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RemoveRole([FromBody] RemoveRoleRequestDto dto)
     {
         if (dto.UserId <= 0)
@@ -125,5 +159,86 @@ public class RLSController : ControllerBase
             return BadRequest($"Erro ao remover role: {string.Join(", ", result.Errors.Select(e => e.Description))}");
 
         return Ok("Role removida com sucesso.");
+    }
+
+    /// <summary>
+    /// Cadastro de Nova Regra (Role)
+    /// </summary>
+    /// <remarks>
+    /// Cria uma nova regra global (Role) no sistema (ex: Financeiro, RH, Suporte).
+    /// **Regra de Segurança**: Esta operação estrutural é restrita apenas a perfis de Desenvolvedor (Dev).
+    /// </remarks>
+    /// <param name="dto">Objeto contendo o Nome da nova role.</param>
+    /// <response code="200">Role criada e registrada com sucesso no Identity.</response>
+    /// <response code="400">Payload em branco, nulo ou nome da Role já existente.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada. Apenas perfis 'Dev' podem criar novas regras estruturais.</response>
+    /// <response code="500">Erro interno do servidor.</response>
+    [Authorize(Roles = "Dev")]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CreateRole([FromBody] CreateRoleDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Name))
+            return BadRequest(new { message = "O nome da role é obrigatório." });
+
+        var roleExists = await _roleManager.RoleExistsAsync(dto.Name);
+        if (roleExists)
+            return BadRequest(new { message = "Já existe uma role com este nome." });
+
+        var result = await _roleManager.CreateAsync(new IdentityRole<int>(dto.Name));
+        
+        if (result.Succeeded)
+            return Ok(new { message = "Role criada com sucesso." });
+
+        return BadRequest(new { message = $"Erro ao criar role: {string.Join(", ", result.Errors.Select(e => e.Description))}" });
+    }
+
+    /// <summary>
+    /// Atualização de Nome de Regra (Role)
+    /// </summary>
+    /// <remarks>
+    /// Altera o nome de uma Role existente. Essa alteração é propagada globalmente no sistema de permissões.
+    /// **Regra de Segurança**: Restrito a perfis de Desenvolvedor (Dev).
+    /// </remarks>
+    /// <param name="dto">Objeto contendo o ID numérico e o Novo Nome da role.</param>
+    /// <response code="200">Nome da role atualizado com sucesso.</response>
+    /// <response code="400">Payload inválido ou o novo nome já está em uso por outra Role.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada. Apenas perfis 'Dev' podem editar regras.</response>
+    /// <response code="404">Role informada não encontrada na base de dados.</response>
+    /// <response code="500">Erro interno do Identity ao tentar atualizar a Role.</response>
+    [Authorize(Roles = "Dev")]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> EditRole([FromBody] RoleDto dto)
+    {
+        if (dto.Id <= 0 || string.IsNullOrWhiteSpace(dto.Name))
+            return BadRequest(new { message = "O Id e o novo Nome da role são obrigatórios." });
+
+        var role = await _roleManager.FindByIdAsync(dto.Id.ToString());
+        if (role == null)
+            return NotFound(new { message = "Role não encontrada." });
+
+        var roleWithSameName = await _roleManager.FindByNameAsync(dto.Name);
+        if (roleWithSameName != null && roleWithSameName.Id != role.Id)
+            return BadRequest(new { message = "Já existe outra role com este mesmo nome." });
+
+        role.Name = dto.Name;
+        var result = await _roleManager.UpdateAsync(role);
+
+        if (result.Succeeded)
+            return Ok(new { message = "Role atualizada com sucesso." });
+
+        return BadRequest(new { message = $"Erro ao atualizar role: {string.Join(", ", result.Errors.Select(e => e.Description))}" });
     }
 }

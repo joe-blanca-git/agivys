@@ -22,11 +22,21 @@ public class CompanyController : ControllerBase
     }
 
     /// <summary>
-    /// Cadastra uma nova empresa e seu endereço em uma única operação.
+    /// Cadastro Completo de Empresa (com Endereço)
     /// </summary>
+    /// <remarks>
+    /// Cadastra simultaneamente uma nova empresa (Company) e seu respectivo endereço (CompanyAddress) dentro de uma única transação no banco de dados.
+    /// Em caso de falha em qualquer etapa, a operação inteira é desfeita (Rollback).
+    /// </remarks>
+    /// <param name="dto">Dados consolidados da empresa e do endereço.</param>
+    /// <response code="200">Empresa e endereço cadastrados com sucesso.</response>
+    /// <response code="400">Dados inválidos ou CNPJ já existente.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="500">Erro interno do servidor ao salvar os dados.</response>
     [HttpPost("create-with-address")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateWithAddress([FromBody] CreateCompanyWithAddressDto dto)
     {
@@ -90,12 +100,17 @@ public class CompanyController : ControllerBase
     }
 
     /// <summary>
-    /// Cadastra uma nova empresa vinculada a um usuário proprietário.
+    /// Cadastro Simplificado de Empresa
     /// </summary>
-    /// <response code="200">Empresa cadastrada com sucesso!</response>
-    /// <response code="400">Este CNPJ já está cadastrado.</response>
+    /// <remarks>
+    /// Cria uma nova empresa vinculada ao usuário proprietário especificado. 
+    /// O CNPJ é validado para garantir que não haja duplicidade na plataforma.
+    /// </remarks>
+    /// <param name="dto">Dados básicos da empresa (Nome, CNPJ, Logo).</param>
+    /// <response code="200">Empresa cadastrada com sucesso.</response>
+    /// <response code="400">Dados inválidos ou CNPJ já cadastrado.</response>
     /// <response code="401">Usuário não autenticado.</response>
-    /// <response code="500">Erro ao cadastrar empresa.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpPost]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)] 
@@ -131,15 +146,20 @@ public class CompanyController : ControllerBase
     }
 
     /// <summary>
-    /// Lista todas as empresas de um determinado proprietário.
+    /// Listagem de Empresas por Proprietário
     /// </summary>
-    /// <response code="200">Retornas a Empresas do usuário</response>
+    /// <remarks>
+    /// Recupera todas as empresas cujo `UserOwnerId` corresponde ao ID fornecido.
+    /// É comumente utilizado para preencher o seletor de contextos do Dashboard.
+    /// </remarks>
+    /// <param name="userId">ID numérico do usuário proprietário.</param>
+    /// <response code="200">Lista de empresas recuperada com sucesso.</response>
     /// <response code="401">Usuário não autenticado.</response>
-    /// <response code="500">Erro ao obter empresas.</response>
+    /// <response code="500">Erro interno do servidor.</response>
+    [HttpGet("owner/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)] 
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [HttpGet("owner/{userId}")]
     public async Task<IActionResult> GetByOwner(int userId)
     {
         var companies = await _context.Companies
@@ -150,18 +170,28 @@ public class CompanyController : ControllerBase
     }
 
     /// <summary>
-    /// Atualiza dados básicos da empresa.
+    /// Atualização de Empresa
     /// </summary>
-    /// <response code="200">Empresa atualzizada com sucesso!</response>
-    /// <response code="404">Empresa não encontrada.</response>
+    /// <remarks>
+    /// Atualiza dados cadastrais básicos de uma empresa.
+    /// **Regra de Segurança**: Somente o próprio dono (UserOwnerId) da empresa possui permissão para atualizá-la (validação feita cruzando o ID do BD com o do Token).
+    /// </remarks>
+    /// <param name="id">ID numérico único da empresa.</param>
+    /// <param name="dto">Dados atualizados da empresa.</param>
+    /// <response code="200">Empresa atualizada com sucesso.</response>
+    /// <response code="400">Payload inválido.</response>
     /// <response code="401">Usuário não autenticado.</response>
-    /// <response code="500">Erro ao atualizar empresa.</response>
-    [ProducesResponseType(StatusCodes.Status200OK)] 
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    /// <response code="403">Acesso negado. O usuário não é o dono da empresa.</response>
+    /// <response code="404">Empresa não localizada.</response>
+    /// <response code="500">Erro interno do servidor ao atualizar a empresa.</response>
     [HttpPut("{id}")]
     [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)] 
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateCompanyDto dto)
     {
         var company = await _context.Companies.FindAsync(id);
@@ -187,17 +217,22 @@ public class CompanyController : ControllerBase
     }
 
     /// <summary>
-    /// Remove o registro da empresa.
+    /// Exclusão de Empresa
     /// </summary>
-    /// <response code="200">Empresa removida com sucesso!</response>
-    /// <response code="404">Empresa não encontrada.</response>
+    /// <remarks>
+    /// Remove completamente o registro da empresa. Esta é uma deleção física no banco de dados.
+    /// É altamente recomendável garantir que a empresa não possua registros financeiros dependentes antes da deleção.
+    /// </remarks>
+    /// <param name="id">ID numérico único da empresa.</param>
+    /// <response code="200">Empresa removida com sucesso.</response>
     /// <response code="401">Usuário não autenticado.</response>
-    /// <response code="500">Erro ao remover empresa.</response>
-    [ProducesResponseType(StatusCodes.Status200OK)] 
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    /// <response code="404">Empresa não localizada.</response>
+    /// <response code="500">Erro interno do servidor ao tentar deletar a empresa (ex: violação de chave estrangeira).</response>
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)] 
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete(int id)
     {
         var company = await _context.Companies.FindAsync(id);
@@ -216,13 +251,27 @@ public class CompanyController : ControllerBase
     }
 
     /// <summary>
-    /// Adiciona um novo endereço para uma empresa específica.
+    /// Cadastro de Endereço Empresarial
     /// </summary>
-    /// <response code="201">Endereço cadastrado com sucesso.</response>
-    /// <response code="403">Você não tem permissão para esta empresa.</response>
+    /// <remarks>
+    /// Vincula um novo endereço a uma empresa existente. Uma empresa pode ter múltiplos endereços (ex: Matriz, Filial, Galpão).
+    /// **Regra de Segurança**: Apenas o dono da empresa pode adicionar endereços à mesma.
+    /// </remarks>
+    /// <param name="companyId">ID único numérico da empresa associada.</param>
+    /// <param name="dto">Dados do endereço.</param>
+    /// <response code="201">Endereço cadastrado e vinculado com sucesso à empresa.</response>
+    /// <response code="400">Dados de endereço inválidos ou malformados.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada. O usuário não é o dono da empresa.</response>
+    /// <response code="404">Empresa não encontrada para realizar o vínculo.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpPost("{companyId}/addresses")]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> AddAddress(int companyId, [FromBody] CompanyAddressDto dto)
     {
         var company = await _context.Companies.FindAsync(companyId);
@@ -252,17 +301,24 @@ public class CompanyController : ControllerBase
     }
 
     /// <summary>
-    /// Lista todos os endereços de uma empresa.
+    /// Listagem de Endereços Empresariais
     /// </summary>
-    /// <response code="200"></response>
-    /// <response code="404">Nenhum endereço encontrado.</response>
+    /// <remarks>
+    /// Recupera a lista completa de endereços atrelados a uma empresa específica.
+    /// Somente o dono da empresa pode visualizar seus respectivos endereços.
+    /// </remarks>
+    /// <param name="companyId">ID único numérico da empresa.</param>
+    /// <response code="200">Lista de endereços recuperada com sucesso.</response>
     /// <response code="401">Usuário não autenticado.</response>
-    /// <response code="500">Erro ao remover empresa.</response>
-    [ProducesResponseType(StatusCodes.Status200OK)] 
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    /// <response code="403">Permissão negada. O usuário não é o dono da empresa.</response>
+    /// <response code="404">A empresa não foi localizada.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpGet("{companyId}/addresses")]
+    [ProducesResponseType(StatusCodes.Status200OK)] 
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAddresses(int companyId)
     {
         var company = await _context.Companies.FindAsync(companyId);
@@ -279,17 +335,27 @@ public class CompanyController : ControllerBase
     }
 
     /// <summary>
-    /// Atualiza um endereço existente (Apenas o proprietário).
+    /// Atualização de Endereço Empresarial
     /// </summary>
-    /// <response code="200">Endereço atualizado com sucesso!</response>
-    /// <response code="404">Endereço não encontrada.</response>
+    /// <remarks>
+    /// Edita as informações de um endereço de empresa já existente.
+    /// **Regra de Segurança**: Esta operação valida cruzadamente se o usuário logado possui a empresa dona do endereço.
+    /// </remarks>
+    /// <param name="addressId">ID numérico único do endereço a ser modificado.</param>
+    /// <param name="dto">Novos dados completos do endereço.</param>
+    /// <response code="200">Endereço atualizado com sucesso.</response>
+    /// <response code="400">Dados inválidos enviados no payload.</response>
     /// <response code="401">Usuário não autenticado.</response>
-    /// <response code="403">Permissão negada.</response>
-    /// <response code="500">Erro ao atualizar endereço.</response>
+    /// <response code="403">Permissão negada. Endereço pertence a uma empresa de outro usuário.</response>
+    /// <response code="404">Endereço não localizado.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpPut("addresses/{addressId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateAddress(int addressId, [FromBody] CompanyAddressDto dto)
     {
         // Buscamos o endereço incluindo a empresa para checar o dono
@@ -318,18 +384,24 @@ public class CompanyController : ControllerBase
     }
 
     /// <summary>
-    /// Remove um endereço específico.
+    /// Exclusão de Endereço Empresarial
     /// </summary>
-    /// <response code="200">Endereço removida com sucesso!</response>
-    /// <response code="404">Endereço não encontrada.</response>
+    /// <remarks>
+    /// Remove definitivamente um endereço vinculado a uma empresa.
+    /// Valida previamente se a pessoa que está executando a exclusão é o proprietário da empresa detentora do endereço.
+    /// </remarks>
+    /// <param name="addressId">ID numérico único do endereço a ser removido.</param>
+    /// <response code="200">Endereço removido permanentemente.</response>
     /// <response code="401">Usuário não autenticado.</response>
-    /// <response code="500">Erro ao remover endereço.</response>
-    [ProducesResponseType(StatusCodes.Status200OK)] 
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    /// <response code="403">Permissão negada. O usuário não tem acesso a este endereço.</response>
+    /// <response code="404">Endereço não localizado.</response>
+    /// <response code="500">Erro interno do servidor ao tentar excluir o endereço.</response>
     [HttpDelete("addresses/{addressId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)] 
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteAddress(int addressId)
     {
         var address = await _context.CompanyAddresses

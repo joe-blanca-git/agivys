@@ -20,18 +20,26 @@ public class UserAccessMapController : ControllerBase
     }
 
     /// <summary>
-    /// Vincula um usuário a um menu.
+    /// Concessão de Acesso a Menu (ACL)
     /// </summary>
-    /// <response code="200">Vínculo criado com sucesso.</response>
-    /// <response code="400">Erro nos dados enviados.</response>
-    /// <response code="401">Não autenticado.</response>
-    /// <response code="403">Sem permissão (Owner necessário).</response>
+    /// <remarks>
+    /// Concede acesso explícito a um Menu/Funcionalidade para um usuário específico.
+    /// Utilizado para criar permissões granulares por usuário que vão além das permissões de Plano ou Regra Global.
+    /// **Regra de Segurança**: Exige privilégio de Dono (Owner) do workspace.
+    /// </remarks>
+    /// <param name="dto">Dados do vínculo (ID do Usuário e ID do Menu).</param>
+    /// <response code="200">Acesso concedido com sucesso.</response>
+    /// <response code="400">Payload inválido ou vínculo já existente.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada. Apenas 'Owner' tem acesso.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpPost]
     [Authorize(Roles = "Owner")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> AddUserAccessMap([FromBody] UserAccessMapDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -48,18 +56,25 @@ public class UserAccessMapController : ControllerBase
     }
 
     /// <summary>
-    /// Remove o vínculo de um usuário com um menu.
+    /// Revogação de Acesso a Menu (ACL)
     /// </summary>
-    /// <response code="200">Vínculo removido com sucesso.</response>
-    /// <response code="400">Erro nos dados enviados.</response>
-    /// <response code="401">Não autenticado.</response>
-    /// <response code="403">Sem permissão (Owner necessário).</response>
+    /// <remarks>
+    /// Revoga o acesso explícito de um usuário a um Menu/Funcionalidade específica.
+    /// **Regra de Segurança**: Exige privilégio de Dono (Owner) do workspace.
+    /// </remarks>
+    /// <param name="dto">Dados do vínculo a ser removido (ID do Usuário e ID do Menu).</param>
+    /// <response code="200">Acesso revogado com sucesso.</response>
+    /// <response code="400">Payload inválido ou vínculo não localizado.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada. Apenas 'Owner' tem acesso.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpPut("remove")]
     [Authorize(Roles = "Owner")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RemoveUserAccessMap([FromBody] UserAccessMapDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -76,14 +91,22 @@ public class UserAccessMapController : ControllerBase
     }
 
     /// <summary>
-    /// Obtém os mapas de acesso (Sistemas, Menus e Submenus) do usuário logado.
+    /// Consulta de Árvore de Acesso do Usuário (Base de Dados)
     /// </summary>
-    /// <response code="200">Retorna os acessos do usuário.</response>
-    /// <response code="401">Não autenticado.</response>
+    /// <remarks>
+    /// Consulta no banco de dados toda a árvore hierárquica de permissões (Sistemas -> Menus -> Submenus) disponível para o usuário autenticado.
+    /// O ID do usuário é extraído de forma segura via token (ClaimTypes.NameIdentifier).
+    /// </remarks>
+    /// <response code="200">Árvore de permissões recuperada com sucesso.</response>
+    /// <response code="400">Erro durante a montagem da árvore.</response>
+    /// <response code="401">Usuário não autenticado ou ID do token inválido.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpGet]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetUserAccessMap()
     {
         var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -104,15 +127,20 @@ public class UserAccessMapController : ControllerBase
     }
 
     /// <summary>
-    /// Obtém os mapas de acesso (Sistemas, Menus e Submenus) do usuário a partir do cookie da sessão (HttpOnly).
-    /// Evita acesso ao banco de dados para ganho extremo de performance.
+    /// Consulta de Árvore de Acesso do Usuário (via Sessão/Cookie)
     /// </summary>
-    /// <response code="200">Retorna os acessos do usuário.</response>
-    /// <response code="401">Não autenticado ou cookie ausente.</response>
+    /// <remarks>
+    /// Deserializa a árvore hierárquica de permissões (Sistemas -> Menus -> Submenus) diretamente de um Cookie HttpOnly encriptado e codificado em Base64.
+    /// **Performance**: Projetado para renderização imediata do front-end com ganho extremo de velocidade (0 trips ao banco de dados).
+    /// </remarks>
+    /// <response code="200">Árvore de permissões carregada com sucesso da sessão.</response>
+    /// <response code="401">Cookie de sessão ausente, malformado ou corrompido.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpGet("session")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult GetUserAccessMapFromSession()
     {
         if (Request.Cookies.TryGetValue("MedNext_Menu", out var encodedMap))

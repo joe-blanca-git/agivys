@@ -1,73 +1,55 @@
 <!DOCTYPE html>
-<html lang="zxx">
-
+<html lang="pt-br">
 <head>
   <meta charset="utf-8">
-  <title>AGIVYS</title>
-
-  <!-- mobile responsive meta -->
+  <title>AGIVYS - Software House & API Platform</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <!-- ** Plugins Needed for the Project ** -->
-  <!-- Bootstrap -->
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Plugins Needed for the Project -->
   <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
-  <!-- themefy-icon -->
   <link rel="stylesheet" href="plugins/themify-icons/themify-icons.css">
-  <!-- slick slider -->
-  <link rel="stylesheet" href="plugins/slick/slick.css">
-  <!-- venobox popup -->
-  <link rel="stylesheet" href="plugins/Venobox/venobox.css">
-  <!-- aos -->
   <link rel="stylesheet" href="plugins/aos/aos.css">
 
   <!-- Main Stylesheet -->
   <link href="css/style.css" rel="stylesheet">
+  <!-- Custom Dark Theme -->
+  <link href="css/custom-dark.css" rel="stylesheet">
   
   <!--Favicon-->
   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-  <!-- <link rel="icon" href="images/favicon.ico" type="image/x-icon"> -->
-
 </head>
-
 <body>
-  
 
 <!-- navigation -->
-<section class="fixed-top navigation">
+<section class="fixed-top navigation navbar-custom">
   <div class="container">
-    <nav class="navbar navbar-expand-lg navbar-light">
-      <a class="navbar-brand" href="index.html"><img src="images/logo.png" alt="logo" width="90"></a>
-      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar"
-        aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-lg navbar-dark p-0">
+      <a class="navbar-brand" href="index.html">
+          <img src="images/logo.png" alt="AGIVYS" width="120" style="filter: brightness(0) invert(1);">
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <!-- navbar -->
-      <div class="collapse navbar-collapse text-center" id="navbar">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link page-scroll" href="index.html#feature">Soluções</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="about.html">Sobre Nós</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="service.html">Serviços</a>
-          </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link page-scroll" href="#team">Time</a>
-          </li> -->
-          <!-- <li class="nav-item">
-            <a class="nav-link page-scroll" href="#pricing">Planos</a>
-          </li> -->
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="contact.html">Contato</a>
-          </li> -->
+      <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Início</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">Sobre Nós</a></li>
+          <li class="nav-item"><a class="nav-link page-scroll" href="#solutions">Soluções</a></li>
+          <li class="nav-item"><a class="nav-link page-scroll" href="#api">API</a></li>
+          <li class="nav-item"><a class="nav-link page-scroll" href="#features">Recursos</a></li>
+          <li class="nav-item"><a class="nav-link page-scroll" href="#pricing">Preços</a></li>
+          <li class="nav-item"><a class="nav-link" href="docs.html">Documentação</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contato</a></li>
         </ul>
-        <a href="http://localhost:4200" class="btn btn-primary ml-lg-3 primary-shadow">Entrar</a>
+        <div class="d-flex align-items-center">
+            <a href="http://localhost:4200" class="nav-link text-white mr-3">Entrar</a>
+            <a href="http://localhost:4200/auth/register" class="btn-neon">Teste Grátis</a>
+        </div>
       </div>
     </nav>
   </div>
@@ -75,463 +57,432 @@
 <!-- /navigation -->
 
 <!-- hero area -->
-<section class="hero-section hero" data-background="" style="background-image: url(images/hero-area/banner-bg.png);">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center zindex-1">
-        <h1 class="mb-3">O SOFTWARE<br>
-         Que a sua empresa Precisa.</h1>
-        <p class="mb-4">Desenvolvemos o sistema ideal<br>
-          para o seu tipo de negócio.</p>
-        <a href="http://localhost:4200/auth/register" class="btn btn-secondary btn-lg">CRIE SUA CONTA GRÁTIS</a>
-        <!-- banner image -->
-        <img class="img-fluid w-100 banner-image" src="images/hero-area/banner-img.png" alt="banner-img">
-      </div>
-    </div>
-  </div>
-  <!-- background shapes -->
-  <div id="scene">
-    <img class="img-fluid hero-bg-1 up-down-animation" src="images/background-shape/feature-bg-2.png" alt="">
-    <img class="img-fluid hero-bg-2 left-right-animation" src="images/background-shape/seo-ball-1.png" alt="">
-    <img class="img-fluid hero-bg-3 left-right-animation" src="images/background-shape/seo-half-cycle.png" alt="">
-    <img class="img-fluid hero-bg-4 up-down-animation" src="images/background-shape/green-dot.png" alt="">
-    <img class="img-fluid hero-bg-5 left-right-animation" src="images/background-shape/blue-half-cycle.png" alt="">
-    <img class="img-fluid hero-bg-6 up-down-animation" src="images/background-shape/seo-ball-1.png" alt="">
-    <img class="img-fluid hero-bg-7 left-right-animation" src="images/background-shape/yellow-triangle.png" alt="">
-    <img class="img-fluid hero-bg-8 up-down-animation" src="images/background-shape/service-half-cycle.png" alt="">
-    <img class="img-fluid hero-bg-9 up-down-animation" src="images/background-shape/team-bg-triangle.png" alt="">
-  </div>
-</section>
-<!-- /hero-area -->
-
-<!-- feature -->
-<section class="section feature mb-0" id="feature">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-title">Soluções</h2>
-        <p class="mb-100">Conheça nossas soluções prontas que atender diversos segmentos do mercado!</p>
-      </div>
-
-      <!-- feature item -->
-      <!-- <div class="col-md-6 mb-80" >
-        <a class="d-flex feature-item" href="agivys-admin.html">
-          <div>
-            <img src="images/brands/4.png" width="80" alt="">
-          </div>
-          <div>
-            <h4>Agi-Admin</h4>
-            <p>Sistema de Gerenciamento Financeiro para pequenas empresas ou atônomos.</p>
-          </div>
-        </a>
-      </div> -->
-
-      <!-- feature item -->
-      <!-- <div class="col-md-6 mb-80">
-        <a class="d-flex feature-item">
-          <div>
-             <img src="images/brands/3.png" width="80" alt="">
-          </div>
-          <div>
-            <h4>Agivys Dinner</h4>
-            <p>Restaurantes, Bares ou Lanchonetes</p>
-          </div>
-        </a>
-      </div> -->
-
-      <!-- feature item -->
-      <!-- <div class="col-md-6 mb-80">
-        <a class="d-flex feature-item">
-          <div>
-             <img src="images/brands/2.png" width="80" alt="">
-          </div>
-          <div>
-            <h4>Service</h4>
-            <p>Prestadores de Serviços, Agendas, Atendimentos, Orçamentos, Mão de Obra...</p>
-          </div>
-        </a>
-      </div> -->
-
-      <!-- feature item -->
-      <!-- <div class="col-md-6 mb-80">
-        <a class="d-flex feature-item">
-          <div>
-             <img src="images/brands/1.png" width="80" alt="">
-          </div>
-          <div>
-            <h4>Agivys Shop</h4>
-            <p>E-Commerce, sua loja personalizada na Web.</p>
-          </div>
-        </a>
-      </div> -->
-
-    </div>
-  </div>
-  <img class="feature-bg-1 up-down-animation" src="images/background-shape/feature-bg-1.png" alt="bg-shape">
-  <img class="feature-bg-2 left-right-animation" src="images/background-shape/feature-bg-2.png" alt="bg-shape">
-</section>
-<!-- /feature -->
-
-<!-- marketing -->
-<!-- <section class="section-lg seo">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-        <div class="seo-image">
-          <img class="img-fluid" src="images/marketing/marketing.png" alt="form-img">
+<section class="hero-section-new">
+  <div class="hero-bg-glow"></div>
+  <div class="container hero-content">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-up">
+        <div class="badge-neon">SOFTWARE HOUSE • API WHITE LABEL</div>
+        <h1 class="hero-title">Desenvolvemos sistemas.<br>Fornecemos a base para você <span class="text-neon">ir mais longe.</span></h1>
+        <p class="hero-subtitle">A AGIVYS combina desenvolvimento de software com uma infraestrutura tecnológica pronta para acelerar novos produtos, sistemas e negócios digitais.</p>
+        <div class="d-flex flex-wrap gap-3 mb-4" style="gap: 15px;">
+            <a href="http://localhost:4200/auth/register" class="btn-neon">Comece Gratuitamente &rarr;</a>
+            <a href="#docs" class="btn-outline-neon">Ver Documentação &lt;/&gt;</a>
+        </div>
+        <div class="hero-benefits">
+            <span><i class="ti-check-box"></i> API White Label</span>
+            <span><i class="ti-bolt"></i> Fácil Integração</span>
+            <span><i class="ti-bar-chart"></i> Alta Escalabilidade</span>
         </div>
       </div>
-      <div class="col-md-5">
-        <h2 class="section-title">AGIVYS ADMIN é gestão do SUCESSO</h2>
-        <p>Agivys ADMIN é uma ferramenta integrada as nossas outras soluções, como E-Commerce, Serviços e Restaurantes. Desta forma você controla Financeiro, Estoque, Agenda, Mão de Obra e Logísitica. Tudo em um só lugar.
-        </p>
-      </div>
-    </div>
-  </div> -->
-  <!-- background image -->
-  <img class="img-fluid seo-bg" src="images/backgrounds/seo-bg.png" alt="seo-bg">
-  <!-- background-shape -->
-  <img class="seo-bg-shape-1 left-right-animation" src="images/background-shape/seo-ball-1.png" alt="bg-shape">
-  <img class="seo-bg-shape-2 up-down-animation" src="images/background-shape/seo-half-cycle.png" alt="bg-shape">
-  <img class="seo-bg-shape-3 left-right-animation" src="images/background-shape/seo-ball-2.png" alt="bg-shape">
-</section>
-<!-- /marketing -->
-
-<!-- service -->
-<section class="section-lg service">
-  <!-- <div class="container">
-    <div class="row justify-content-between">
-      <div class="col-md-5 order-2 order-md-1">
-        <h2 class="section-title">Planeje o Futuro do seu Negócio.</h2>
-        <p class="mb-4">Com nossa ferramenta de planejamento você define metas e estratégias para alcançá-la, garantindo que seu negócio alcance objetivos sólidos.</p>
-        <ul class="pl-0 service-list">
-          <li><i class="ti-money text-purple"></i>Fluxo de Caixa</li>
-          <li><i class="ti-target text-purple"></i>Planejamento Financeiro</li>
-          <li><i class="ti-stats-up text-purple"></i>Gestão de Lucro</li>
-        </ul>
-      </div>
-      <div class="col-md-7 order-1 order-md-2">
-        <img class="img-fluid layer-3" src="images/service/service.png" alt="service">
-      </div>
-    </div>
-  </div> -->
-  <!-- background image -->
-  <img class="img-fluid service-bg" src="images/backgrounds/service-bg.png" alt="service-bg">
-  <!-- background shapes -->
-  <img class="service-bg-shape-1 up-down-animation" src="images/background-shape/service-half-cycle.png" alt="background-shape">
-  <img class="service-bg-shape-2 left-right-animation" src="images/background-shape/feature-bg-2.png" alt="background-shape">
-</section>
-<!-- /service -->
-
-<!-- team -->
-<!-- <section class="section-lg team" id="team">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-title">Nosso Time</h2>
-        <p class="mb-100">Estamos preparados para te dar todo suporte necessário para ultilizar nossos sistemas e alcançar seus objetivos.</p>
-      </div>
-    </div>
-    <div class="col-10 mx-auto">
-      <div class="team-slider">
-        <div class="team-member">
-          <div class="d-flex mb-4">
-            <div class="mr-3">
-              <img class="rounded-circle img-fluid" src="images/team/team-1.jpg" alt="team-member">
+      <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+        <!-- Dashboard Mockup -->
+        <div class="mockup-dashboard">
+            <div class="mockup-header">
+                <div class="mockup-logo"><i class="ti-layout-grid2"></i> AGIVYS Dashboard</div>
             </div>
-            <div class="align-self-center">
-              <h4>Joeder Blanca</h4>
-              <h6 class="text-color">Programador</h6>
+            <div class="mockup-stats-grid">
+                <div class="mockup-stat-card">
+                    <div class="mockup-stat-title">Usuários Totais</div>
+                    <div class="mockup-stat-value">12.456</div>
+                    <div class="mockup-stat-trend"><i class="ti-arrow-up"></i> 12.5% este mês</div>
+                </div>
+                <div class="mockup-stat-card">
+                    <div class="mockup-stat-title">Logins Hoje</div>
+                    <div class="mockup-stat-value">1.234</div>
+                    <div class="mockup-stat-trend"><i class="ti-arrow-up"></i> 5.1% este mês</div>
+                </div>
+                <div class="mockup-stat-card">
+                    <div class="mockup-stat-title">Novos Cadastros</div>
+                    <div class="mockup-stat-value">342</div>
+                    <div class="mockup-stat-trend"><i class="ti-arrow-up"></i> 15.3% este mês</div>
+                </div>
             </div>
-          </div>
-          <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. S eparated they</p>
+            <div class="mockup-body">
+                <div class="mockup-list">
+                    <div style="font-size: 13px; font-weight: 600; margin-bottom: 15px; color: var(--text-primary);">Atividade Recente</div>
+                    <div class="mockup-list-item">
+                        <div>
+                            <div class="mockup-list-item-text"><i class="ti-user text-neon mr-2"></i>Novo usuário</div>
+                            <div class="mockup-list-item-time">maria.silva@email.com</div>
+                        </div>
+                        <div class="mockup-list-item-time">agora</div>
+                    </div>
+                    <div class="mockup-list-item">
+                        <div>
+                            <div class="mockup-list-item-text"><i class="ti-key text-neon mr-2"></i>Login realizado</div>
+                            <div class="mockup-list-item-time">joao.santos@email.com</div>
+                        </div>
+                        <div class="mockup-list-item-time">2m atrás</div>
+                    </div>
+                    <div class="mockup-list-item">
+                        <div>
+                            <div class="mockup-list-item-text"><i class="ti-lock text-neon mr-2"></i>Senha redefinida</div>
+                            <div class="mockup-list-item-time">ana.costa@email.com</div>
+                        </div>
+                        <div class="mockup-list-item-time">5m atrás</div>
+                    </div>
+                </div>
+                <div class="mockup-chart">
+                    <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Logins últimos 7 dias</div>
+                    <svg class="mockup-chart-svg" viewBox="0 0 200 100" preserveAspectRatio="none">
+                        <path d="M0,80 L30,50 L60,60 L90,20 L120,40 L150,10 L180,30 L200,10 L200,100 L0,100 Z" fill="rgba(0,255,136,0.1)"></path>
+                        <path d="M0,80 L30,50 L60,60 L90,20 L120,40 L150,10 L180,30 L200,10" fill="none" stroke="var(--neon-green)" stroke-width="2"></path>
+                    </svg>
+                </div>
+            </div>
         </div>
       </div>
     </div>
   </div>
-  <img src="images/backgrounds/team-bg.png" alt="team-bg" class="img-fluid team-bg">
-  <img class="team-bg-shape-1 up-down-animation" src="images/background-shape/seo-ball-1.png" alt="background-shape">
-  <img class="team-bg-shape-2 left-right-animation" src="images/background-shape/seo-ball-1.png" alt="background-shape">
-  <img class="team-bg-shape-3 left-right-animation" src="images/background-shape/team-bg-triangle.png" alt="background-shape">
-  <img class="team-bg-shape-4 up-down-animation img-fluid" src="images/background-shape/team-bg-dots.png" alt="background-shape">
-</section> -->
-<!-- /team -->
+</section>
 
-<!-- pricing -->
-<!-- <section class="section-lg pb-0 pricing" id="pricing">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-title">Planos</h2>
-        <p class="mb-50">O Plano com a solução ideal e que cabe no seu bolso.</p>
-      </div>
-      <div class="col-lg-10 mx-auto">
+<!-- Trust Section -->
+<section class="trust-section">
+    <div class="container">
+        <h6 class="trust-title">TECNOLOGIA PARA PRODUTOS DIGITAIS</h6>
+        <div class="trust-logos">
+            <div class="trust-logo-placeholder"><i class="ti-rocket"></i> TechStart</div>
+            <div class="trust-logo-placeholder"><i class="ti-vector"></i> InovaSys</div>
+            <div class="trust-logo-placeholder"><i class="ti-cloud"></i> SmartWay</div>
+            <div class="trust-logo-placeholder"><i class="ti-server"></i> DevCore</div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="solutions" class="features-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center" data-aos="fade-up">
+                <div class="badge-neon">SOLUÇÕES COMPLETAS</div>
+                <h2>Muito mais que <span class="text-neon">desenvolvimento</span></h2>
+                <p class="mt-3 text-secondary" style="max-width: 600px; margin: 0 auto;">Entregamos sistemas sob medida e também a infraestrutura necessária para construir seu produto com agilidade, segurança e escalabilidade.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ti-html5"></i></div>
+                    <h4>Desenvolvimento de Sistemas</h4>
+                    <p>Aplicações personalizadas para web, mobile e desktop utilizando tecnologias modernas e escaláveis.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ti-cloud-up"></i></div>
+                    <h4>API White Label</h4>
+                    <p>Uma base pronta para usuários, autenticação, permissões e múltiplos sistemas.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ti-lock"></i></div>
+                    <h4>Segurança</h4>
+                    <p>Autenticação JWT, autorização robusta e controle de acesso para proteger seus dados.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ti-rocket"></i></div>
+                    <h4>Escalabilidade</h4>
+                    <p>Uma infraestrutura preparada para crescer junto com seu produto, suportando alto tráfego.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- API Section -->
+<section id="api" class="api-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="code-editor">
+                    <div class="code-header">
+                        <div class="code-tab active">POST /login</div>
+                        <div class="code-tab">POST /register</div>
+                        <div class="code-tab">GET /users</div>
+                    </div>
+                    <div class="code-body">
+<span class="code-highlight">POST</span> /api/v1/authentication/login<br>
+{<br>
+&nbsp;&nbsp;<span class="code-key">"email"</span>: <span class="code-string">"usuario@email.com"</span>,<br>
+&nbsp;&nbsp;<span class="code-key">"password"</span>: <span class="code-string">"sua_senha"</span><br>
+}<br><br>
+<span style="color: #6a9955;">// Response 200 OK</span><br>
+{<br>
+&nbsp;&nbsp;<span class="code-key">"token"</span>: <span class="code-string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span>,<br>
+&nbsp;&nbsp;<span class="code-key">"user"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"id"</span>: <span class="code-number">1</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"name"</span>: <span class="code-string">"João Silva"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"email"</span>: <span class="code-string">"usuario@email.com"</span><br>
+&nbsp;&nbsp;}<br>
+}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 offset-lg-1" data-aos="fade-left">
+                <div class="badge-neon">API COMPLETA E PRONTA PARA USAR</div>
+                <h2 class="mb-4">Todos os endpoints que você precisa, em uma única API</h2>
+                <p class="mb-4 text-secondary">Nossa API oferece os recursos essenciais para acelerar o desenvolvimento de aplicações modernas. A documentação OpenAPI é a fonte da verdade para nossa infraestrutura.</p>
+                <ul class="api-list mb-4">
+                    <li><i class="ti-check"></i> Autenticação com JWT</li>
+                    <li><i class="ti-check"></i> Cadastro e gerenciamento de usuários</li>
+                    <li><i class="ti-check"></i> Recuperação e redefinição de senha</li>
+                    <li><i class="ti-check"></i> Múltiplos sistemas e multi-tenancy</li>
+                    <li><i class="ti-check"></i> Perfis e permissões granulares</li>
+                    <li><i class="ti-check"></i> Controle de acesso e menus</li>
+                </ul>
+                <a href="#docs" class="btn-outline-neon">Ver Todos os Endpoints &rarr;</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it Works Section -->
+<section id="features" class="steps-section">
+    <div class="container">
+        <div class="row mb-5 text-center" data-aos="fade-up">
+            <div class="col-12">
+                <h2>Como Funciona</h2>
+            </div>
+        </div>
+        <div class="row position-relative">
+            <div class="step-line d-none d-lg-block"></div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-item">
+                    <div class="step-number">01</div>
+                    <h5 class="text-white">Crie seu sistema</h5>
+                    <p class="text-secondary small">Configure seu produto sobre uma base tecnológica pronta.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-item">
+                    <div class="step-number">02</div>
+                    <h5 class="text-white">Conecte sua aplicação</h5>
+                    <p class="text-secondary small">Integre sua aplicação aos recursos da API facilmente.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="step-item">
+                    <div class="step-number">03</div>
+                    <h5 class="text-white">Gerencie acessos</h5>
+                    <p class="text-secondary small">Utilize autenticação, usuários, roles e menus.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="step-item">
+                    <div class="step-number">04</div>
+                    <h5 class="text-white">Evolua seu produto</h5>
+                    <p class="text-secondary small">Concentre seus esforços no que diferencia seu negócio.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Architecture Section -->
+<section class="architecture-section">
+    <div class="container">
+        <div class="row mb-5 text-center" data-aos="fade-up">
+            <div class="col-12">
+                <h2>Plataforma Centralizada</h2>
+                <p class="text-secondary">Uma arquitetura robusta para suportar seus produtos digitais.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12" data-aos="zoom-in">
+                <div class="arch-diagram">
+                    <div class="arch-lines">
+                        <svg>
+                            <line x1="50%" y1="50%" x2="50%" y2="10%"></line>
+                            <line x1="50%" y1="50%" x2="90%" y2="25%"></line>
+                            <line x1="50%" y1="50%" x2="95%" y2="50%"></line>
+                            <line x1="50%" y1="50%" x2="90%" y2="75%"></line>
+                            <line x1="50%" y1="50%" x2="50%" y2="90%"></line>
+                            <line x1="50%" y1="50%" x2="10%" y2="75%"></line>
+                            <line x1="50%" y1="50%" x2="5%" y2="50%"></line>
+                            <line x1="50%" y1="50%" x2="10%" y2="25%"></line>
+                        </svg>
+                    </div>
+                    <div class="arch-center">AGIVYS API</div>
+                    <div class="arch-node node-1">Authentication</div>
+                    <div class="arch-node node-2">Users</div>
+                    <div class="arch-node node-3">Profiles</div>
+                    <div class="arch-node node-4">Roles</div>
+                    <div class="arch-node node-5">Permissions</div>
+                    <div class="arch-node node-6">Systems</div>
+                    <div class="arch-node node-7">Menus</div>
+                    <div class="arch-node node-8">Plans</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Metrics Section -->
+<section class="metrics-section">
+    <div class="container">
         <div class="row justify-content-center">
-          <div class="col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="rounded text-center pricing-table table-1 h-100">
-              <h3>Basic</h3>
-              <h1>
-                <span><a style="font-size: 10px;">(Mês)</a>R$</span>29,90
-              </h1>
-              <ul class="list-group">
-                <li class="list-group-item bg-transparent border-top-0 border-right-0 border-left-0 border-bottom">AGIVYS ADMIN   <b style="font-size: 10px;">(1 usuário)</b></li></li>
-                <li class="list-group-item bg-transparent d-flex flex-column align-items-start">
-                  <span><i class="ti-angle-double-right text-secondary"></i>Financeiro</span>
-                  <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Receitas e Despesas
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Fluxo de Caixa
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Agenda de Pagamentos
-                 </span>
-                </li>
-
-                <li class="list-group-item bg-transparent d-flex flex-column align-items-start">
-                  <span><i class="ti-angle-double-right text-secondary"></i>Estoque</span>
-                  <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Cadastro de Produtos
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Movimentações de Produtos
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Estoque Min/Max
-                 </span>
-                </li>
-              </ul>
-              <a href="#" class="btn pricing-btn px-2">Comprar Agora</a>
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0" data-aos="fade-up" data-aos-delay="100">
+                <div class="metric-item">
+                    <div class="metric-icon"><i class="ti-plug"></i></div>
+                    <div class="metric-text">
+                        <h4>API First</h4>
+                        <p>Arquitetura preparada para integração</p>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="rounded text-center pricing-table table-2">
-              <h3>Standard</h3>
-              <h1>
-                <span><a style="font-size: 10px;">(Mês)</a>R$</span>59,90
-              </h1>
-              <ul class="list-group">
-                <li class="list-group-item bg-transparent border-top-0 border-right-0 border-left-0 border-bottom">AGIVYS ADMIN  <b style="font-size: 10px;">(2 usuários)</b></li></li>
-                <li class="list-group-item bg-transparent d-flex flex-column align-items-start">
-                  <span><i class="ti-angle-double-right text-secondary"></i>Financeiro</span>
-                  <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Receitas e Despesas
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Fluxo de Caixa
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Agenda de Pagamentos
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Planejamento Financeiro
-                 </span>
-                </li>
-
-                <li class="list-group-item bg-transparent d-flex flex-column align-items-start">
-                  <span><i class="ti-angle-double-right text-secondary"></i>Estoque</span>
-                  <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Cadastro de Produtos
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Movimentações de Produtos
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Estoque Min/Max
-                 </span>
-                </li>
-
-                <li class="list-group-item bg-transparent d-flex flex-column align-items-start">
-                  <span><i class="ti-angle-double-right text-secondary"></i>1 Integração</span>
-                  <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Escolha entre <br><b>Agivys Shop,</b> <b>Agivys Service ou </b> <b>Agivys Dinner</b>
-                 </span>
-                </li>
-              </ul>
-              <a href="#" class="btn pricing-btn px-2">Comprar Agora</a>
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0" data-aos="fade-up" data-aos-delay="200">
+                <div class="metric-item">
+                    <div class="metric-icon"><i class="ti-shield"></i></div>
+                    <div class="metric-text">
+                        <h4>Security Ready</h4>
+                        <p>Autenticação e controle de acesso</p>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="rounded text-center pricing-table table-3">
-              <h3>Professional</h3>
-              <h1>
-                <span><a style="font-size: 10px;">(Mês)</a>R$</span>99,90
-              </h1>
-              <ul class="list-group">
-                <li class="list-group-item bg-transparent border-top-0 border-right-0 border-left-0 border-bottom">AGIVYS ADMIN  <b style="font-size: 10px;">(5 usuários)</b></li>
-                <li class="list-group-item bg-transparent d-flex flex-column align-items-start">
-                  <span><i class="ti-angle-double-right text-secondary"></i>Financeiro</span>
-                  <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Receitas e Despesas
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Fluxo de Caixa
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Agenda de Pagamentos
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Planejamento Financeiro
-                 </span>
-                </li>
-
-                <li class="list-group-item bg-transparent d-flex flex-column align-items-start">
-                  <span><i class="ti-angle-double-right text-secondary"></i>Estoque</span>
-                  <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Cadastro de Produtos
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Movimentações de Produtos
-                 </span>
-                 <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Estoque Min/Max
-                 </span>
-                </li>
-
-                <li class="list-group-item bg-transparent d-flex flex-column align-items-start">
-                  <span><i class="ti-angle-double-right text-secondary"></i>3 Integrações</span>
-                  <span style="font-size: 10px;">
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    <i class="ti-angle-double-right text-secondary"></i>
-                    Tenha acesso á <br><b>Agivys Shop,</b> <b>Agivys Service ou </b> <b>Agivys Dinner</b>
-                 </span>
-                </li>
-              </ul>
-              <a href="#" class="btn pricing-btn px-2">Comprar Agora</a>
+            <div class="col-lg-3 col-md-6 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="300">
+                <div class="metric-item">
+                    <div class="metric-icon"><i class="ti-desktop"></i></div>
+                    <div class="metric-text">
+                        <h4>Developer Friendly</h4>
+                        <p>Construída pensando na integração</p>
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="metric-item">
+                    <div class="metric-icon"><i class="ti-bar-chart-alt"></i></div>
+                    <div class="metric-text">
+                        <h4>Scalable</h4>
+                        <p>Estrutura preparada para evolução</p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  <img class="pricing-bg-shape-1 up-down-animation" src="images/background-shape/seo-ball-1.png" alt="background-shape">
-  <img class="pricing-bg-shape-2 up-down-animation" src="images/background-shape/seo-half-cycle.png" alt="background-shape">
-  <img class="pricing-bg-shape-3 left-right-animation" src="images/background-shape/team-bg-triangle.png" alt="background-shape">
-</section> -->
-<!-- /pricing -->
-
-<!-- client logo slider -->
-<!-- <section class="section">
-  <div class="container">
-      <div class="client-logo-slider align-self-center">
-          <a href="#" class="text-center d-block outline-0 p-5"><img class="d-unset img-fluid" src="images/clients-logo/client-logo-1.png" alt="client-logo"></a>
-          <a href="#" class="text-center d-block outline-0 p-5"><img class="d-unset img-fluid" src="images/clients-logo/client-logo-2.png" alt="client-logo"></a>
-          <a href="#" class="text-center d-block outline-0 p-5"><img class="d-unset img-fluid" src="images/clients-logo/client-logo-3.png" alt="client-logo"></a>
-          <a href="#" class="text-center d-block outline-0 p-5"><img class="d-unset img-fluid" src="images/clients-logo/client-logo-4.png" alt="client-logo"></a>
-          <a href="#" class="text-center d-block outline-0 p-5"><img class="d-unset img-fluid" src="images/clients-logo/client-logo-5.png" alt="client-logo"></a>
-          <a href="#" class="text-center d-block outline-0 p-5"><img class="d-unset img-fluid" src="images/clients-logo/client-logo-1.png" alt="client-logo"></a>
-          <a href="#" class="text-center d-block outline-0 p-5"><img class="d-unset img-fluid" src="images/clients-logo/client-logo-2.png" alt="client-logo"></a>
-          <a href="#" class="text-center d-block outline-0 p-5"><img class="d-unset img-fluid" src="images/clients-logo/client-logo-3.png" alt="client-logo"></a>
-          <a href="#" class="text-center d-block outline-0 p-5"><img class="d-unset img-fluid" src="images/clients-logo/client-logo-4.png" alt="client-logo"></a>
-          <a href="#" class="text-center d-block outline-0 p-5"><img class="d-unset img-fluid" src="images/clients-logo/client-logo-5.png" alt="client-logo"></a>
-      </div>
-  </div>
-</section> -->
-<!-- /client logo slider -->
-
-<!-- newsletter -->
-<section class="newsletter">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2>Inscreva-se em nosso Newsletter</h2>
-        <p class="mb-5">Receive updates, news and deals</p>
-      </div>
-      <div class="col-lg-8 col-sm-10 col-12 mx-auto">
-        <form action="#">
-          <div class="input-wrapper position-relative">
-            <input type="email" class="newsletter-form" id="newsletter" placeholder="Informe se E-mail">
-            <button type="submit" value="send" class="btn newsletter-btn">Inscreva-se</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <!-- background shapes -->
-  <img class="newsletter-bg-shape left-right-animation" src="images/background-shape/seo-ball-2.png" alt="background-shape">
 </section>
-<!-- /newsletter -->
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="badge-neon">COMECE AGORA</div>
+                <h2 class="mb-4">Sua próxima aplicação pode começar com uma base pronta.</h2>
+                <p class="text-secondary mb-4">Crie sua conta e descubra como a tecnologia AGIVYS pode acelerar seu próximo projeto sem reinventar a roda.</p>
+                <div class="d-flex flex-wrap" style="gap: 15px;">
+                    <a href="http://localhost:4200/auth/register" class="btn-neon">Teste Grátis &rarr;</a>
+                    <a href="contact.html" class="btn-outline-light" style="padding: 10px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">Falar com Especialista</a>
+                </div>
+            </div>
+            <div class="col-lg-5 offset-lg-1" data-aos="fade-left">
+                <div class="cta-illustration">
+                    <i class="ti-cloud cta-cloud"></i>
+                    <div class="cta-element ce-1"><i class="ti-server"></i> API</div>
+                    <div class="cta-element ce-2"><i class="ti-lock"></i> Auth</div>
+                    <div class="cta-element ce-3"><i class="ti-user"></i> Users</div>
+                    <div class="cta-element ce-4"><i class="ti-layers"></i> Systems</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Documentation -->
+<section id="docs" class="docs-section">
+    <div class="container">
+        <div class="row mb-5 text-center" data-aos="fade-up">
+            <div class="col-12">
+                <h2>Construído para desenvolvedores</h2>
+                <p class="text-secondary">Documentação clara, endpoints organizados e uma API pronta para integrar.</p>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="doc-card">
+                    <h5>API Reference</h5>
+                    <p class="text-secondary small mb-0">Endpoints, métodos e payloads disponíveis via OpenAPI.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="doc-card">
+                    <h5>Authentication</h5>
+                    <p class="text-secondary small mb-0">Fluxos de login, cadastro, recuperação e tokens JWT.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="doc-card">
+                    <h5>Users</h5>
+                    <p class="text-secondary small mb-0">Gerenciamento completo de usuários, perfis e dados.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="doc-card">
+                    <h5>Permissions</h5>
+                    <p class="text-secondary small mb-0">Controle de acesso granular, roles, menus e planos.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 text-center" data-aos="fade-up" data-aos-delay="500">
+                <a href="#" class="btn-outline-neon">Acessar Documentação &rarr;</a>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- footer -->
-<footer class="footer-section footer" style="background-image: url(images/backgrounds/footer-bg.png);">
+<footer class="footer-custom">
   <div class="container">
     <div class="row">
-      <div class="col-lg-4 text-center text-lg-left mb-4 mb-lg-0">
-        <!-- logo -->
-        <a href="index.html">
-          <img class="img-fluid" src="images/logo.png" width="100" alt="logo">
+      <div class="col-lg-3 mb-5 mb-lg-0">
+        <a href="index.html" class="d-block mb-4">
+          <img class="img-fluid" src="images/logo.png" width="120" alt="AGIVYS" style="filter: brightness(0) invert(1);">
         </a>
+        <p class="text-secondary small">Transformamos ideias em soluções digitais e fornecemos a base tecnológica para você inovar sem limitações.</p>
       </div>
-      <!-- footer menu -->
-      <nav class="col-lg-8 align-self-center mb-5">
-        <ul class="list-inline text-lg-right text-center footer-menu">
-          <li class="list-inline-item active"><a href="index.html">Home</a></li>
-          <li class="list-inline-item"><a class="page-scroll" href="#feature">Soluções</a></li>
-          <li class="list-inline-item"><a href="about.html">Sobre Nós</a></li>
-          <!-- <li class="list-inline-item"><a class="page-scroll" href="#team">Time</a></li> -->
-          <li class="list-inline-item"><a class="page-scroll" href="#pricing">Planos</a></li>
-          <li class="list-inline-item"><a href="contact.html">Contato</a></li>
+      <div class="col-lg-2 offset-lg-1 col-md-4 mb-4 mb-md-0">
+        <h6 class="footer-title">Soluções</h6>
+        <ul class="footer-links">
+          <li><a href="#">Desenvolvimento</a></li>
+          <li><a href="#">API White Label</a></li>
+          <li><a href="#">Integrações</a></li>
+          <li><a href="#">Consultoria</a></li>
         </ul>
-      </nav>
-      <!-- footer social icon -->
-      <nav class="col-12">
-        <ul class="list-inline text-lg-right text-center social-icon">
-          <!-- <li class="list-inline-item">
-            <a class="facebook" href="#"><i class="ti-facebook"></i></a>
-          </li> -->
-          <!-- <li class="list-inline-item">
-            <a class="twitter" href="#"><i class="ti-twitter-alt"></i></a>
-          </li> -->
-          <!-- <li class="list-inline-item">
-            <a class="linkedin" href="#"><i class="ti-linkedin"></i></a>
-          </li> -->
-          <!-- <li class="list-inline-item">
-            <a class="black" href="#"><i class="ti-github"></i></a>
-          </li> -->
+      </div>
+      <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+        <h6 class="footer-title">Recursos</h6>
+        <ul class="footer-links">
+          <li><a href="#">Documentação</a></li>
+          <li><a href="#">Guia de Início</a></li>
+          <li><a href="#">Exemplos</a></li>
+          <li><a href="#">Status da API</a></li>
         </ul>
-      </nav>
+      </div>
+      <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+        <h6 class="footer-title">Empresa</h6>
+        <ul class="footer-links">
+          <li><a href="about.html">Sobre Nós</a></li>
+          <li><a href="#">Carreiras</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="contact.html">Contato</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-4">
+        <h6 class="footer-title">Legal</h6>
+        <ul class="footer-links">
+          <li><a href="#">Termos de Uso</a></li>
+          <li><a href="#">Política de Privacidade</a></li>
+          <li><a href="#">Segurança</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+        <div>&copy; 2026 AGIVYS. Todos os direitos reservados.</div>
+        <div>Feito com <span class="text-neon">&hearts;</span> para desenvolvedores</div>
     </div>
   </div>
 </footer>
@@ -541,14 +492,24 @@
 <script src="plugins/jQuery/jquery.min.js"></script>
 <!-- Bootstrap JS -->
 <script src="plugins/bootstrap/bootstrap.min.js"></script>
-<!-- slick slider -->
-<script src="plugins/slick/slick.min.js"></script>
-<!-- venobox -->
-<script src="plugins/Venobox/venobox.min.js"></script>
 <!-- aos -->
 <script src="plugins/aos/aos.js"></script>
 <!-- Main Script -->
-<script src="js/script.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+    
+    // Navbar scroll effect
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 50) {
+            $('.navbar-custom').css('background', 'rgba(6, 11, 20, 0.95)');
+        } else {
+            $('.navbar-custom').css('background', 'var(--glass-bg)');
+        }
+    });
+</script>
 
 </body>
 </html>

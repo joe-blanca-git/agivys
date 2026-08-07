@@ -1,172 +1,502 @@
 <!DOCTYPE html>
-<html lang="zxx">
-
+<html lang="pt-br">
 <head>
   <meta charset="utf-8">
-  <title>Dtox</title>
-
-  <!-- mobile responsive meta -->
+  <title>AGIVYS - Contato</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <!-- ** Plugins Needed for the Project ** -->
-  <!-- Bootstrap -->
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Plugins Needed for the Project -->
   <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
-  <!-- themefy-icon -->
   <link rel="stylesheet" href="plugins/themify-icons/themify-icons.css">
-  <!-- slick slider -->
-  <link rel="stylesheet" href="plugins/slick/slick.css">
-  <!-- venobox popup -->
-  <link rel="stylesheet" href="plugins/Venobox/venobox.css">
-  <!-- aos -->
   <link rel="stylesheet" href="plugins/aos/aos.css">
 
   <!-- Main Stylesheet -->
   <link href="css/style.css" rel="stylesheet">
+  <!-- Custom Dark Theme -->
+  <link href="css/custom-dark.css" rel="stylesheet">
   
   <!--Favicon-->
   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-
-</head>
-
-<body>
   
+  <style>
+      /* Styles specific to contact page */
+      .contact-hero-illustration {
+          position: relative;
+          width: 100%;
+          height: 380px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 30px;
+      }
+      .chi-node {
+          background: var(--card-bg);
+          border: 1px solid var(--border-color);
+          padding: 12px 25px;
+          border-radius: 8px;
+          font-weight: 600;
+          color: var(--text-primary);
+          z-index: 2;
+      }
+      .chi-api {
+          background: rgba(0, 255, 136, 0.1);
+          border-color: var(--neon-green);
+          color: var(--neon-green);
+          box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+          padding: 15px 35px;
+          font-size: 1.1rem;
+      }
+      .chi-modules {
+          display: flex;
+          gap: 15px;
+      }
+      .chi-module {
+          background: rgba(255,255,255,0.02);
+          border: 1px solid rgba(255,255,255,0.1);
+          padding: 8px 15px;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          color: var(--text-secondary);
+          z-index: 2;
+      }
+      .chi-arrow {
+          color: rgba(0, 255, 136, 0.5);
+          font-size: 1.2rem;
+          margin: -15px 0;
+          z-index: 1;
+      }
+      
+      .form-custom .form-control {
+          background-color: var(--darker-navy);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: var(--text-primary);
+          padding: 15px 20px;
+          border-radius: 8px;
+          height: auto;
+      }
+      .form-custom .form-control:focus {
+          border-color: var(--neon-green);
+          box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+          background-color: var(--darker-navy);
+          color: var(--text-primary);
+      }
+      .form-custom .form-control::placeholder {
+          color: rgba(255,255,255,0.3);
+      }
+      .form-custom select.form-control {
+          height: 54px;
+          padding-top: 0;
+          padding-bottom: 0;
+      }
+      .form-custom label {
+          color: var(--text-secondary);
+          font-size: 0.9rem;
+          margin-bottom: 8px;
+          font-weight: 500;
+      }
+      
+      .contact-side-card {
+          background: var(--darker-navy);
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          padding: 40px;
+          height: 100%;
+      }
+      .contact-subcard {
+          background: var(--card-bg);
+          border: 1px solid rgba(255,255,255,0.05);
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 15px;
+          transition: border-color 0.3s;
+      }
+      .contact-subcard:hover {
+          border-color: rgba(0, 255, 136, 0.3);
+      }
+      .contact-subcard h5 {
+          color: var(--text-primary);
+          font-size: 1.05rem;
+          margin-bottom: 8px;
+      }
+      .contact-subcard p {
+          color: var(--text-secondary);
+          font-size: 0.85rem;
+          margin-bottom: 10px;
+      }
+      
+      .mockup-api-mini {
+          background: #1e1e1e;
+          border-radius: 8px;
+          padding: 20px;
+          font-family: 'Fira Code', monospace;
+          color: #d4d4d4;
+          font-size: 0.85rem;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+          border: 1px solid #333;
+      }
+      .mockup-api-mini .m-title {
+          color: var(--neon-green);
+          margin-bottom: 15px;
+          font-weight: 600;
+      }
+      .mockup-api-mini .m-item {
+          margin-bottom: 5px;
+          padding-left: 15px;
+          position: relative;
+      }
+      .mockup-api-mini .m-item::before {
+          content: '>';
+          position: absolute;
+          left: 0;
+          color: #569cd6;
+      }
+      
+      /* Form states */
+      .form-state-box {
+          display: none;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+      }
+      .state-sending { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); }
+      .state-success { background: rgba(0, 255, 136, 0.1); border: 1px solid var(--neon-green); color: var(--neon-green); }
+      .state-error { background: rgba(220, 53, 69, 0.1); border: 1px solid #dc3545; color: #ff6b6b; }
+      
+      .motives-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 20px;
+      }
+      
+      .hero-tags span {
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: var(--text-secondary);
+          padding: 5px 12px;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          letter-spacing: 1px;
+      }
+  </style>
+</head>
+<body>
 
 <!-- navigation -->
-<section class="fixed-top navigation">
+<section class="fixed-top navigation navbar-custom">
   <div class="container">
-    <nav class="navbar navbar-expand-lg navbar-light">
-      <a class="navbar-brand" href="index.html"><img src="images/logo-bit.png" alt="logo" width="90"></a>
-      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar"
-        aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-lg navbar-dark p-0">
+      <a class="navbar-brand" href="index.html">
+          <img src="images/logo.png" alt="AGIVYS" width="120" style="filter: brightness(0) invert(1);">
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <!-- navbar -->
-      <div class="collapse navbar-collapse text-center" id="navbar">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link page-scroll" href="index.html#feature">Soluções</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="about.html">Sobre Nós</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="service.html">Serviços</a>
-          </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link page-scroll" href="#team">Time</a>
-          </li> -->
-          <!-- <li class="nav-item">
-            <a class="nav-link page-scroll" href="#pricing">Planos</a>
-          </li> -->
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="contact.html">Contato</a>
-          </li> -->
+      <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Início</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">Sobre Nós</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#solutions">Soluções</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#api">API</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#features">Recursos</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#pricing">Preços</a></li>
+          <li class="nav-item"><a class="nav-link" href="docs.html">Documentação</a></li>
+          <li class="nav-item"><a class="nav-link active" href="contact.html" style="color: var(--neon-green) !important;">Contato</a></li>
         </ul>
-        <a href="http://localhost:4200/register" class="btn btn-primary ml-lg-3 primary-shadow">Entrar Agora!</a>
+        <div class="d-flex align-items-center">
+            <a href="http://localhost:4200" class="nav-link text-white mr-3">Entrar</a>
+            <a href="http://localhost:4200/auth/register" class="btn-neon">Teste Grátis</a>
+        </div>
       </div>
     </nav>
   </div>
 </section>
 <!-- /navigation -->
 
-<!-- contact -->
-<section class="section-lg contact">
+<!-- hero area -->
+<section class="hero-section-new">
+  <div class="hero-bg-glow"></div>
+  <div class="container hero-content">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-up">
+        <div class="badge-neon">FALE COM A AGIVYS</div>
+        <h1 class="hero-title">Vamos construir algo <span class="text-neon">incrível juntos.</span></h1>
+        <p class="hero-subtitle mb-4">Tem uma ideia, precisa integrar nossa API ou quer conversar sobre uma solução de software? Estamos prontos para ouvir você.</p>
+        <div class="hero-tags d-flex flex-wrap gap-2" style="gap: 10px;">
+            <span>API</span>
+            <span>DESENVOLVIMENTO</span>
+            <span>INTEGRAÇÕES</span>
+            <span>TECNOLOGIA</span>
+        </div>
+      </div>
+      <div class="col-lg-5 offset-lg-1" data-aos="fade-left" data-aos-delay="200">
+        <!-- Abstract Tech Illustration -->
+        <div class="contact-hero-illustration">
+            <div class="chi-node"><i class="ti-desktop mr-2"></i> SEU SISTEMA</div>
+            <div class="chi-arrow"><i class="ti-arrow-down"></i></div>
+            <div class="chi-node chi-api"><i class="ti-server mr-2"></i> AGIVYS API</div>
+            <div class="chi-arrow"><i class="ti-arrow-down"></i></div>
+            <div class="chi-modules">
+                <div class="chi-module">Authentication</div>
+                <div class="chi-module">Users</div>
+                <div class="chi-module">Permissions</div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Formulário de Contato -->
+<section class="features-section" style="padding-top: 50px;">
     <div class="container">
         <div class="row">
-            <div class="col-lg-12 text-center">
-                <h2 class="section-title">Contact</h2>
-            </div>
-        </div>
-        <div class="row contact-bg p-5 rounded mb-5">
-            <div class="col-lg-7 mb-4 mb-lg-0">
-                <form action="#">
-                    <input type="text" class="form-control mb-3" id="name" name="name" placeholder="Your Name">
-                    <input type="email" class="form-control mb-3" id="mail" name="mail" placeholder="Your Email">
-                    <input type="text" class="form-control mb-3" id="subject" name="subject" placeholder="Subject">
-                    <textarea name="message" id="message" class="form-control mb-3" placeholder="Your Message"></textarea>
-                    <button type="submit" value="send" class="btn btn-secondary">SEND MESSAGE</button>
+            <!-- Esquerda: Formulário -->
+            <div class="col-lg-7 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="badge-neon">ENTRE EM CONTATO</div>
+                <h2 class="mb-4">Conte-nos como podemos ajudar.</h2>
+                <p class="text-secondary mb-5">Preencha o formulário e envie sua mensagem. Nossa equipe poderá entender melhor sua necessidade e direcionar o atendimento.</p>
+                
+                <!-- Mockup de estados de envio -->
+                <div class="form-state-box state-sending" id="stateSending">
+                    <i class="ti-reload mr-2 text-neon" style="animation: spin 1s linear infinite;"></i> <strong>Enviando mensagem...</strong>
+                </div>
+                <div class="form-state-box state-success" id="stateSuccess">
+                    <h5 class="m-0"><i class="ti-check-box mr-2"></i> Mensagem enviada!</h5>
+                    <p class="mt-2 mb-0" style="font-size: 0.9rem;">Obrigado por entrar em contato. Em breve retornaremos.</p>
+                </div>
+                <div class="form-state-box state-error" id="stateError">
+                    <h5 class="m-0"><i class="ti-alert mr-2"></i> Não foi possível enviar sua mensagem.</h5>
+                    <p class="mt-2 mb-0" style="font-size: 0.9rem;">Verifique os dados e tente novamente.</p>
+                </div>
+
+                <form class="form-custom" id="contactForm" onsubmit="event.preventDefault(); simulateSend();">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="name">Nome</label>
+                            <input type="text" class="form-control" id="name" placeholder="Como podemos chamar você?" required>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label for="email">E-mail</label>
+                            <input type="email" class="form-control" id="email" placeholder="seu@email.com" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="subject">Assunto</label>
+                        <select class="form-control" id="subject" required style="cursor: pointer;">
+                            <option value="" disabled selected>Selecione uma opção</option>
+                            <option value="conhecer">Conhecer a API</option>
+                            <option value="integracao">Integração com a API</option>
+                            <option value="desenvolvimento">Desenvolvimento de sistema</option>
+                            <option value="parceria">Parceria</option>
+                            <option value="duvida">Dúvida</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="mb-5">
+                        <label for="message">Mensagem</label>
+                        <textarea class="form-control" id="message" rows="5" placeholder="Conte um pouco sobre sua necessidade..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-neon" id="submitBtn">Enviar Mensagem &rarr;</button>
                 </form>
             </div>
-            <div class="col-lg-5">
-                <p class="mb-5">If you'll like to know more about our experience designing and delivering cloud solutions, or get advice on your own technology challenges get in touch. With dedicated engineers on-hand 24/7,      we’re set up to become an extension of your team.</p>
-                <a href="tel:+442081446356" class="text-color h5 d-block">+44 20 8144 6356</a>
-                <a href="mailto:info@altostack.io" class="mb-5 text-color h5 d-block">info@altostack.io</a>
-                <p>71 Shelton Street<br>London WC2H 9JQ England</p>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-4 col-sm-6 mb-4 mb-lg-0">
-                <div class="card p-4 border-blue">
-                    <h5><i class="ti-layers-alt round-icon blue mr-2"></i> Sales</h5>
-                    <p class="mb-0">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-sm-6 mb-4 mb-lg-0">
-                <div class="card p-4 border-blue">
-                    <h5><i class="ti-desktop round-icon green mr-2"></i> Help & Support</h5>
-                    <p class="mb-0">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-sm-6 mb-4 mb-lg-0">
-                <div class="card p-4 border-blue">
-                    <h5><i class="ti-panel round-icon orange mr-2"></i> Legal Departments</h5>
-                    <p class="mb-0">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+            
+            <!-- Direita: Informações e Atalhos -->
+            <div class="col-lg-4 offset-lg-1" data-aos="fade-left">
+                <div class="contact-side-card">
+                    <div class="badge-neon mb-3">AGIVYS</div>
+                    <h3 class="mb-4 text-white" style="font-size: 1.5rem;">Tecnologia começa com uma conversa.</h3>
+                    <p class="text-secondary mb-5" style="font-size: 0.9rem;">Se você está começando um novo produto, precisa de uma infraestrutura de autenticação e usuários ou deseja desenvolver um sistema sob medida, fale conosco.</p>
+                    
+                    <div class="contact-subcard">
+                        <h5>API</h5>
+                        <p>Descubra como utilizar uma base tecnológica pronta em seu próximo projeto.</p>
+                        <a href="index.html#api" class="text-neon" style="text-decoration: none; font-size: 0.9rem; font-weight: 500;">Conhecer a API &rarr;</a>
+                    </div>
+                    
+                    <div class="contact-subcard">
+                        <h5>Desenvolvimento</h5>
+                        <p>Converse conosco sobre seu projeto e suas necessidades.</p>
+                        <a href="#contactForm" class="text-neon" style="text-decoration: none; font-size: 0.9rem; font-weight: 500;">Falar sobre meu projeto &rarr;</a>
+                    </div>
+                    
+                    <div class="contact-subcard">
+                        <h5>Integração</h5>
+                        <p>Podemos conversar sobre arquitetura, integração e utilização da API.</p>
+                        <a href="index.html#docs" class="text-neon" style="text-decoration: none; font-size: 0.9rem; font-weight: 500;">Ver documentação &rarr;</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- background shapes -->
-    <img class="contact-bg-1 up-down-animation" src="images/background-shape/feature-bg-2.png" alt="background-shape">
-    <img class="contact-bg-2 left-right-animation" src="images/background-shape/green-half-cycle.png" alt="background-shape">
-    <img class="contact-bg-3 up-down-animation" src="images/background-shape/green-dot.png" alt="background-shape">
-    <img class="contact-bg-4 left-right-animation" src="images/background-shape/service-half-cycle.png" alt="background-shape">
-    <img class="contact-bg-5 up-down-animation" src="images/background-shape/feature-bg-2.png" alt="background-shape">
 </section>
-<!-- /contact -->
+
+<!-- Por que falar conosco? -->
+<section class="features-section" style="background-color: var(--darker-navy);">
+    <div class="container">
+        <div class="row mb-5 text-center" data-aos="fade-up">
+            <div class="col-12">
+                <h2>De uma ideia a um <span class="text-neon">produto digital.</span></h2>
+                <p class="text-secondary mt-3">Conte o que você precisa. A tecnologia necessária pode começar aqui.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card h-100">
+                    <div class="feature-icon"><h3 style="color: var(--neon-green); margin: 0;">01</h3></div>
+                    <h4>Entendemos</h4>
+                    <p>Entendemos o problema antes de pensar na solução.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card h-100">
+                    <div class="feature-icon"><h3 style="color: var(--neon-green); margin: 0;">02</h3></div>
+                    <h4>Construímos</h4>
+                    <p>Criamos software e integrações de acordo com cada necessidade.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card h-100">
+                    <div class="feature-icon"><h3 style="color: var(--neon-green); margin: 0;">03</h3></div>
+                    <h4>Evoluímos</h4>
+                    <p>Utilizamos uma base tecnológica preparada para acompanhar o crescimento do produto.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Seção Especial - API -->
+<section class="api-section" style="background-color: var(--dark-navy);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="badge-neon">PARA DESENVOLVEDORES</div>
+                <h2 class="mb-4">Quer falar diretamente com a nossa API?</h2>
+                <p class="text-secondary mb-4">Se sua intenção é conhecer os recursos disponíveis, consulte a documentação e descubra como integrar a API AGIVYS à sua aplicação.</p>
+                <h5 class="text-white mb-4">Tudo começa com uma integração.</h5>
+                <a href="index.html#docs" class="btn-neon">Ver Documentação &rarr;</a>
+            </div>
+            <div class="col-lg-5 offset-lg-1" data-aos="fade-left">
+                <div class="mockup-api-mini">
+                    <div class="m-title">AGIVYS API - Modules</div>
+                    <div class="m-item">Authentication</div>
+                    <div class="m-item">Users</div>
+                    <div class="m-item">Systems</div>
+                    <div class="m-item">Menus</div>
+                    <div class="m-item">Roles</div>
+                    <div class="m-item">Permissions</div>
+                    <div class="m-item">Plans</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Motivos para Contato -->
+<section class="features-section">
+    <div class="container">
+        <div class="motives-grid">
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                <h5><i class="ti-server text-neon mr-2"></i> API</h5>
+                <p class="text-secondary small m-0 mt-2">Conheça nossa infraestrutura tecnológica.</p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <h5><i class="ti-desktop text-neon mr-2"></i> Desenvolvimento</h5>
+                <p class="text-secondary small m-0 mt-2">Converse sobre um novo sistema ou produto.</p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                <h5><i class="ti-plug text-neon mr-2"></i> Integração</h5>
+                <p class="text-secondary small m-0 mt-2">Tire dúvidas sobre integração com a API.</p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                <h5><i class="ti-handshake text-neon mr-2"></i> Parcerias</h5>
+                <p class="text-secondary small m-0 mt-2">Fale conosco sobre oportunidades de parceria.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="badge-neon">SEU PRÓXIMO PROJETO COMEÇA AQUI</div>
+                <h2 class="mb-4">Pronto para transformar sua ideia em tecnologia?</h2>
+                <p class="text-secondary mb-4">Fale com a AGIVYS e descubra como nossa API e nossa experiência em desenvolvimento podem ajudar seu próximo produto.</p>
+                <div class="d-flex flex-wrap" style="gap: 15px;">
+                    <a href="#contactForm" class="btn-neon page-scroll">Falar com a AGIVYS &rarr;</a>
+                    <a href="index.html#api" class="btn-outline-light" style="padding: 10px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">Conhecer a API</a>
+                </div>
+            </div>
+            <div class="col-lg-5 offset-lg-1" data-aos="fade-left">
+                <div class="cta-illustration">
+                    <i class="ti-cloud cta-cloud"></i>
+                    <div class="cta-element ce-1"><i class="ti-server"></i> API</div>
+                    <div class="cta-element ce-2"><i class="ti-lock"></i> Auth</div>
+                    <div class="cta-element ce-3"><i class="ti-user"></i> Users</div>
+                    <div class="cta-element ce-4"><i class="ti-layers"></i> Systems</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- footer -->
-<footer class="footer-section footer" style="background-image: url(images/backgrounds/footer-bg.png);">
+<footer class="footer-custom">
   <div class="container">
     <div class="row">
-      <div class="col-lg-4 text-center text-lg-left mb-4 mb-lg-0">
-        <!-- logo -->
-        <a href="index.html">
-          <img class="img-fluid" src="images/logo-bit.png" width="100" alt="logo">
+      <div class="col-lg-3 mb-5 mb-lg-0">
+        <a href="index.html" class="d-block mb-4">
+          <img class="img-fluid" src="images/logo.png" width="120" alt="AGIVYS" style="filter: brightness(0) invert(1);">
         </a>
+        <p class="text-secondary small">Transformamos ideias em soluções digitais e fornecemos a base tecnológica para você inovar sem limitações.</p>
       </div>
-      <!-- footer menu -->
-      <nav class="col-lg-8 align-self-center mb-5">
-        <ul class="list-inline text-lg-right text-center footer-menu">
-          <li class="list-inline-item active"><a href="index.html">Home</a></li>
-          <li class="list-inline-item"><a class="page-scroll" href="#feature">Soluções</a></li>
-          <li class="list-inline-item"><a href="about.html">Sobre Nós</a></li>
-          <!-- <li class="list-inline-item"><a class="page-scroll" href="#team">Time</a></li> -->
-          <li class="list-inline-item"><a class="page-scroll" href="#pricing">Planos</a></li>
-          <li class="list-inline-item"><a href="contact.html">Contato</a></li>
+      <div class="col-lg-2 offset-lg-1 col-md-4 mb-4 mb-md-0">
+        <h6 class="footer-title">Soluções</h6>
+        <ul class="footer-links">
+          <li><a href="#">Desenvolvimento</a></li>
+          <li><a href="#">API White Label</a></li>
+          <li><a href="#">Integrações</a></li>
+          <li><a href="#">Consultoria</a></li>
         </ul>
-      </nav>
-      <!-- footer social icon -->
-      <nav class="col-12">
-        <ul class="list-inline text-lg-right text-center social-icon">
-          <!-- <li class="list-inline-item">
-            <a class="facebook" href="#"><i class="ti-facebook"></i></a>
-          </li> -->
-          <!-- <li class="list-inline-item">
-            <a class="twitter" href="#"><i class="ti-twitter-alt"></i></a>
-          </li> -->
-          <!-- <li class="list-inline-item">
-            <a class="linkedin" href="#"><i class="ti-linkedin"></i></a>
-          </li> -->
-          <!-- <li class="list-inline-item">
-            <a class="black" href="#"><i class="ti-github"></i></a>
-          </li> -->
+      </div>
+      <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+        <h6 class="footer-title">Recursos</h6>
+        <ul class="footer-links">
+          <li><a href="#">Documentação</a></li>
+          <li><a href="#">Guia de Início</a></li>
+          <li><a href="#">Exemplos</a></li>
+          <li><a href="#">Status da API</a></li>
         </ul>
-      </nav>
+      </div>
+      <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+        <h6 class="footer-title">Empresa</h6>
+        <ul class="footer-links">
+          <li><a href="about.html">Sobre Nós</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="contact.html">Contato</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-4">
+        <h6 class="footer-title">Legal</h6>
+        <ul class="footer-links">
+          <li><a href="#">Termos de Uso</a></li>
+          <li><a href="#">Política de Privacidade</a></li>
+          <li><a href="#">Segurança</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+        <div>&copy; 2026 AGIVYS. Todos os direitos reservados.</div>
+        <div>Feito com <span class="text-neon">&hearts;</span> para desenvolvedores</div>
     </div>
   </div>
 </footer>
@@ -176,14 +506,57 @@
 <script src="plugins/jQuery/jquery.min.js"></script>
 <!-- Bootstrap JS -->
 <script src="plugins/bootstrap/bootstrap.min.js"></script>
-<!-- slick slider -->
-<script src="plugins/slick/slick.min.js"></script>
-<!-- venobox -->
-<script src="plugins/Venobox/venobox.min.js"></script>
 <!-- aos -->
 <script src="plugins/aos/aos.js"></script>
 <!-- Main Script -->
-<script src="js/script.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+    
+    // Navbar scroll effect
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 50) {
+            $('.navbar-custom').css('background', 'rgba(6, 11, 20, 0.95)');
+        } else {
+            $('.navbar-custom').css('background', 'var(--glass-bg)');
+        }
+    });
+
+    // Page Scroll script for anchor links
+    $('.page-scroll').click(function(e) {
+        var hash = this.hash;
+        if(hash) {
+            e.preventDefault();
+            $('html, body').animate({
+                scrollTop: $(hash).offset().top - 80
+            }, 800);
+        }
+    });
+
+    // Simulate Form Send visual states
+    function simulateSend() {
+        const btn = document.getElementById('submitBtn');
+        const form = document.getElementById('contactForm');
+        
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        
+        document.getElementById('stateSuccess').style.display = 'none';
+        document.getElementById('stateError').style.display = 'none';
+        document.getElementById('stateSending').style.display = 'block';
+
+        setTimeout(() => {
+            document.getElementById('stateSending').style.display = 'none';
+            // Simulate success for demo
+            document.getElementById('stateSuccess').style.display = 'block';
+            form.reset();
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        }, 1500);
+    }
+</script>
 
 </body>
 </html>

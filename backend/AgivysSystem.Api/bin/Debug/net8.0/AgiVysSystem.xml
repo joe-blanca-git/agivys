@@ -4,204 +4,344 @@
         <name>AgiVysSystem</name>
     </assembly>
     <members>
-        <member name="T:AgiVysSystem.Api.Controllers.Auth.AuthController">
+        <member name="T:AgiVysSystem.Api.Controllers.Address.AddressController">
+            <summary>
+            Controlador responsável pela gestão de endereços.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Address.AddressController.GetMyAddresses">
+            <summary>
+            Listagem de Endereços do Usuário
+            </summary>
+            <remarks>
+            Recupera todos os endereços físicos vinculados ao perfil pessoal (Person) do usuário atualmente autenticado.
+            É necessário enviar o Bearer Token no cabeçalho da requisição.
+            </remarks>
+            <response code="200">Lista de endereços recuperada com sucesso.</response>
+            <response code="401">Usuário não autenticado ou token inválido.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Address.AddressController.AddAddress(AgiVysSystem.Api.DTOs.AddressPersonDto)">
+            <summary>
+            Cadastro de Novo Endereço
+            </summary>
+            <remarks>
+            Adiciona um novo endereço físico ao perfil do usuário autenticado. 
+            O usuário deve possuir um registro de `Person` previamente criado no banco de dados.
+            </remarks>
+            <param name="dto">Dados completos do endereço, incluindo CEP, Logradouro, Número, Bairro, Cidade e Estado.</param>
+            <response code="201">Endereço cadastrado com sucesso.</response>
+            <response code="400">Dados inválidos ou erro de validação.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="404">Perfil (Person) não localizado para o usuário autenticado.</response>
+            <response code="500">Erro interno ao processar a inclusão.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Address.AddressController.UpdateMyAddress(System.Int32,AgiVysSystem.Api.DTOs.AddressPersonDto)">
+            <summary>
+            Atualização de Endereço Existente
+            </summary>
+            <remarks>
+            Modifica os dados de um endereço previamente cadastrado.
+            **Regra de Segurança**: O endereço a ser alterado deve pertencer estritamente ao perfil do usuário autenticado. Tentativas de alterar endereços de terceiros resultarão em bloqueio de acesso (HTTP 403).
+            </remarks>
+            <param name="id">ID único do endereço a ser atualizado.</param>
+            <param name="dto">Objeto contendo os novos dados do endereço.</param>
+            <response code="200">Endereço atualizado com sucesso.</response>
+            <response code="400">Dados inválidos no corpo da requisição.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada. O endereço pertence a outro usuário.</response>
+            <response code="404">Endereço não localizado na base de dados.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Address.AddressController.DeleteMyAddress(System.Int32)">
+            <summary>
+            Exclusão de Endereço
+            </summary>
+            <remarks>
+            Remove de forma permanente um endereço vinculado ao perfil do usuário autenticado.
+            **Regra de Segurança**: A exclusão só será permitida caso o endereço pertença ao usuário logado, protegendo os dados contra acesso indevido (Insecure Direct Object Reference).
+            </remarks>
+            <param name="id">ID único numérico do endereço a ser removido.</param>
+            <response code="200">Endereço removido permanentemente com sucesso.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Ação negada. O endereço não pertence ao usuário.</response>
+            <response code="404">O endereço especificado não foi encontrado.</response>
+            <response code="500">Erro interno do servidor ao processar a exclusão.</response>
+        </member>
+        <member name="T:AgiVysSystem.Api.Controllers.Authentication.AuthenticationController">
             <summary>
             Controlador responsável pela autenticação e gestão de acessos do ecossistema AgiVysSystem.
             </summary>
         </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.Login(AgiVysSystem.Api.DTOs.LoginDto)">
+        <member name="M:AgiVysSystem.Api.Controllers.Authentication.AuthenticationController.ValidateToken(AgiVysSystem.Api.Controllers.Authentication.AuthenticationController.TokenValidationRequest)">
             <summary>
-            Autentica um usuário e retorna o Token JWT junto com os dados do perfil e permissões.
+            Validação de Token JWT
             </summary>
             <remarks>
-            O token gerado tem validade de 4 horas e deve ser enviado no Header de todas as requisições protegidas.
+            Recebe um token JWT e verifica sua assinatura, emissor, audiência e validade.
+            Utilizado internamente ou por microsserviços para confirmar se um token ainda é válido.
             </remarks>
-            <param name="model">Credenciais de acesso (Email e Senha).</param>
-            <response code="200">Login realizado com sucesso.</response>
+            <param name="dto">Objeto contendo o token JWT a ser validado.</param>
+            <response code="200">Retorna true se o token for válido, false caso contrário.</response>
+            <response code="400">Token não fornecido ou nulo.</response>
+            <response code="500">Erro interno ao processar a validação.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Authentication.AuthenticationController.Login(AgiVysSystem.Api.DTOs.LoginDto)">
+            <summary>
+            Autenticação de Usuário (Login)
+            </summary>
+            <remarks>
+            Valida as credenciais do usuário e, se corretas, retorna um Token JWT junto com os dados essenciais do perfil e permissões.
+            
+            **Detalhes Importantes:**
+            - O token gerado possui validade de **4 horas**.
+            - O token deve ser enviado no cabeçalho `Authorization: Bearer {token}` em requisições subsequentes.
+            - Além do token, a API também pode gerar um cookie `MedNext_Menu` (HttpOnly) contendo as permissões.
+            </remarks>
+            <param name="model">Credenciais de acesso (E-mail e Senha).</param>
+            <response code="200">Login realizado com sucesso. Retorna o Token e dados do usuário.</response>
             <response code="401">E-mail ou senha incorretos.</response>
+            <response code="500">Erro interno do servidor ao tentar autenticar.</response>
         </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.Logout">
+        <member name="M:AgiVysSystem.Api.Controllers.Authentication.AuthenticationController.Logout">
             <summary>
-            Realiza o logout do usuário e limpa os cookies de sessão.
+            Encerramento de Sessão (Logout)
             </summary>
-            <response code="200">Logout realizado com sucesso.</response>
+            <remarks>
+            Realiza o logout do usuário limpando os cookies de sessão, em especial o cookie `MedNext_Menu`.
+            Observe que, como o JWT é stateless, o cliente também deve descartar o token do lado do front-end.
+            </remarks>
+            <response code="200">Logout realizado com sucesso. Cookies removidos.</response>
+            <response code="500">Erro interno ao processar o logout.</response>
         </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.Register(AgiVysSystem.Api.DTOs.RegisterDto)">
+        <member name="M:AgiVysSystem.Api.Controllers.Authentication.AuthenticationController.RegisterSystemUser(AgiVysSystem.Api.DTOs.RegisterSystemUserDto)">
             <summary>
-            Realiza o cadastro de um novo usuário do tipo Proprietário no sistema.
+            Registro de Proprietário de Sistema
             </summary>
-            <param name="model">A Senha deve conter letras, números e ao menos um caractere especial.</param>
-            <returns>Retorna uma mensagem de sucesso ou uma lista de erros de validação.</returns>
-            <response code="200">Usuário Cadastrado com Sucesso!</response>
-            <response code="400">Dados inválidos.</response>
+            <remarks>
+            Cria um novo usuário com a role "Owner" (Proprietário) vinculado a um sistema específico (`IdSystem`).
+            
+            **Regras de Negócio:**
+            - O E-mail fornecido não pode existir previamente na base de dados.
+            - O ID do sistema deve corresponder a um registro válido.
+            - Um documento fictício único é gerado automaticamente.
+            - Após o sucesso, um e-mail de boas-vindas com as cores do sistema é enviado.
+            - A senha deve obedecer a política de segurança (letras, números e caracteres especiais).
+            </remarks>
+            <param name="model">Dados necessários para criar a conta (Nome, E-mail, Senha, Sistema, etc).</param>
+            <response code="200">Usuário cadastrado com sucesso.</response>
+            <response code="400">Dados inválidos, e-mail já em uso, sistema inexistente ou senha fraca.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.RegisterSystemUser(AgiVysSystem.Api.DTOs.RegisterSystemUserDto)">
+        <member name="M:AgiVysSystem.Api.Controllers.Authentication.AuthenticationController.ForgotPassword(ForgotPasswordDto)">
             <summary>
-            Realiza o cadastro de um novo usuário do tipo Proprietário a partir de sistemas.
+            Solicitação de Recuperação de Senha
             </summary>
-            <param name="model">A Senha deve conter letras, números e ao menos um caractere especial.</param>
-            <returns>Retorna uma mensagem de sucesso ou uma lista de erros de validação.</returns>
-            <response code="200">Usuário Cadastrado com Sucesso!</response>
-            <response code="400">Dados inválidos.</response>
+            <remarks>
+            Envia um e-mail contendo um link seguro para redefinição de senha, caso o e-mail exista na base.
+            
+            **Comportamento de Segurança:**
+            - Para evitar enumeração de contas, a API sempre retorna 200 OK informando que "Se o e-mail existir, o link foi enviado", mesmo que o e-mail não seja encontrado.
+            - O link gerado expira em 2 horas.
+            </remarks>
+            <param name="model">E-mail do usuário e opcionalmente o ID do sistema para customização do template.</param>
+            <response code="200">Requisição processada com sucesso (e-mail enviado se a conta existir).</response>
+            <response code="500">Erro interno ao gerar o token ou enviar o e-mail.</response>
         </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.UpdatePerson(AgiVysSystem.Api.DTOs.UpdatePersonDto)">
+        <member name="M:AgiVysSystem.Api.Controllers.Authentication.AuthenticationController.ResetPassword(ResetPasswordDto)">
             <summary>
-            Atualiza os dados pessoais do usuário autenticado.
+            Redefinição de Senha
             </summary>
-            <response code="200">Dados atualizados com sucesso.</response>
-            <response code="403">Tentativa de editar dados de outro usuário.</response>
-            <response code="404">Dados pessoais não encontrados.</response>
+            <remarks>
+            Processa o token gerado na recuperação de senha e define a nova senha fornecida.
+            O token enviado pelo cliente deve estar em formato `Base64Url`.
+            </remarks>
+            <param name="model">E-mail, token de recuperação e a nova senha.</param>
+            <response code="200">Senha atualizada com sucesso.</response>
+            <response code="400">Usuário não encontrado, token inválido, expirado, ou nova senha fraca.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.CheckEmail(System.String)">
+        <member name="M:AgiVysSystem.Api.Controllers.Authentication.AuthenticationController.ChangePassword(AgiVysSystem.Api.DTOs.ChangePasswordDto)">
             <summary>
-            Verifica se um e-mail já está em uso no sistema AgiVysSystem.
+            Alteração de Senha do Usuário Logado
             </summary>
-            <param name="email">O e-mail completo a ser consultado.</param>
-            <response code="200">Retorna true se o e-mail já existir, false caso contrário.</response>
-        </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.CheckCpf(System.String)">
-            <summary>
-            Verifica se um CPF já está vinculado a alguma conta no sistema.
-            </summary>
-            <param name="document">O CPF a ser consultado (apenas números).</param>
-            <response code="200">Retorna true se o CPF já existir, false caso contrário.</response>
-        </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.ForgotPassword(ForgotPasswordDto)">
-            <summary>
-            Envia um e-mail para recuperação de senha..
-            </summary>
-            <param name="model">Informe um e-mail válido para receber a recuperação de senha.</param>
-            <returns>Retorna uma mensagem de E-mail enviado com sucesso.</returns>
-            <response code="200">Link de recuperação enviado com sucesso.</response>
-            <response code="400">Dados inválidos.</response>
-        </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.ResetPassword(ResetPasswordDto)">
-            <summary>
-            Altera a senha.
-            </summary>
-            <param name="model">Altera a senha do usuário</param>
-            <returns>Retorna uma mensagem de senha alterada com sucesso</returns>
+            <remarks>
+            Permite que um usuário autenticado mude sua própria senha.
+            É obrigatório informar a senha atual para garantir a segurança da operação.
+            </remarks>
+            <param name="model">Objeto contendo a senha atual e a nova senha.</param>
             <response code="200">Senha alterada com sucesso.</response>
-            <response code="400">Dados inválidos.</response>
+            <response code="400">Senha atual incorreta ou nova senha não atende aos requisitos.</response>
+            <response code="401">Usuário não autenticado (Token JWT ausente ou inválido).</response>
+            <response code="404">Registro do usuário autenticado não foi encontrado no banco de dados.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.ChangePassword(AgiVysSystem.Api.DTOs.ChangePasswordDto)">
+        <member name="T:AgiVysSystem.Api.Controllers.Checks.ChecksController">
             <summary>
-            Altera a senha do usuário autenticado.
+            Controlador responsável por verificações do sistema (Email, CPF, etc).
             </summary>
-            <param name="model">Recebe a senha atual e a nova senha.</param>
-            <response code="200">Senha alterada com sucesso.</response>
-            <response code="400">Senha atual incorreta ou erro de validação.</response>
-            <response code="401">Usuário não autenticado.</response>
         </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.GetMyAddresses">
+        <member name="M:AgiVysSystem.Api.Controllers.Checks.ChecksController.CheckEmail(System.String)">
             <summary>
-            Lista todos os endereços vinculados ao perfil do usuário autenticado.
+            Verificação de Disponibilidade de E-mail
             </summary>
-            <response code="200">Retorna a lista de endereços.</response>
-            <response code="401">Usuário não autenticado.</response>
+            <remarks>
+            Consulta na base de dados (Identity) se o e-mail fornecido já está vinculado a alguma conta de usuário existente.
+            Este endpoint é público e frequentemente utilizado durante etapas de pré-cadastro (Onboarding) para validação assíncrona de formulários em tempo real.
+            </remarks>
+            <param name="email">O endereço de e-mail completo a ser verificado.</param>
+            <response code="200">Requisição bem-sucedida. Retorna um objeto indicando se o e-mail já existe (`true` ou `false`).</response>
+            <response code="400">Formato de e-mail inválido ou parâmetro ausente.</response>
+            <response code="500">Erro interno do servidor ao tentar consultar o banco de dados.</response>
         </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.AddAddress(AgiVysSystem.Api.DTOs.AddressPersonDto)">
+        <member name="M:AgiVysSystem.Api.Controllers.Checks.ChecksController.CheckCpf(System.String)">
             <summary>
-            Adiciona um novo endereço ao perfil do usuário autenticado.
+            Verificação de Disponibilidade de CPF
             </summary>
-            <param name="dto">Dados do endereço (CEP, Rua, Número, etc).</param>
-            <response code="201">Endereço cadastrado com sucesso.</response>
-            <response code="400">Dados inválidos.</response>
-            <response code="404">Perfil (Person) não encontrado para o usuário.</response>
-        </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.UpdateMyAddress(System.Int32,AgiVysSystem.Api.DTOs.AddressPersonDto)">
-            <summary>
-            Atualiza um endereço existente do usuário autenticado.
-            </summary>
-            <param name="id">ID do endereço.</param>
-            <param name="dto">Novos dados para o endereço.</param>
-            <response code="200">Endereço atualizado com sucesso.</response>
-            <response code="403">Tentativa de alterar endereço de outro usuário.</response>
-            <response code="404">Endereço não encontrado.</response>
-        </member>
-        <member name="M:AgiVysSystem.Api.Controllers.Auth.AuthController.DeleteMyAddress(System.Int32)">
-            <summary>
-            Remove um endereço do perfil do usuário autenticado.
-            </summary>
-            <param name="id">ID do endereço a ser removido.</param>
-            <response code="200">Endereço removido com sucesso.</response>
-            <response code="403">Tentativa de remover endereço de outro usuário.</response>
-            <response code="404">Endereço não encontrado.</response>
+            <remarks>
+            Verifica se o documento (CPF) informado já possui um cadastro atrelado na tabela de Pessoas (Person).
+            Endpoint público de utilidade para formulários. Suporta o recebimento do documento com ou sem máscara de formatação (pontos e traços), uma vez que a API higieniza a string mantendo apenas números.
+            </remarks>
+            <param name="document">O número do CPF a ser consultado.</param>
+            <response code="200">Requisição bem-sucedida. Retorna um objeto indicando se o documento já existe (`true` ou `false`).</response>
+            <response code="400">CPF com tamanho inválido ou string malformada.</response>
+            <response code="500">Erro interno do servidor ao tentar consultar o banco de dados.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.CreateWithAddress(AgiVysSystem.Api.Dtos.CreateCompanyWithAddressDto)">
             <summary>
-            Cadastra uma nova empresa e seu endereço em uma única operação.
+            Cadastro Completo de Empresa (com Endereço)
             </summary>
+            <remarks>
+            Cadastra simultaneamente uma nova empresa (Company) e seu respectivo endereço (CompanyAddress) dentro de uma única transação no banco de dados.
+            Em caso de falha em qualquer etapa, a operação inteira é desfeita (Rollback).
+            </remarks>
+            <param name="dto">Dados consolidados da empresa e do endereço.</param>
+            <response code="200">Empresa e endereço cadastrados com sucesso.</response>
+            <response code="400">Dados inválidos ou CNPJ já existente.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="500">Erro interno do servidor ao salvar os dados.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.Create(AgiVysSystem.Api.Dtos.CreateCompanyDto)">
             <summary>
-            Cadastra uma nova empresa vinculada a um usuário proprietário.
+            Cadastro Simplificado de Empresa
             </summary>
-            <response code="200">Empresa cadastrada com sucesso!</response>
-            <response code="400">Este CNPJ já está cadastrado.</response>
+            <remarks>
+            Cria uma nova empresa vinculada ao usuário proprietário especificado. 
+            O CNPJ é validado para garantir que não haja duplicidade na plataforma.
+            </remarks>
+            <param name="dto">Dados básicos da empresa (Nome, CNPJ, Logo).</param>
+            <response code="200">Empresa cadastrada com sucesso.</response>
+            <response code="400">Dados inválidos ou CNPJ já cadastrado.</response>
             <response code="401">Usuário não autenticado.</response>
-            <response code="500">Erro ao cadastrar empresa.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.GetByOwner(System.Int32)">
             <summary>
-            Lista todas as empresas de um determinado proprietário.
+            Listagem de Empresas por Proprietário
             </summary>
-            <response code="200">Retornas a Empresas do usuário</response>
+            <remarks>
+            Recupera todas as empresas cujo `UserOwnerId` corresponde ao ID fornecido.
+            É comumente utilizado para preencher o seletor de contextos do Dashboard.
+            </remarks>
+            <param name="userId">ID numérico do usuário proprietário.</param>
+            <response code="200">Lista de empresas recuperada com sucesso.</response>
             <response code="401">Usuário não autenticado.</response>
-            <response code="500">Erro ao obter empresas.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.Update(System.Int32,AgiVysSystem.Api.Dtos.UpdateCompanyDto)">
             <summary>
-            Atualiza dados básicos da empresa.
+            Atualização de Empresa
             </summary>
-            <response code="200">Empresa atualzizada com sucesso!</response>
-            <response code="404">Empresa não encontrada.</response>
+            <remarks>
+            Atualiza dados cadastrais básicos de uma empresa.
+            **Regra de Segurança**: Somente o próprio dono (UserOwnerId) da empresa possui permissão para atualizá-la (validação feita cruzando o ID do BD com o do Token).
+            </remarks>
+            <param name="id">ID numérico único da empresa.</param>
+            <param name="dto">Dados atualizados da empresa.</param>
+            <response code="200">Empresa atualizada com sucesso.</response>
+            <response code="400">Payload inválido.</response>
             <response code="401">Usuário não autenticado.</response>
-            <response code="500">Erro ao atualizar empresa.</response>
+            <response code="403">Acesso negado. O usuário não é o dono da empresa.</response>
+            <response code="404">Empresa não localizada.</response>
+            <response code="500">Erro interno do servidor ao atualizar a empresa.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.Delete(System.Int32)">
             <summary>
-            Remove o registro da empresa.
+            Exclusão de Empresa
             </summary>
-            <response code="200">Empresa removida com sucesso!</response>
-            <response code="404">Empresa não encontrada.</response>
+            <remarks>
+            Remove completamente o registro da empresa. Esta é uma deleção física no banco de dados.
+            É altamente recomendável garantir que a empresa não possua registros financeiros dependentes antes da deleção.
+            </remarks>
+            <param name="id">ID numérico único da empresa.</param>
+            <response code="200">Empresa removida com sucesso.</response>
             <response code="401">Usuário não autenticado.</response>
-            <response code="500">Erro ao remover empresa.</response>
+            <response code="404">Empresa não localizada.</response>
+            <response code="500">Erro interno do servidor ao tentar deletar a empresa (ex: violação de chave estrangeira).</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.AddAddress(System.Int32,AgiVysSystem.Api.Dtos.CompanyAddressDto)">
             <summary>
-            Adiciona um novo endereço para uma empresa específica.
+            Cadastro de Endereço Empresarial
             </summary>
-            <response code="201">Endereço cadastrado com sucesso.</response>
-            <response code="403">Você não tem permissão para esta empresa.</response>
+            <remarks>
+            Vincula um novo endereço a uma empresa existente. Uma empresa pode ter múltiplos endereços (ex: Matriz, Filial, Galpão).
+            **Regra de Segurança**: Apenas o dono da empresa pode adicionar endereços à mesma.
+            </remarks>
+            <param name="companyId">ID único numérico da empresa associada.</param>
+            <param name="dto">Dados do endereço.</param>
+            <response code="201">Endereço cadastrado e vinculado com sucesso à empresa.</response>
+            <response code="400">Dados de endereço inválidos ou malformados.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada. O usuário não é o dono da empresa.</response>
+            <response code="404">Empresa não encontrada para realizar o vínculo.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.GetAddresses(System.Int32)">
             <summary>
-            Lista todos os endereços de uma empresa.
+            Listagem de Endereços Empresariais
             </summary>
-            <response code="200"></response>
-            <response code="404">Nenhum endereço encontrado.</response>
+            <remarks>
+            Recupera a lista completa de endereços atrelados a uma empresa específica.
+            Somente o dono da empresa pode visualizar seus respectivos endereços.
+            </remarks>
+            <param name="companyId">ID único numérico da empresa.</param>
+            <response code="200">Lista de endereços recuperada com sucesso.</response>
             <response code="401">Usuário não autenticado.</response>
-            <response code="500">Erro ao remover empresa.</response>
+            <response code="403">Permissão negada. O usuário não é o dono da empresa.</response>
+            <response code="404">A empresa não foi localizada.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.UpdateAddress(System.Int32,AgiVysSystem.Api.Dtos.CompanyAddressDto)">
             <summary>
-            Atualiza um endereço existente (Apenas o proprietário).
+            Atualização de Endereço Empresarial
             </summary>
-            <response code="200">Endereço atualizado com sucesso!</response>
-            <response code="404">Endereço não encontrada.</response>
+            <remarks>
+            Edita as informações de um endereço de empresa já existente.
+            **Regra de Segurança**: Esta operação valida cruzadamente se o usuário logado possui a empresa dona do endereço.
+            </remarks>
+            <param name="addressId">ID numérico único do endereço a ser modificado.</param>
+            <param name="dto">Novos dados completos do endereço.</param>
+            <response code="200">Endereço atualizado com sucesso.</response>
+            <response code="400">Dados inválidos enviados no payload.</response>
             <response code="401">Usuário não autenticado.</response>
-            <response code="403">Permissão negada.</response>
-            <response code="500">Erro ao atualizar endereço.</response>
+            <response code="403">Permissão negada. Endereço pertence a uma empresa de outro usuário.</response>
+            <response code="404">Endereço não localizado.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Company.CompanyController.DeleteAddress(System.Int32)">
             <summary>
-            Remove um endereço específico.
+            Exclusão de Endereço Empresarial
             </summary>
-            <response code="200">Endereço removida com sucesso!</response>
-            <response code="404">Endereço não encontrada.</response>
+            <remarks>
+            Remove definitivamente um endereço vinculado a uma empresa.
+            Valida previamente se a pessoa que está executando a exclusão é o proprietário da empresa detentora do endereço.
+            </remarks>
+            <param name="addressId">ID numérico único do endereço a ser removido.</param>
+            <response code="200">Endereço removido permanentemente.</response>
             <response code="401">Usuário não autenticado.</response>
-            <response code="500">Erro ao remover endereço.</response>
+            <response code="403">Permissão negada. O usuário não tem acesso a este endereço.</response>
+            <response code="404">Endereço não localizado.</response>
+            <response code="500">Erro interno do servidor ao tentar excluir o endereço.</response>
         </member>
         <member name="T:AgiVysSystem.Api.Controllers.Configuration.AppSystemController">
             <summary>
@@ -210,108 +350,331 @@
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.Create(AgiVysSystem.Api.Dtos.CreateAppSystemDto)">
             <summary>
-            Cadastra um novo sistema.
+            Cadastro de Sistema (AppSystem)
             </summary>
+            <remarks>
+            Adiciona um novo sistema raiz no ecossistema AgiVys. Nomes de sistemas devem ser únicos.
+            Requer a role de Administrador ou Desenvolvedor (Admin, Dev).
+            </remarks>
+            <param name="dto">Dados do sistema (Nome, Descrição).</param>
+            <response code="200">Sistema criado com sucesso.</response>
+            <response code="400">Dados inválidos ou nome já existente.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada (Role insuficiente).</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.GetAll">
             <summary>
-            Lista todos os sistemas cadastrados no ecossistema.
+            Listagem Geral de Sistemas
             </summary>
-            <response code="200">Retorna a lista de sistemas.</response>
+            <remarks>
+            Recupera a lista completa de todos os sistemas (AppSystems) registrados na plataforma.
+            </remarks>
+            <response code="200">Lista de sistemas recuperada com sucesso.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada (Role insuficiente).</response>
             <response code="500">Erro interno no servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.Update(System.Int32,AgiVysSystem.Api.Dtos.UpdateAppSystemDto)">
             <summary>
-            Atualiza os dados de um sistema existente.
+            Atualização de Sistema
             </summary>
+            <remarks>
+            Atualiza nome, descrição e parâmetros visuais (cores, domínio) de um sistema existente.
+            Valida se o novo nome não conflita com outro sistema.
+            </remarks>
+            <param name="id">ID numérico único do sistema.</param>
+            <param name="dto">Novos dados do sistema.</param>
+            <response code="200">Sistema atualizado com sucesso.</response>
+            <response code="400">ID da rota incompatível com payload ou nome duplicado.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada (Role insuficiente).</response>
+            <response code="404">Sistema não localizado.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.Delete(System.Int32)">
             <summary>
-            Exclui um sistema e seus vínculos em cascata.
+            Exclusão de Sistema
             </summary>
+            <remarks>
+            Remove um sistema e aciona exclusão em cascata das suas entidades filhas (Menus, Planos, etc) dependendo da configuração do banco de dados.
+            </remarks>
+            <param name="id">ID numérico do sistema.</param>
+            <response code="200">Sistema removido com sucesso.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada (Role insuficiente).</response>
+            <response code="404">Sistema não localizado.</response>
+            <response code="500">Erro interno (ex: falha de deleção em cascata).</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.CreateMenuHierarchy(AgiVysSystem.Api.Dtos.CreateMenuDto)">
             <summary>
-            Cadastra um menu e seus respectivos submenus de forma hierárquica.
+            Cadastro de Hierarquia de Menus
             </summary>
             <remarks>
-            Permite criar o agrupador (Menu) e suas funcionalidades filhas (Submenus) em uma única transação.
+            Cadastra um menu (Agrupador) e seus respectivos submenus (Funcionalidades) de forma atômica utilizando transação no banco.
             </remarks>
-            <response code="200">Hierarquia criada com sucesso.</response>
-            <response code="400">Dados inválidos ou IDs inexistentes.</response>
+            <param name="dto">Payload contendo os dados do Menu pai e array de Submenus.</param>
+            <response code="200">Hierarquia cadastrada com sucesso.</response>
+            <response code="400">Payload inválido ou Sistema Pai (AppSystem) não localizado.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="500">Erro na transação de banco de dados.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.GetSystemMenus(System.Int32)">
             <summary>
-            Retorna a árvore de menus e submenus de um sistema específico.
+            Listagem de Menus por Sistema
             </summary>
+            <remarks>
+            Recupera a árvore completa (Menus e Submenus) atrelada a um sistema específico.
+            A resposta é estruturada hierarquicamente para facilitar a montagem da UI do front-end.
+            </remarks>
+            <param name="systemId">ID do sistema a ser consultado.</param>
+            <response code="200">Árvore de menus recuperada.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.UpdateMenu(System.Int32,AgiVysSystem.Api.Dtos.UpdateMenuDto)">
             <summary>
-            Atualiza os dados de um Menu (Pai).
+            Atualização de Menu Pai
             </summary>
+            <remarks>
+            Edita apenas os dados de um Menu pai (Nome e Ícone). Não altera submenus diretamente por este endpoint.
+            </remarks>
+            <param name="id">ID do menu a ser atualizado.</param>
+            <param name="dto">Novos dados do menu.</param>
+            <response code="200">Menu atualizado.</response>
+            <response code="400">Payload inválido.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="404">Menu não encontrado.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.DeleteMenu(System.Int32)">
             <summary>
-            Remove um menu (e todos os seus submenus em cascata).
+            Exclusão de Menu (em cascata)
             </summary>
+            <remarks>
+            Remove o Menu Pai e, consequentemente, destrói todos os seus Submenus atrelados no banco de dados.
+            </remarks>
+            <param name="id">ID do menu a ser removido.</param>
+            <response code="200">Menu e filhos removidos.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="404">Menu não encontrado.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.CreatePlan(AgiVysSystem.Api.Dtos.CreatePlanDto)">
             <summary>
-            Cria um plano vinculando-o a um sistema e selecionando Menus e Submenus específicos.
+            Criação de Plano de Assinatura
             </summary>
             <remarks>
-            Permite granularidade total: você pode liberar um Menu e apenas alguns de seus Submenus.
+            Cria um novo plano comercial para um Sistema, vinculando quais Menus e Submenus os assinantes deste plano terão acesso.
+            Oferece controle granular de permissões (Access Control List baseado em plano).
             </remarks>
-            <response code="200">Plano criado e permissões vinculadas.</response>
+            <param name="dto">Payload com os dados do plano (Nome, Preço, Trial) e as permissões de acesso.</param>
+            <response code="200">Plano criado e permissões vinculadas com sucesso.</response>
+            <response code="400">Payload inválido.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada (Role insuficiente).</response>
+            <response code="500">Erro na transação ao vincular permissões.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.GetPlansBySystem(System.Int32)">
             <summary>
-            Lista todos os planos de um sistema, detalhando os menus e submenus liberados.
+            Listagem de Planos por Sistema
             </summary>
-            <param name="systemId">ID do sistema para filtrar os planos.</param>
+            <remarks>
+            Recupera a lista de planos de um determinado sistema, expandindo (Include) detalhadamente as permissões (Menus e Submenus) liberadas por cada plano.
+            </remarks>
+            <param name="systemId">ID do sistema a ser consultado.</param>
+            <response code="200">Planos e permissões recuperados com sucesso.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="404">Nenhum plano cadastrado para o sistema informado.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.UpdatePlan(System.Int32,AgiVysSystem.Api.Dtos.CreatePlanDto)">
             <summary>
-            Atualiza um plano existente e suas permissões de menus/submenus.
+            Atualização de Plano e Permissões
             </summary>
-            <param name="id">ID do plano a ser editado.</param>
-            <param name="dto">Novos dados do plano e lista de permissões.</param>
+            <remarks>
+            Modifica os dados básicos do plano (Preço, Trial, etc) e recria os vínculos de acesso aos Menus e Submenus associados.
+            Utiliza transação para garantir que a troca de permissões seja atômica.
+            </remarks>
+            <param name="id">ID do plano a ser atualizado.</param>
+            <param name="dto">Payload completo contendo a nova configuração do plano.</param>
+            <response code="200">Plano e acessos atualizados com sucesso.</response>
+            <response code="400">Payload com dados malformados.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="404">Plano não localizado na base de dados.</response>
+            <response code="500">Falha durante o commit da transação de atualização.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.AppSystemController.DeletePlan(System.Int32)">
             <summary>
-            Remove um plano e todos os seus vínculos de permissão.
+            Exclusão de Plano
             </summary>
-            <param name="id">ID do plano a ser removido.</param>
+            <remarks>
+            Deleta fisicamente um plano do banco de dados e remove suas associações com Menus e Submenus.
+            *Nota*: Caso existam empresas atreladas a este plano, a exclusão pode falhar por restrição de chave estrangeira.
+            </remarks>
+            <param name="id">ID do plano a ser excluído.</param>
+            <response code="200">Plano e vínculos removidos permanentemente.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="404">Plano não localizado.</response>
+            <response code="500">Erro interno (provável violação de restrição do banco de dados).</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.GetAll">
             <summary>
-            Lista todas as integrações cadastradas.
+            Listagem Geral de Integrações
             </summary>
+            <remarks>
+            Recupera todas as integrações (Gateways de Pagamento, ERPs, APIs externas) registradas em todos os sistemas.
+            Os parâmetros sensíveis (chaves de API) são listados, porém é responsabilidade do front-end mascará-los caso necessário.
+            </remarks>
+            <response code="200">Lista completa de integrações e parâmetros.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada. Apenas Admin e Dev têm acesso.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.GetBySystem(System.Int32)">
             <summary>
-            Lista integrações vinculadas a um sistema específico.
+            Listagem de Integrações por Sistema
             </summary>
+            <remarks>
+            Retorna as integrações ativas atreladas especificamente a um sistema (AppSystem).
+            </remarks>
+            <param name="appSystemId">ID do sistema alvo.</param>
+            <response code="200">Integrações do sistema recuperadas com sucesso.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.GetById(System.Int32)">
             <summary>
-            Busca uma integração específica pelo ID.
+            Busca de Integração por ID
             </summary>
+            <remarks>
+            Recupera os dados detalhados e os parâmetros (chaves e valores) de uma integração específica.
+            </remarks>
+            <param name="id">ID numérico da integração.</param>
+            <response code="200">Dados da integração localizados com sucesso.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="404">A integração informada não foi localizada.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.Create(AgiVysSystem.Api.DTOs.CreateIntegrationDto)">
             <summary>
-            Cria uma nova integração e seus parâmetros.
+            Cadastro de Nova Integração
             </summary>
+            <remarks>
+            Cadastra uma integração no sistema, recebendo também a lista de parâmetros (Chave e Valor) necessários para o funcionamento.
+            É verificado previamente se o sistema informado (AppSystem) existe na base de dados.
+            </remarks>
+            <param name="dto">Dados e parâmetros da integração.</param>
+            <response code="201">Integração criada com sucesso. Retorna o ID gerado.</response>
+            <response code="400">Payload inválido ou o Sistema (AppSystemId) não existe.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.Update(System.Int32,AgiVysSystem.Api.DTOs.UpdateIntegrationDto)">
             <summary>
-            Atualiza os dados de uma integração e sincroniza seus parâmetros.
+            Atualização e Sincronização de Integração
             </summary>
+            <remarks>
+            Atualiza os dados principais da integração e realiza uma **sincronização de parâmetros**. 
+            Parâmetros não enviados no payload serão excluídos; parâmetros sem ID serão criados; parâmetros com ID serão atualizados.
+            </remarks>
+            <param name="id">ID numérico da integração.</param>
+            <param name="dto">Novos dados da integração e lista atualizada de parâmetros.</param>
+            <response code="200">Integração e parâmetros sincronizados com sucesso.</response>
+            <response code="400">Payload inválido.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="404">A integração não foi encontrada.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.Configuration.IntegrationController.Delete(System.Int32)">
             <summary>
-            Exclui uma integração (os parâmetros são removidos em cascata automaticamente).
+            Exclusão de Integração
             </summary>
+            <remarks>
+            Deleta fisicamente uma integração do sistema. 
+            O banco de dados (EF Core) cuida de excluir em cascata todos os parâmetros atrelados a ela.
+            </remarks>
+            <param name="id">ID numérico da integração a ser excluída.</param>
+            <response code="200">Integração e seus parâmetros removidos permanentemente.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada.</response>
+            <response code="404">A integração informada não foi localizada.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="T:AgiVysSystem.Api.Controllers.Person.PersonController">
+            <summary>
+            Controlador responsável pela gestão de dados pessoais.
+            </summary>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Person.PersonController.UpdatePerson(AgiVysSystem.Api.DTOs.UpdatePersonDto)">
+            <summary>
+            Atualização Completa de Perfil (Person)
+            </summary>
+            <remarks>
+            Substitui integralmente os dados pessoais do usuário autenticado.
+            **Importante**: Caso o E-mail seja alterado, o login (UserName) na base do Identity também será atualizado simultaneamente para manter a consistência de acesso.
+            </remarks>
+            <param name="model">Objeto contendo todos os dados atualizados.</param>
+            <response code="200">Perfil e credenciais de login atualizados com sucesso.</response>
+            <response code="400">Dados inválidos ou erro durante a atualização no Identity.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="404">Registro de pessoa física (Person) não localizado para este usuário.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Person.PersonController.GetPerson">
+            <summary>
+            Consulta de Perfil do Usuário Autenticado
+            </summary>
+            <remarks>
+            Recupera os dados pessoais (Person) atrelados ao usuário logado, utilizando o ID presente no Bearer Token (ClaimTypes.NameIdentifier).
+            Endpoint padrão para carregar a página "Meu Perfil" no front-end.
+            </remarks>
+            <response code="200">Dados do perfil recuperados com sucesso.</response>
+            <response code="401">Usuário não autenticado (Token ausente ou inválido).</response>
+            <response code="404">Perfil (Person) não localizado na base de dados.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Person.PersonController.GetPersonById(System.Int32)">
+            <summary>
+            Consulta de Perfil por ID (Admin/Dev)
+            </summary>
+            <remarks>
+            Recupera os dados de qualquer perfil (Person) através de seu ID.
+            **Regra de Segurança**: Endpoint restrito apenas a administradores ou desenvolvedores da plataforma.
+            </remarks>
+            <param name="id">ID numérico do perfil (Person).</param>
+            <response code="200">Dados do perfil recuperados com sucesso.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada. Apenas Admin e Dev têm acesso.</response>
+            <response code="404">Perfil (Person) não localizado.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Person.PersonController.PatchPerson(AgiVysSystem.Api.DTOs.PatchPersonDto)">
+            <summary>
+            Atualização Parcial de Perfil (PATCH)
+            </summary>
+            <remarks>
+            Modifica parcialmente os dados do usuário autenticado.
+            Apenas os atributos enviados no payload serão alterados; os demais permanecerão intactos.
+            Se o E-mail for enviado no payload, o login (UserName) correspondente no Identity também será atualizado.
+            </remarks>
+            <param name="model">Objeto contendo os dados a serem atualizados (campos opcionais).</param>
+            <response code="200">Dados parciais e credenciais (caso e-mail fornecido) atualizados com sucesso.</response>
+            <response code="400">Payload malformado ou erro no processamento.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="404">Perfil (Person) não localizado para este usuário.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="T:AgiVysSystem.Api.Controllers.RLS.RLSController">
             <summary>
@@ -320,56 +683,135 @@
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.RLS.RLSController.GetRoles">
             <summary>
-            Retorna a lista de todas as roles cadastradas.
+            Listagem de Regras de Acesso (Roles)
             </summary>
-            <returns>Lista com Id e Name das roles</returns>
+            <remarks>
+            Recupera todas as regras de controle de acesso (Roles) cadastradas no sistema Identity.
+            Endpoint restrito a perfis de administração (Admin e Dev).
+            </remarks>
+            <response code="200">Lista de roles recuperada com sucesso.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada (Role insuficiente).</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.RLS.RLSController.AssignRole(AgiVysSystem.Api.DTOs.RLS.AssignRoleRequestDto)">
             <summary>
-            Vincula um usuário a uma role.
+            Atribuição de Regra (Role) a Usuário
             </summary>
-            <param name="dto">Dados para vincular a role</param>
-            <returns>Mensagem de sucesso ou erro</returns>
+            <remarks>
+            Vincula uma Regra de Acesso (Role) a um Usuário específico. O vínculo pode ser feito através do `RoleId` numérico ou diretamente pelo `RoleName` textual.
+            É verificado previamente se o usuário já possui a regra atribuída para evitar duplicidade.
+            </remarks>
+            <param name="dto">Objeto contendo o ID do usuário e a identificação da Role (Id ou Nome).</param>
+            <response code="200">Regra atribuída ao usuário com sucesso.</response>
+            <response code="400">Payload inválido, IDs nulos ou o usuário já possui a Role.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada (Role insuficiente).</response>
+            <response code="404">Usuário ou Role informada não localizada na base de dados.</response>
+            <response code="500">Erro interno do Identity ao tentar realizar o vínculo.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.RLS.RLSController.RemoveRole(AgiVysSystem.Api.DTOs.RLS.RemoveRoleRequestDto)">
             <summary>
-            Remove uma role de um usuário.
+            Remoção de Regra (Role) de um Usuário
             </summary>
-            <param name="dto">Dados para remover a role</param>
-            <returns>Mensagem de sucesso ou erro</returns>
+            <remarks>
+            Desvincula uma Regra de Acesso de um usuário. O vínculo pode ser removido utilizando o `RoleId` numérico ou o `RoleName` textual.
+            É verificado previamente se o usuário realmente possui esta regra vinculada.
+            </remarks>
+            <param name="dto">Objeto contendo o ID do usuário e a identificação da Role (Id ou Nome).</param>
+            <response code="200">Regra removida do usuário com sucesso.</response>
+            <response code="400">Payload inválido, IDs nulos ou o usuário não possui a Role informada.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada (Role insuficiente).</response>
+            <response code="404">Usuário ou Role informada não localizada na base de dados.</response>
+            <response code="500">Erro interno do Identity ao tentar desfazer o vínculo.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.RLS.RLSController.CreateRole(AgiVysSystem.Api.DTOs.RLS.CreateRoleDto)">
+            <summary>
+            Cadastro de Nova Regra (Role)
+            </summary>
+            <remarks>
+            Cria uma nova regra global (Role) no sistema (ex: Financeiro, RH, Suporte).
+            **Regra de Segurança**: Esta operação estrutural é restrita apenas a perfis de Desenvolvedor (Dev).
+            </remarks>
+            <param name="dto">Objeto contendo o Nome da nova role.</param>
+            <response code="200">Role criada e registrada com sucesso no Identity.</response>
+            <response code="400">Payload em branco, nulo ou nome da Role já existente.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada. Apenas perfis 'Dev' podem criar novas regras estruturais.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.RLS.RLSController.EditRole(AgiVysSystem.Api.DTOs.RLS.RoleDto)">
+            <summary>
+            Atualização de Nome de Regra (Role)
+            </summary>
+            <remarks>
+            Altera o nome de uma Role existente. Essa alteração é propagada globalmente no sistema de permissões.
+            **Regra de Segurança**: Restrito a perfis de Desenvolvedor (Dev).
+            </remarks>
+            <param name="dto">Objeto contendo o ID numérico e o Novo Nome da role.</param>
+            <response code="200">Nome da role atualizado com sucesso.</response>
+            <response code="400">Payload inválido ou o novo nome já está em uso por outra Role.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada. Apenas perfis 'Dev' podem editar regras.</response>
+            <response code="404">Role informada não encontrada na base de dados.</response>
+            <response code="500">Erro interno do Identity ao tentar atualizar a Role.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.UserAccessMap.UserAccessMapController.AddUserAccessMap(AgiVysSystem.Api.DTOs.UserAccessMap.UserAccessMapDto)">
             <summary>
-            Vincula um usuário a um menu.
+            Concessão de Acesso a Menu (ACL)
             </summary>
-            <response code="200">Vínculo criado com sucesso.</response>
-            <response code="400">Erro nos dados enviados.</response>
-            <response code="401">Não autenticado.</response>
-            <response code="403">Sem permissão (Owner necessário).</response>
+            <remarks>
+            Concede acesso explícito a um Menu/Funcionalidade para um usuário específico.
+            Utilizado para criar permissões granulares por usuário que vão além das permissões de Plano ou Regra Global.
+            **Regra de Segurança**: Exige privilégio de Dono (Owner) do workspace.
+            </remarks>
+            <param name="dto">Dados do vínculo (ID do Usuário e ID do Menu).</param>
+            <response code="200">Acesso concedido com sucesso.</response>
+            <response code="400">Payload inválido ou vínculo já existente.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada. Apenas 'Owner' tem acesso.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.UserAccessMap.UserAccessMapController.RemoveUserAccessMap(AgiVysSystem.Api.DTOs.UserAccessMap.UserAccessMapDto)">
             <summary>
-            Remove o vínculo de um usuário com um menu.
+            Revogação de Acesso a Menu (ACL)
             </summary>
-            <response code="200">Vínculo removido com sucesso.</response>
-            <response code="400">Erro nos dados enviados.</response>
-            <response code="401">Não autenticado.</response>
-            <response code="403">Sem permissão (Owner necessário).</response>
+            <remarks>
+            Revoga o acesso explícito de um usuário a um Menu/Funcionalidade específica.
+            **Regra de Segurança**: Exige privilégio de Dono (Owner) do workspace.
+            </remarks>
+            <param name="dto">Dados do vínculo a ser removido (ID do Usuário e ID do Menu).</param>
+            <response code="200">Acesso revogado com sucesso.</response>
+            <response code="400">Payload inválido ou vínculo não localizado.</response>
+            <response code="401">Usuário não autenticado.</response>
+            <response code="403">Permissão negada. Apenas 'Owner' tem acesso.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.UserAccessMap.UserAccessMapController.GetUserAccessMap">
             <summary>
-            Obtém os mapas de acesso (Sistemas, Menus e Submenus) do usuário logado.
+            Consulta de Árvore de Acesso do Usuário (Base de Dados)
             </summary>
-            <response code="200">Retorna os acessos do usuário.</response>
-            <response code="401">Não autenticado.</response>
+            <remarks>
+            Consulta no banco de dados toda a árvore hierárquica de permissões (Sistemas -> Menus -> Submenus) disponível para o usuário autenticado.
+            O ID do usuário é extraído de forma segura via token (ClaimTypes.NameIdentifier).
+            </remarks>
+            <response code="200">Árvore de permissões recuperada com sucesso.</response>
+            <response code="400">Erro durante a montagem da árvore.</response>
+            <response code="401">Usuário não autenticado ou ID do token inválido.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="M:AgiVysSystem.Api.Controllers.UserAccessMap.UserAccessMapController.GetUserAccessMapFromSession">
             <summary>
-            Obtém os mapas de acesso (Sistemas, Menus e Submenus) do usuário a partir do cookie da sessão (HttpOnly).
-            Evita acesso ao banco de dados para ganho extremo de performance.
+            Consulta de Árvore de Acesso do Usuário (via Sessão/Cookie)
             </summary>
-            <response code="200">Retorna os acessos do usuário.</response>
-            <response code="401">Não autenticado ou cookie ausente.</response>
+            <remarks>
+            Deserializa a árvore hierárquica de permissões (Sistemas -> Menus -> Submenus) diretamente de um Cookie HttpOnly encriptado e codificado em Base64.
+            **Performance**: Projetado para renderização imediata do front-end com ganho extremo de velocidade (0 trips ao banco de dados).
+            </remarks>
+            <response code="200">Árvore de permissões carregada com sucesso da sessão.</response>
+            <response code="401">Cookie de sessão ausente, malformado ou corrompido.</response>
+            <response code="500">Erro interno do servidor.</response>
         </member>
         <member name="T:AgiVysSystem.Migrations.InitialIdentity">
             <inheritdoc />

@@ -27,11 +27,24 @@ public class AppSystemController : ControllerBase
     #region AppSystem (Sistemas)
 
     /// <summary>
-    /// Cadastra um novo sistema.
+    /// Cadastro de Sistema (AppSystem)
     /// </summary>
+    /// <remarks>
+    /// Adiciona um novo sistema raiz no ecossistema AgiVys. Nomes de sistemas devem ser únicos.
+    /// Requer a role de Administrador ou Desenvolvedor (Admin, Dev).
+    /// </remarks>
+    /// <param name="dto">Dados do sistema (Nome, Descrição).</param>
+    /// <response code="200">Sistema criado com sucesso.</response>
+    /// <response code="400">Dados inválidos ou nome já existente.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada (Role insuficiente).</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] CreateAppSystemDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -59,12 +72,19 @@ public class AppSystemController : ControllerBase
     }
 
     /// <summary>
-    /// Lista todos os sistemas cadastrados no ecossistema.
+    /// Listagem Geral de Sistemas
     /// </summary>
-    /// <response code="200">Retorna a lista de sistemas.</response>
+    /// <remarks>
+    /// Recupera a lista completa de todos os sistemas (AppSystems) registrados na plataforma.
+    /// </remarks>
+    /// <response code="200">Lista de sistemas recuperada com sucesso.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada (Role insuficiente).</response>
     /// <response code="500">Erro interno no servidor.</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
@@ -80,9 +100,27 @@ public class AppSystemController : ControllerBase
     }
 
     /// <summary>
-    /// Atualiza os dados de um sistema existente.
+    /// Atualização de Sistema
     /// </summary>
+    /// <remarks>
+    /// Atualiza nome, descrição e parâmetros visuais (cores, domínio) de um sistema existente.
+    /// Valida se o novo nome não conflita com outro sistema.
+    /// </remarks>
+    /// <param name="id">ID numérico único do sistema.</param>
+    /// <param name="dto">Novos dados do sistema.</param>
+    /// <response code="200">Sistema atualizado com sucesso.</response>
+    /// <response code="400">ID da rota incompatível com payload ou nome duplicado.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada (Role insuficiente).</response>
+    /// <response code="404">Sistema não localizado.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateAppSystemDto dto)
     {
         if (id != dto.Id) return BadRequest(new { message = "ID da rota não confere com o ID do payload." });
@@ -113,9 +151,23 @@ public class AppSystemController : ControllerBase
     }
 
     /// <summary>
-    /// Exclui um sistema e seus vínculos em cascata.
+    /// Exclusão de Sistema
     /// </summary>
+    /// <remarks>
+    /// Remove um sistema e aciona exclusão em cascata das suas entidades filhas (Menus, Planos, etc) dependendo da configuração do banco de dados.
+    /// </remarks>
+    /// <param name="id">ID numérico do sistema.</param>
+    /// <response code="200">Sistema removido com sucesso.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada (Role insuficiente).</response>
+    /// <response code="404">Sistema não localizado.</response>
+    /// <response code="500">Erro interno (ex: falha de deleção em cascata).</response>
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete(int id)
     {
         try
@@ -139,14 +191,23 @@ public class AppSystemController : ControllerBase
     #region Menus e Submenus
 
     /// <summary>
-    /// Cadastra um menu e seus respectivos submenus de forma hierárquica.
+    /// Cadastro de Hierarquia de Menus
     /// </summary>
     /// <remarks>
-    /// Permite criar o agrupador (Menu) e suas funcionalidades filhas (Submenus) em uma única transação.
+    /// Cadastra um menu (Agrupador) e seus respectivos submenus (Funcionalidades) de forma atômica utilizando transação no banco.
     /// </remarks>
-    /// <response code="200">Hierarquia criada com sucesso.</response>
-    /// <response code="400">Dados inválidos ou IDs inexistentes.</response>
+    /// <param name="dto">Payload contendo os dados do Menu pai e array de Submenus.</param>
+    /// <response code="200">Hierarquia cadastrada com sucesso.</response>
+    /// <response code="400">Payload inválido ou Sistema Pai (AppSystem) não localizado.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada.</response>
+    /// <response code="500">Erro na transação de banco de dados.</response>
     [HttpPost("menus")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateMenuHierarchy([FromBody] CreateMenuDto dto)
     {
         var systemExists = await _context.AppSystems.AnyAsync(s => s.Id == dto.SystemId);
@@ -192,9 +253,22 @@ public class AppSystemController : ControllerBase
     }
 
     /// <summary>
-    /// Retorna a árvore de menus e submenus de um sistema específico.
+    /// Listagem de Menus por Sistema
     /// </summary>
+    /// <remarks>
+    /// Recupera a árvore completa (Menus e Submenus) atrelada a um sistema específico.
+    /// A resposta é estruturada hierarquicamente para facilitar a montagem da UI do front-end.
+    /// </remarks>
+    /// <param name="systemId">ID do sistema a ser consultado.</param>
+    /// <response code="200">Árvore de menus recuperada.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpGet("{systemId}/menus")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetSystemMenus(int systemId)
     {
         try
@@ -225,9 +299,26 @@ public class AppSystemController : ControllerBase
     }
 
     /// <summary>
-    /// Atualiza os dados de um Menu (Pai).
+    /// Atualização de Menu Pai
     /// </summary>
+    /// <remarks>
+    /// Edita apenas os dados de um Menu pai (Nome e Ícone). Não altera submenus diretamente por este endpoint.
+    /// </remarks>
+    /// <param name="id">ID do menu a ser atualizado.</param>
+    /// <param name="dto">Novos dados do menu.</param>
+    /// <response code="200">Menu atualizado.</response>
+    /// <response code="400">Payload inválido.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada.</response>
+    /// <response code="404">Menu não encontrado.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpPut("menus/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateMenu(int id, [FromBody] UpdateMenuDto dto)
     {
         var menu = await _context.Menus.FindAsync(id);
@@ -250,9 +341,23 @@ public class AppSystemController : ControllerBase
     }
 
     /// <summary>
-    /// Remove um menu (e todos os seus submenus em cascata).
+    /// Exclusão de Menu (em cascata)
     /// </summary>
+    /// <remarks>
+    /// Remove o Menu Pai e, consequentemente, destrói todos os seus Submenus atrelados no banco de dados.
+    /// </remarks>
+    /// <param name="id">ID do menu a ser removido.</param>
+    /// <response code="200">Menu e filhos removidos.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada.</response>
+    /// <response code="404">Menu não encontrado.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpDelete("menus/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteMenu(int id)
     {
         var menu = await _context.Menus.FindAsync(id);
@@ -268,13 +373,24 @@ public class AppSystemController : ControllerBase
     #region Plans (Planos)
 
     /// <summary>
-    /// Cria um plano vinculando-o a um sistema e selecionando Menus e Submenus específicos.
+    /// Criação de Plano de Assinatura
     /// </summary>
     /// <remarks>
-    /// Permite granularidade total: você pode liberar um Menu e apenas alguns de seus Submenus.
+    /// Cria um novo plano comercial para um Sistema, vinculando quais Menus e Submenus os assinantes deste plano terão acesso.
+    /// Oferece controle granular de permissões (Access Control List baseado em plano).
     /// </remarks>
-    /// <response code="200">Plano criado e permissões vinculadas.</response>
+    /// <param name="dto">Payload com os dados do plano (Nome, Preço, Trial) e as permissões de acesso.</param>
+    /// <response code="200">Plano criado e permissões vinculadas com sucesso.</response>
+    /// <response code="400">Payload inválido.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada (Role insuficiente).</response>
+    /// <response code="500">Erro na transação ao vincular permissões.</response>
     [HttpPost("plans")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreatePlan([FromBody] CreatePlanDto dto) 
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -314,10 +430,23 @@ public class AppSystemController : ControllerBase
     }
 
     /// <summary>
-    /// Lista todos os planos de um sistema, detalhando os menus e submenus liberados.
+    /// Listagem de Planos por Sistema
     /// </summary>
-    /// <param name="systemId">ID do sistema para filtrar os planos.</param>
+    /// <remarks>
+    /// Recupera a lista de planos de um determinado sistema, expandindo (Include) detalhadamente as permissões (Menus e Submenus) liberadas por cada plano.
+    /// </remarks>
+    /// <param name="systemId">ID do sistema a ser consultado.</param>
+    /// <response code="200">Planos e permissões recuperados com sucesso.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada.</response>
+    /// <response code="404">Nenhum plano cadastrado para o sistema informado.</response>
+    /// <response code="500">Erro interno do servidor.</response>
     [HttpGet("{systemId}/plans")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetPlansBySystem(int systemId)
     {
         try
@@ -370,11 +499,27 @@ public class AppSystemController : ControllerBase
     }
 
     /// <summary>
-    /// Atualiza um plano existente e suas permissões de menus/submenus.
+    /// Atualização de Plano e Permissões
     /// </summary>
-    /// <param name="id">ID do plano a ser editado.</param>
-    /// <param name="dto">Novos dados do plano e lista de permissões.</param>
+    /// <remarks>
+    /// Modifica os dados básicos do plano (Preço, Trial, etc) e recria os vínculos de acesso aos Menus e Submenus associados.
+    /// Utiliza transação para garantir que a troca de permissões seja atômica.
+    /// </remarks>
+    /// <param name="id">ID do plano a ser atualizado.</param>
+    /// <param name="dto">Payload completo contendo a nova configuração do plano.</param>
+    /// <response code="200">Plano e acessos atualizados com sucesso.</response>
+    /// <response code="400">Payload com dados malformados.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada.</response>
+    /// <response code="404">Plano não localizado na base de dados.</response>
+    /// <response code="500">Falha durante o commit da transação de atualização.</response>
     [HttpPut("plans/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdatePlan(int id, [FromBody] CreatePlanDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -423,10 +568,24 @@ public class AppSystemController : ControllerBase
     }
 
     /// <summary>
-    /// Remove um plano e todos os seus vínculos de permissão.
+    /// Exclusão de Plano
     /// </summary>
-    /// <param name="id">ID do plano a ser removido.</param>
+    /// <remarks>
+    /// Deleta fisicamente um plano do banco de dados e remove suas associações com Menus e Submenus.
+    /// *Nota*: Caso existam empresas atreladas a este plano, a exclusão pode falhar por restrição de chave estrangeira.
+    /// </remarks>
+    /// <param name="id">ID do plano a ser excluído.</param>
+    /// <response code="200">Plano e vínculos removidos permanentemente.</response>
+    /// <response code="401">Usuário não autenticado.</response>
+    /// <response code="403">Permissão negada.</response>
+    /// <response code="404">Plano não localizado.</response>
+    /// <response code="500">Erro interno (provável violação de restrição do banco de dados).</response>
     [HttpDelete("plans/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeletePlan(int id)
     {
         try

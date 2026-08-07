@@ -1,0 +1,3069 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "AgiVysSystem API",
+    "description": "API para gestão do ecossistema AgiVysSystem",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://joederblanca.com.br/agivys-api"
+    }
+  ],
+  "paths": {
+    "/api/v1/authentication/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Autenticação de Usuário (Login)",
+        "description": "Valida as credenciais do usuário e, se corretas, retorna um Token JWT junto com os dados essenciais do perfil e permissões.\r\n\r\n**Detalhes Importantes:**\r\n- O token gerado possui validade de **4 horas**.\r\n- O token deve ser enviado no cabeçalho `Authorization: Bearer {token}` em requisições subsequentes.\r\n- Além do token, a API também pode gerar um cookie `MedNext_Menu` (HttpOnly) contendo as permissões.",
+        "requestBody": {
+          "description": "Credenciais de acesso (E-mail e Senha).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso. Retorna o Token e dados do usuário.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "E-mail ou senha incorretos."
+          },
+          "500": {
+            "description": "Erro interno do servidor ao tentar autenticar."
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Encerramento de Sessão (Logout)",
+        "description": "Realiza o logout do usuário limpando os cookies de sessão, em especial o cookie `MedNext_Menu`.\r\nObserve que, como o JWT é stateless, o cliente também deve descartar o token do lado do front-end.",
+        "responses": {
+          "200": {
+            "description": "Logout realizado com sucesso. Cookies removidos."
+          },
+          "500": {
+            "description": "Erro interno ao processar o logout."
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/register-system-user": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Registro de Proprietário de Sistema",
+        "description": "Cria um novo usuário com a role \"Owner\" (Proprietário) vinculado a um sistema específico (`IdSystem`).\r\n\r\n**Regras de Negócio:**\r\n- O E-mail fornecido não pode existir previamente na base de dados.\r\n- O ID do sistema deve corresponder a um registro válido.\r\n- Um documento fictício único é gerado automaticamente.\r\n- Após o sucesso, um e-mail de boas-vindas com as cores do sistema é enviado.\r\n- A senha deve obedecer a política de segurança (letras, números e caracteres especiais).",
+        "requestBody": {
+          "description": "Dados necessários para criar a conta (Nome, E-mail, Senha, Sistema, etc).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterSystemUserDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterSystemUserDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterSystemUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário cadastrado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos, e-mail já em uso, sistema inexistente ou senha fraca."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/forgot-password": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Solicitação de Recuperação de Senha",
+        "description": "Envia um e-mail contendo um link seguro para redefinição de senha, caso o e-mail exista na base.\r\n\r\n**Comportamento de Segurança:**\r\n- Para evitar enumeração de contas, a API sempre retorna 200 OK informando que \"Se o e-mail existir, o link foi enviado\", mesmo que o e-mail não seja encontrado.\r\n- O link gerado expira em 2 horas.",
+        "requestBody": {
+          "description": "E-mail do usuário e opcionalmente o ID do sistema para customização do template.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Requisição processada com sucesso (e-mail enviado se a conta existir)."
+          },
+          "500": {
+            "description": "Erro interno ao gerar o token ou enviar o e-mail."
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/reset-password": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Redefinição de Senha",
+        "description": "Processa o token gerado na recuperação de senha e define a nova senha fornecida.\r\nO token enviado pelo cliente deve estar em formato `Base64Url`.",
+        "requestBody": {
+          "description": "E-mail, token de recuperação e a nova senha.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha atualizada com sucesso."
+          },
+          "400": {
+            "description": "Usuário não encontrado, token inválido, expirado, ou nova senha fraca."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/change-password": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Alteração de Senha do Usuário Logado",
+        "description": "Permite que um usuário autenticado mude sua própria senha.\r\nÉ obrigatório informar a senha atual para garantir a segurança da operação.",
+        "requestBody": {
+          "description": "Objeto contendo a senha atual e a nova senha.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha alterada com sucesso."
+          },
+          "400": {
+            "description": "Senha atual incorreta ou nova senha não atende aos requisitos."
+          },
+          "401": {
+            "description": "Usuário não autenticado (Token JWT ausente ou inválido)."
+          },
+          "404": {
+            "description": "Registro do usuário autenticado não foi encontrado no banco de dados."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/address/my-address": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Listagem de Endereços do Usuário",
+        "description": "Recupera todos os endereços físicos vinculados ao perfil pessoal (Person) do usuário atualmente autenticado.\r\nÉ necessário enviar o Bearer Token no cabeçalho da requisição.",
+        "responses": {
+          "200": {
+            "description": "Lista de endereços recuperada com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado ou token inválido."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Cadastro de Novo Endereço",
+        "description": "Adiciona um novo endereço físico ao perfil do usuário autenticado. \r\nO usuário deve possuir um registro de `Person` previamente criado no banco de dados.",
+        "requestBody": {
+          "description": "Dados completos do endereço, incluindo CEP, Logradouro, Número, Bairro, Cidade e Estado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressPersonDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressPersonDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressPersonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Endereço cadastrado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos ou erro de validação."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "404": {
+            "description": "Perfil (Person) não localizado para o usuário autenticado."
+          },
+          "500": {
+            "description": "Erro interno ao processar a inclusão."
+          }
+        }
+      }
+    },
+    "/api/v1/address/my-address/{id}": {
+      "put": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Atualização de Endereço Existente",
+        "description": "Modifica os dados de um endereço previamente cadastrado.\r\n**Regra de Segurança**: O endereço a ser alterado deve pertencer estritamente ao perfil do usuário autenticado. Tentativas de alterar endereços de terceiros resultarão em bloqueio de acesso (HTTP 403).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID único do endereço a ser atualizado.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Objeto contendo os novos dados do endereço.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressPersonDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressPersonDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressPersonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Endereço atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos no corpo da requisição."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. O endereço pertence a outro usuário."
+          },
+          "404": {
+            "description": "Endereço não localizado na base de dados."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Exclusão de Endereço",
+        "description": "Remove de forma permanente um endereço vinculado ao perfil do usuário autenticado.\r\n**Regra de Segurança**: A exclusão só será permitida caso o endereço pertença ao usuário logado, protegendo os dados contra acesso indevido (Insecure Direct Object Reference).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID único numérico do endereço a ser removido.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endereço removido permanentemente com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Ação negada. O endereço não pertence ao usuário."
+          },
+          "404": {
+            "description": "O endereço especificado não foi encontrado."
+          },
+          "500": {
+            "description": "Erro interno do servidor ao processar a exclusão."
+          }
+        }
+      }
+    },
+    "/api/v1/person": {
+      "put": {
+        "tags": [
+          "Person"
+        ],
+        "summary": "Atualização Completa de Perfil (Person)",
+        "description": "Substitui integralmente os dados pessoais do usuário autenticado.\r\n**Importante**: Caso o E-mail seja alterado, o login (UserName) na base do Identity também será atualizado simultaneamente para manter a consistência de acesso.",
+        "requestBody": {
+          "description": "Objeto contendo todos os dados atualizados.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perfil e credenciais de login atualizados com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos ou erro durante a atualização no Identity."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "404": {
+            "description": "Registro de pessoa física (Person) não localizado para este usuário."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Person"
+        ],
+        "summary": "Consulta de Perfil do Usuário Autenticado",
+        "description": "Recupera os dados pessoais (Person) atrelados ao usuário logado, utilizando o ID presente no Bearer Token (ClaimTypes.NameIdentifier).\r\nEndpoint padrão para carregar a página \"Meu Perfil\" no front-end.",
+        "responses": {
+          "200": {
+            "description": "Dados do perfil recuperados com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado (Token ausente ou inválido)."
+          },
+          "404": {
+            "description": "Perfil (Person) não localizado na base de dados."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Person"
+        ],
+        "summary": "Atualização Parcial de Perfil (PATCH)",
+        "description": "Modifica parcialmente os dados do usuário autenticado.\r\nApenas os atributos enviados no payload serão alterados; os demais permanecerão intactos.\r\nSe o E-mail for enviado no payload, o login (UserName) correspondente no Identity também será atualizado.",
+        "requestBody": {
+          "description": "Objeto contendo os dados a serem atualizados (campos opcionais).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchPersonDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchPersonDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchPersonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dados parciais e credenciais (caso e-mail fornecido) atualizados com sucesso."
+          },
+          "400": {
+            "description": "Payload malformado ou erro no processamento."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "404": {
+            "description": "Perfil (Person) não localizado para este usuário."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/person/{id}": {
+      "get": {
+        "tags": [
+          "Person"
+        ],
+        "summary": "Consulta de Perfil por ID (Admin/Dev)",
+        "description": "Recupera os dados de qualquer perfil (Person) através de seu ID.\r\n**Regra de Segurança**: Endpoint restrito apenas a administradores ou desenvolvedores da plataforma.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID numérico do perfil (Person).",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do perfil recuperados com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. Apenas Admin e Dev têm acesso."
+          },
+          "404": {
+            "description": "Perfil (Person) não localizado."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/rls": {
+      "get": {
+        "tags": [
+          "RLS"
+        ],
+        "summary": "Listagem de Regras de Acesso (Roles)",
+        "description": "Recupera todas as regras de controle de acesso (Roles) cadastradas no sistema Identity.\r\nEndpoint restrito a perfis de administração (Admin e Dev).",
+        "responses": {
+          "200": {
+            "description": "Lista de roles recuperada com sucesso.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada (Role insuficiente)."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "RLS"
+        ],
+        "summary": "Cadastro de Nova Regra (Role)",
+        "description": "Cria uma nova regra global (Role) no sistema (ex: Financeiro, RH, Suporte).\r\n**Regra de Segurança**: Esta operação estrutural é restrita apenas a perfis de Desenvolvedor (Dev).",
+        "requestBody": {
+          "description": "Objeto contendo o Nome da nova role.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoleDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoleDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role criada e registrada com sucesso no Identity."
+          },
+          "400": {
+            "description": "Payload em branco, nulo ou nome da Role já existente."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. Apenas perfis 'Dev' podem criar novas regras estruturais."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "RLS"
+        ],
+        "summary": "Atualização de Nome de Regra (Role)",
+        "description": "Altera o nome de uma Role existente. Essa alteração é propagada globalmente no sistema de permissões.\r\n**Regra de Segurança**: Restrito a perfis de Desenvolvedor (Dev).",
+        "requestBody": {
+          "description": "Objeto contendo o ID numérico e o Novo Nome da role.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nome da role atualizado com sucesso."
+          },
+          "400": {
+            "description": "Payload inválido ou o novo nome já está em uso por outra Role."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. Apenas perfis 'Dev' podem editar regras."
+          },
+          "404": {
+            "description": "Role informada não encontrada na base de dados."
+          },
+          "500": {
+            "description": "Erro interno do Identity ao tentar atualizar a Role."
+          }
+        }
+      }
+    },
+    "/api/v1/rls/assignrole": {
+      "post": {
+        "tags": [
+          "RLS"
+        ],
+        "summary": "Atribuição de Regra (Role) a Usuário",
+        "description": "Vincula uma Regra de Acesso (Role) a um Usuário específico. O vínculo pode ser feito através do `RoleId` numérico ou diretamente pelo `RoleName` textual.\r\nÉ verificado previamente se o usuário já possui a regra atribuída para evitar duplicidade.",
+        "requestBody": {
+          "description": "Objeto contendo o ID do usuário e a identificação da Role (Id ou Nome).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Regra atribuída ao usuário com sucesso.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payload inválido, IDs nulos ou o usuário já possui a Role.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada (Role insuficiente)."
+          },
+          "404": {
+            "description": "Usuário ou Role informada não localizada na base de dados.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do Identity ao tentar realizar o vínculo."
+          }
+        }
+      }
+    },
+    "/api/v1/rls/removerole": {
+      "delete": {
+        "tags": [
+          "RLS"
+        ],
+        "summary": "Remoção de Regra (Role) de um Usuário",
+        "description": "Desvincula uma Regra de Acesso de um usuário. O vínculo pode ser removido utilizando o `RoleId` numérico ou o `RoleName` textual.\r\nÉ verificado previamente se o usuário realmente possui esta regra vinculada.",
+        "requestBody": {
+          "description": "Objeto contendo o ID do usuário e a identificação da Role (Id ou Nome).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveRoleRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveRoleRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveRoleRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Regra removida do usuário com sucesso.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payload inválido, IDs nulos ou o usuário não possui a Role informada.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada (Role insuficiente)."
+          },
+          "404": {
+            "description": "Usuário ou Role informada não localizada na base de dados.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do Identity ao tentar desfazer o vínculo."
+          }
+        }
+      }
+    },
+    "/api/v1/systems": {
+      "post": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Cadastro de Sistema (AppSystem)",
+        "description": "Adiciona um novo sistema raiz no ecossistema AgiVys. Nomes de sistemas devem ser únicos.\r\nRequer a role de Administrador ou Desenvolvedor (Admin, Dev).",
+        "requestBody": {
+          "description": "Dados do sistema (Nome, Descrição).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAppSystemDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAppSystemDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAppSystemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sistema criado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos ou nome já existente."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada (Role insuficiente)."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Listagem Geral de Sistemas",
+        "description": "Recupera a lista completa de todos os sistemas (AppSystems) registrados na plataforma.",
+        "responses": {
+          "200": {
+            "description": "Lista de sistemas recuperada com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada (Role insuficiente)."
+          },
+          "500": {
+            "description": "Erro interno no servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/systems/{id}": {
+      "put": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Atualização de Sistema",
+        "description": "Atualiza nome, descrição e parâmetros visuais (cores, domínio) de um sistema existente.\r\nValida se o novo nome não conflita com outro sistema.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID numérico único do sistema.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Novos dados do sistema.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAppSystemDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAppSystemDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAppSystemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sistema atualizado com sucesso."
+          },
+          "400": {
+            "description": "ID da rota incompatível com payload ou nome duplicado."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada (Role insuficiente)."
+          },
+          "404": {
+            "description": "Sistema não localizado."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Exclusão de Sistema",
+        "description": "Remove um sistema e aciona exclusão em cascata das suas entidades filhas (Menus, Planos, etc) dependendo da configuração do banco de dados.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID numérico do sistema.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sistema removido com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada (Role insuficiente)."
+          },
+          "404": {
+            "description": "Sistema não localizado."
+          },
+          "500": {
+            "description": "Erro interno (ex: falha de deleção em cascata)."
+          }
+        }
+      }
+    },
+    "/api/v1/systems/menus": {
+      "post": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Cadastro de Hierarquia de Menus",
+        "description": "Cadastra um menu (Agrupador) e seus respectivos submenus (Funcionalidades) de forma atômica utilizando transação no banco.",
+        "requestBody": {
+          "description": "Payload contendo os dados do Menu pai e array de Submenus.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMenuDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMenuDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMenuDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Hierarquia cadastrada com sucesso."
+          },
+          "400": {
+            "description": "Payload inválido ou Sistema Pai (AppSystem) não localizado."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "500": {
+            "description": "Erro na transação de banco de dados."
+          }
+        }
+      }
+    },
+    "/api/v1/systems/{systemId}/menus": {
+      "get": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Listagem de Menus por Sistema",
+        "description": "Recupera a árvore completa (Menus e Submenus) atrelada a um sistema específico.\r\nA resposta é estruturada hierarquicamente para facilitar a montagem da UI do front-end.",
+        "parameters": [
+          {
+            "name": "systemId",
+            "in": "path",
+            "description": "ID do sistema a ser consultado.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Árvore de menus recuperada."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/systems/menus/{id}": {
+      "put": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Atualização de Menu Pai",
+        "description": "Edita apenas os dados de um Menu pai (Nome e Ícone). Não altera submenus diretamente por este endpoint.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do menu a ser atualizado.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Novos dados do menu.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMenuDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMenuDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMenuDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Menu atualizado."
+          },
+          "400": {
+            "description": "Payload inválido."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "404": {
+            "description": "Menu não encontrado."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Exclusão de Menu (em cascata)",
+        "description": "Remove o Menu Pai e, consequentemente, destrói todos os seus Submenus atrelados no banco de dados.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do menu a ser removido.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu e filhos removidos."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "404": {
+            "description": "Menu não encontrado."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/systems/plans": {
+      "post": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Criação de Plano de Assinatura",
+        "description": "Cria um novo plano comercial para um Sistema, vinculando quais Menus e Submenus os assinantes deste plano terão acesso.\r\nOferece controle granular de permissões (Access Control List baseado em plano).",
+        "requestBody": {
+          "description": "Payload com os dados do plano (Nome, Preço, Trial) e as permissões de acesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlanDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlanDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plano criado e permissões vinculadas com sucesso."
+          },
+          "400": {
+            "description": "Payload inválido."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada (Role insuficiente)."
+          },
+          "500": {
+            "description": "Erro na transação ao vincular permissões."
+          }
+        }
+      }
+    },
+    "/api/v1/systems/{systemId}/plans": {
+      "get": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Listagem de Planos por Sistema",
+        "description": "Recupera a lista de planos de um determinado sistema, expandindo (Include) detalhadamente as permissões (Menus e Submenus) liberadas por cada plano.",
+        "parameters": [
+          {
+            "name": "systemId",
+            "in": "path",
+            "description": "ID do sistema a ser consultado.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Planos e permissões recuperados com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "404": {
+            "description": "Nenhum plano cadastrado para o sistema informado."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/systems/plans/{id}": {
+      "put": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Atualização de Plano e Permissões",
+        "description": "Modifica os dados básicos do plano (Preço, Trial, etc) e recria os vínculos de acesso aos Menus e Submenus associados.\r\nUtiliza transação para garantir que a troca de permissões seja atômica.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do plano a ser atualizado.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Payload completo contendo a nova configuração do plano.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlanDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlanDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plano e acessos atualizados com sucesso."
+          },
+          "400": {
+            "description": "Payload com dados malformados."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "404": {
+            "description": "Plano não localizado na base de dados."
+          },
+          "500": {
+            "description": "Falha durante o commit da transação de atualização."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AppSystem"
+        ],
+        "summary": "Exclusão de Plano",
+        "description": "Deleta fisicamente um plano do banco de dados e remove suas associações com Menus e Submenus.\r\n*Nota*: Caso existam empresas atreladas a este plano, a exclusão pode falhar por restrição de chave estrangeira.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do plano a ser excluído.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plano e vínculos removidos permanentemente."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "404": {
+            "description": "Plano não localizado."
+          },
+          "500": {
+            "description": "Erro interno (provável violação de restrição do banco de dados)."
+          }
+        }
+      }
+    },
+    "/api/v1/useraccessmap": {
+      "post": {
+        "tags": [
+          "UserAccessMap"
+        ],
+        "summary": "Concessão de Acesso a Menu (ACL)",
+        "description": "Concede acesso explícito a um Menu/Funcionalidade para um usuário específico.\r\nUtilizado para criar permissões granulares por usuário que vão além das permissões de Plano ou Regra Global.\r\n**Regra de Segurança**: Exige privilégio de Dono (Owner) do workspace.",
+        "requestBody": {
+          "description": "Dados do vínculo (ID do Usuário e ID do Menu).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccessMapDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccessMapDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccessMapDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Acesso concedido com sucesso."
+          },
+          "400": {
+            "description": "Payload inválido ou vínculo já existente."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. Apenas 'Owner' tem acesso."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "UserAccessMap"
+        ],
+        "summary": "Consulta de Árvore de Acesso do Usuário (Base de Dados)",
+        "description": "Consulta no banco de dados toda a árvore hierárquica de permissões (Sistemas -> Menus -> Submenus) disponível para o usuário autenticado.\r\nO ID do usuário é extraído de forma segura via token (ClaimTypes.NameIdentifier).",
+        "responses": {
+          "200": {
+            "description": "Árvore de permissões recuperada com sucesso."
+          },
+          "400": {
+            "description": "Erro durante a montagem da árvore."
+          },
+          "401": {
+            "description": "Usuário não autenticado ou ID do token inválido."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/useraccessmap/remove": {
+      "put": {
+        "tags": [
+          "UserAccessMap"
+        ],
+        "summary": "Revogação de Acesso a Menu (ACL)",
+        "description": "Revoga o acesso explícito de um usuário a um Menu/Funcionalidade específica.\r\n**Regra de Segurança**: Exige privilégio de Dono (Owner) do workspace.",
+        "requestBody": {
+          "description": "Dados do vínculo a ser removido (ID do Usuário e ID do Menu).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccessMapDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccessMapDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccessMapDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Acesso revogado com sucesso."
+          },
+          "400": {
+            "description": "Payload inválido ou vínculo não localizado."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. Apenas 'Owner' tem acesso."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/useraccessmap/session": {
+      "get": {
+        "tags": [
+          "UserAccessMap"
+        ],
+        "summary": "Consulta de Árvore de Acesso do Usuário (via Sessão/Cookie)",
+        "description": "Deserializa a árvore hierárquica de permissões (Sistemas -> Menus -> Submenus) diretamente de um Cookie HttpOnly encriptado e codificado em Base64.\r\n**Performance**: Projetado para renderização imediata do front-end com ganho extremo de velocidade (0 trips ao banco de dados).",
+        "responses": {
+          "200": {
+            "description": "Árvore de permissões carregada com sucesso da sessão."
+          },
+          "401": {
+            "description": "Cookie de sessão ausente, malformado ou corrompido."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/integration": {
+      "get": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Listagem Geral de Integrações",
+        "description": "Recupera todas as integrações (Gateways de Pagamento, ERPs, APIs externas) registradas em todos os sistemas.\r\nOs parâmetros sensíveis (chaves de API) são listados, porém é responsabilidade do front-end mascará-los caso necessário.",
+        "responses": {
+          "200": {
+            "description": "Lista completa de integrações e parâmetros."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. Apenas Admin e Dev têm acesso."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Cadastro de Nova Integração",
+        "description": "Cadastra uma integração no sistema, recebendo também a lista de parâmetros (Chave e Valor) necessários para o funcionamento.\r\nÉ verificado previamente se o sistema informado (AppSystem) existe na base de dados.",
+        "requestBody": {
+          "description": "Dados e parâmetros da integração.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIntegrationDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIntegrationDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIntegrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Integração criada com sucesso. Retorna o ID gerado."
+          },
+          "400": {
+            "description": "Payload inválido ou o Sistema (AppSystemId) não existe."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/integration/system/{appSystemId}": {
+      "get": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Listagem de Integrações por Sistema",
+        "description": "Retorna as integrações ativas atreladas especificamente a um sistema (AppSystem).",
+        "parameters": [
+          {
+            "name": "appSystemId",
+            "in": "path",
+            "description": "ID do sistema alvo.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Integrações do sistema recuperadas com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/integration/{id}": {
+      "get": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Busca de Integração por ID",
+        "description": "Recupera os dados detalhados e os parâmetros (chaves e valores) de uma integração específica.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID numérico da integração.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados da integração localizados com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "404": {
+            "description": "A integração informada não foi localizada."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Atualização e Sincronização de Integração",
+        "description": "Atualiza os dados principais da integração e realiza uma **sincronização de parâmetros**. \r\nParâmetros não enviados no payload serão excluídos; parâmetros sem ID serão criados; parâmetros com ID serão atualizados.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID numérico da integração.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Novos dados da integração e lista atualizada de parâmetros.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateIntegrationDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateIntegrationDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateIntegrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Integração e parâmetros sincronizados com sucesso."
+          },
+          "400": {
+            "description": "Payload inválido."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "404": {
+            "description": "A integração não foi encontrada."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Exclusão de Integração",
+        "description": "Deleta fisicamente uma integração do sistema. \r\nO banco de dados (EF Core) cuida de excluir em cascata todos os parâmetros atrelados a ela.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID numérico da integração a ser excluída.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Integração e seus parâmetros removidos permanentemente."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada."
+          },
+          "404": {
+            "description": "A integração informada não foi localizada."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/create-with-address": {
+      "post": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Cadastro Completo de Empresa (com Endereço)",
+        "description": "Cadastra simultaneamente uma nova empresa (Company) e seu respectivo endereço (CompanyAddress) dentro de uma única transação no banco de dados.\r\nEm caso de falha em qualquer etapa, a operação inteira é desfeita (Rollback).",
+        "requestBody": {
+          "description": "Dados consolidados da empresa e do endereço.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyWithAddressDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyWithAddressDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyWithAddressDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Empresa e endereço cadastrados com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos ou CNPJ já existente."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "500": {
+            "description": "Erro interno do servidor ao salvar os dados."
+          }
+        }
+      }
+    },
+    "/api/v1/companies": {
+      "post": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Cadastro Simplificado de Empresa",
+        "description": "Cria uma nova empresa vinculada ao usuário proprietário especificado. \r\nO CNPJ é validado para garantir que não haja duplicidade na plataforma.",
+        "requestBody": {
+          "description": "Dados básicos da empresa (Nome, CNPJ, Logo).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Empresa cadastrada com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos ou CNPJ já cadastrado."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/owner/{userId}": {
+      "get": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Listagem de Empresas por Proprietário",
+        "description": "Recupera todas as empresas cujo `UserOwnerId` corresponde ao ID fornecido.\r\nÉ comumente utilizado para preencher o seletor de contextos do Dashboard.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID numérico do usuário proprietário.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de empresas recuperada com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}": {
+      "put": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Atualização de Empresa",
+        "description": "Atualiza dados cadastrais básicos de uma empresa.\r\n**Regra de Segurança**: Somente o próprio dono (UserOwnerId) da empresa possui permissão para atualizá-la (validação feita cruzando o ID do BD com o do Token).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID numérico único da empresa.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Dados atualizados da empresa.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanyDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanyDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Empresa atualizada com sucesso."
+          },
+          "400": {
+            "description": "Payload inválido."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Acesso negado. O usuário não é o dono da empresa."
+          },
+          "404": {
+            "description": "Empresa não localizada."
+          },
+          "500": {
+            "description": "Erro interno do servidor ao atualizar a empresa."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Exclusão de Empresa",
+        "description": "Remove completamente o registro da empresa. Esta é uma deleção física no banco de dados.\r\nÉ altamente recomendável garantir que a empresa não possua registros financeiros dependentes antes da deleção.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID numérico único da empresa.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empresa removida com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "404": {
+            "description": "Empresa não localizada."
+          },
+          "500": {
+            "description": "Erro interno do servidor ao tentar deletar a empresa (ex: violação de chave estrangeira)."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{companyId}/addresses": {
+      "post": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Cadastro de Endereço Empresarial",
+        "description": "Vincula um novo endereço a uma empresa existente. Uma empresa pode ter múltiplos endereços (ex: Matriz, Filial, Galpão).\r\n**Regra de Segurança**: Apenas o dono da empresa pode adicionar endereços à mesma.",
+        "parameters": [
+          {
+            "name": "companyId",
+            "in": "path",
+            "description": "ID único numérico da empresa associada.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Dados do endereço.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyAddressDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyAddressDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyAddressDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Endereço cadastrado e vinculado com sucesso à empresa."
+          },
+          "400": {
+            "description": "Dados de endereço inválidos ou malformados."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. O usuário não é o dono da empresa."
+          },
+          "404": {
+            "description": "Empresa não encontrada para realizar o vínculo."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Listagem de Endereços Empresariais",
+        "description": "Recupera a lista completa de endereços atrelados a uma empresa específica.\r\nSomente o dono da empresa pode visualizar seus respectivos endereços.",
+        "parameters": [
+          {
+            "name": "companyId",
+            "in": "path",
+            "description": "ID único numérico da empresa.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de endereços recuperada com sucesso."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. O usuário não é o dono da empresa."
+          },
+          "404": {
+            "description": "A empresa não foi localizada."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/addresses/{addressId}": {
+      "put": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Atualização de Endereço Empresarial",
+        "description": "Edita as informações de um endereço de empresa já existente.\r\n**Regra de Segurança**: Esta operação valida cruzadamente se o usuário logado possui a empresa dona do endereço.",
+        "parameters": [
+          {
+            "name": "addressId",
+            "in": "path",
+            "description": "ID numérico único do endereço a ser modificado.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Novos dados completos do endereço.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyAddressDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyAddressDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyAddressDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Endereço atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos enviados no payload."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. Endereço pertence a uma empresa de outro usuário."
+          },
+          "404": {
+            "description": "Endereço não localizado."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Exclusão de Endereço Empresarial",
+        "description": "Remove definitivamente um endereço vinculado a uma empresa.\r\nValida previamente se a pessoa que está executando a exclusão é o proprietário da empresa detentora do endereço.",
+        "parameters": [
+          {
+            "name": "addressId",
+            "in": "path",
+            "description": "ID numérico único do endereço a ser removido.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endereço removido permanentemente."
+          },
+          "401": {
+            "description": "Usuário não autenticado."
+          },
+          "403": {
+            "description": "Permissão negada. O usuário não tem acesso a este endereço."
+          },
+          "404": {
+            "description": "Endereço não localizado."
+          },
+          "500": {
+            "description": "Erro interno do servidor ao tentar excluir o endereço."
+          }
+        }
+      }
+    },
+    "/api/v1/checks/check-email/{email}": {
+      "get": {
+        "tags": [
+          "Checks"
+        ],
+        "summary": "Verificação de Disponibilidade de E-mail",
+        "description": "Consulta na base de dados (Identity) se o e-mail fornecido já está vinculado a alguma conta de usuário existente.\r\nEste endpoint é público e frequentemente utilizado durante etapas de pré-cadastro (Onboarding) para validação assíncrona de formulários em tempo real.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "O endereço de e-mail completo a ser verificado.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requisição bem-sucedida. Retorna um objeto indicando se o e-mail já existe (`true` ou `false`)."
+          },
+          "400": {
+            "description": "Formato de e-mail inválido ou parâmetro ausente."
+          },
+          "500": {
+            "description": "Erro interno do servidor ao tentar consultar o banco de dados."
+          }
+        }
+      }
+    },
+    "/api/v1/checks/check-cpf/{document}": {
+      "get": {
+        "tags": [
+          "Checks"
+        ],
+        "summary": "Verificação de Disponibilidade de CPF",
+        "description": "Verifica se o documento (CPF) informado já possui um cadastro atrelado na tabela de Pessoas (Person).\r\nEndpoint público de utilidade para formulários. Suporta o recebimento do documento com ou sem máscara de formatação (pontos e traços), uma vez que a API higieniza a string mantendo apenas números.",
+        "parameters": [
+          {
+            "name": "document",
+            "in": "path",
+            "description": "O número do CPF a ser consultado.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requisição bem-sucedida. Retorna um objeto indicando se o documento já existe (`true` ou `false`)."
+          },
+          "400": {
+            "description": "CPF com tamanho inválido ou string malformada."
+          },
+          "500": {
+            "description": "Erro interno do servidor ao tentar consultar o banco de dados."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddressPersonDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "zipCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "street": {
+            "type": "string",
+            "nullable": true
+          },
+          "number": {
+            "type": "string",
+            "nullable": true
+          },
+          "complement": {
+            "type": "string",
+            "nullable": true
+          },
+          "neighborhood": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AssignRoleRequestDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roleId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roleName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuthPersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuthUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "companyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthUserRoleDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuthUserRoleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "newPassword": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CompanyAddressDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "zipCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "street": {
+            "type": "string",
+            "nullable": true
+          },
+          "number": {
+            "type": "string",
+            "nullable": true
+          },
+          "complement": {
+            "type": "string",
+            "nullable": true
+          },
+          "neighborhood": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateAppSystemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateCompanyDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "cnpj": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "userOwnerId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateCompanyWithAddressDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "cnpj": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "userOwnerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "zipCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "street": {
+            "type": "string",
+            "nullable": true
+          },
+          "number": {
+            "type": "string",
+            "nullable": true
+          },
+          "complement": {
+            "type": "string",
+            "nullable": true
+          },
+          "neighborhood": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateIntegrationDto": {
+        "required": [
+          "appSystemId",
+          "name",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "appSystemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 255,
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IntegrationParameterDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateMenuDto": {
+        "type": "object",
+        "properties": {
+          "systemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "menu": {
+            "$ref": "#/components/schemas/MenuEntry"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePlanDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxEmployees": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "trialDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "appSystemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MenuSelectionDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateRoleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ForgotPasswordDto": {
+        "required": [
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "idSystem": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IntegrationParameterDto": {
+        "required": [
+          "key",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "key": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "value": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginDto": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "$ref": "#/components/schemas/AuthUserDto"
+          },
+          "person": {
+            "$ref": "#/components/schemas/AuthPersonDto"
+          },
+          "systemIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "systemNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MenuEntry": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "route": {
+            "type": "string",
+            "nullable": true
+          },
+          "icon": {
+            "type": "string",
+            "nullable": true
+          },
+          "submenu": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubmenuEntry"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MenuSelectionDto": {
+        "type": "object",
+        "properties": {
+          "menuId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "submenuIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PatchPersonDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "document": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterSystemUserDto": {
+        "required": [
+          "birthDate",
+          "email",
+          "idSystem",
+          "name",
+          "password",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "idSystem": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "minLength": 6,
+            "type": "string"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "phone": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RemoveRoleRequestDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roleId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roleName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ResetPasswordDto": {
+        "required": [
+          "email",
+          "newPassword",
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "token": {
+            "type": "string",
+            "nullable": true
+          },
+          "newPassword": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RoleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubmenuEntry": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "route": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateAppSystemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "backgroundColor": {
+            "type": "string",
+            "nullable": true
+          },
+          "textColor": {
+            "type": "string",
+            "nullable": true
+          },
+          "domain": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateCompanyDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateIntegrationDto": {
+        "required": [
+          "name",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 255,
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IntegrationParameterDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateMenuDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "route": {
+            "type": "string",
+            "nullable": true
+          },
+          "icon": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdatePersonDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "document": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserAccessMapDto": {
+        "required": [
+          "appSystemId",
+          "menuId",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "menuId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "appSystemId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "Cole APENAS o token JWT.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}
