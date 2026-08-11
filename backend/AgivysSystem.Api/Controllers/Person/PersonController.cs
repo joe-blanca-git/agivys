@@ -83,7 +83,8 @@ public class PersonController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = "Erro ao atualizar.", details = ex.Message });
+            var innerMsg = ex.InnerException?.Message ?? ex.Message;
+            return BadRequest(new { message = "Erro ao atualizar.", details = innerMsg });
         }
     }
     /// <summary>
