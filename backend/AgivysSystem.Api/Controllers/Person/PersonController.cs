@@ -81,10 +81,18 @@ public class PersonController : ControllerBase
             await _context.SaveChangesAsync();
             return Ok(new { message = "Dados e login atualizados com sucesso!" });
         }
+        catch (DbUpdateException ex)
+        {
+            var innerMsg = ex.InnerException?.Message ?? "";
+            if (innerMsg.Contains("IX_People_Document"))
+            {
+                return BadRequest(new { message = "Este CPF já está cadastrado em outra conta." });
+            }
+            return BadRequest(new { message = "Erro ao atualizar os dados.", details = innerMsg });
+        }
         catch (Exception ex)
         {
-            var innerMsg = ex.InnerException?.Message ?? ex.Message;
-            return BadRequest(new { message = "Erro ao atualizar.", details = innerMsg });
+            return BadRequest(new { message = "Erro inesperado ao atualizar.", details = ex.Message });
         }
     }
     /// <summary>
@@ -199,9 +207,18 @@ public class PersonController : ControllerBase
             await _context.SaveChangesAsync();
             return Ok(new { message = "Dados atualizados com sucesso!" });
         }
+        catch (DbUpdateException ex)
+        {
+            var innerMsg = ex.InnerException?.Message ?? "";
+            if (innerMsg.Contains("IX_People_Document"))
+            {
+                return BadRequest(new { message = "Este CPF já está cadastrado em outra conta." });
+            }
+            return BadRequest(new { message = "Erro ao atualizar os dados.", details = innerMsg });
+        }
         catch (Exception ex)
         {
-            return BadRequest(new { message = "Erro ao atualizar.", details = ex.Message });
+            return BadRequest(new { message = "Erro inesperado ao atualizar.", details = ex.Message });
         }
     }
 }
