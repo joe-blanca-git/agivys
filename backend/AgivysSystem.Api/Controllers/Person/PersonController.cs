@@ -68,7 +68,7 @@ public class PersonController : ControllerBase
             person.BirthDate = model.BirthDate;
             person.Email = model.Email;
             person.Phone = model.Phone;
-            person.Document = model.Document;
+            person.Document = string.IsNullOrWhiteSpace(model.Document) ? null : model.Document;
 
             // ATUALIZA O LOGIN (Identity)
             if (user != null)
@@ -182,7 +182,7 @@ public class PersonController : ControllerBase
             if (model.Name != null) person.Name = model.Name;
             if (model.BirthDate.HasValue) person.BirthDate = model.BirthDate.Value;
             if (model.Phone != null) person.Phone = model.Phone;
-            if (model.Document != null) person.Document = model.Document;
+            if (model.Document != null) person.Document = string.IsNullOrWhiteSpace(model.Document) ? null : model.Document;
 
             if (model.Email != null)
             {

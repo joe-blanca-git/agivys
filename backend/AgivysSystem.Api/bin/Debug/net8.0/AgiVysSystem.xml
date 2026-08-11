@@ -1017,5 +1017,17 @@
         <member name="M:AgiVysSystem.Migrations.AddBrandingToAppSystem.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:AgiVysSystem.Migrations.MakePersonDocumentNullable">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.MakePersonDocumentNullable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.MakePersonDocumentNullable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AgiVysSystem.Migrations.MakePersonDocumentNullable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>
