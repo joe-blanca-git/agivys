@@ -5,5 +5,5 @@ public record UpdatePersonDto(
     DateTime BirthDate,
     string Email,
     string Phone,
-    string Document
+    string? Document
 );

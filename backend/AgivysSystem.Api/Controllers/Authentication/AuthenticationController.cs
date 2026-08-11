@@ -274,14 +274,13 @@ public class AuthenticationController : ControllerBase
         if (system == null)
             return BadRequest(new { message = "Dados inválidos! idSystem não corresponde a um sistema válido." });
 
-        // Gera um documento fictício único para contornar a obrigatoriedade do banco de dados (que também é chave única)
-        var generatedDocument = "SYS" + Guid.NewGuid().ToString("N").Substring(0, 11);
-
+        // O documento (CPF) não é mais obrigatório no cadastro
+        // Deixamos sem preencher para que seja null
+        
         // 2. Criar a Pessoa (People)
         var person = new Models.People.Person
         {
             Name = model.Name,
-            Document = generatedDocument,
             Email = model.Email,
             BirthDate = model.BirthDate,
             Phone = model.Phone
