@@ -86,7 +86,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 // Banco de Dados
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 0))));
 
 // Identity
 builder.Services.AddIdentity<User, IdentityRole<int>>(options => {
