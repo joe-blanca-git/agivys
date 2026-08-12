@@ -113,7 +113,7 @@ namespace AgiVysSystem.Migrations
                 column: "AppSystemId");
 
             // --- INJEÇÃO MANUAL DE PRESERVAÇÃO DE DADOS ---
-            migrationBuilder.Sql("INSERT INTO UserSystems (UserId, AppSystemId, CreatedAt) SELECT Id, AppSystemId, UTC_TIMESTAMP() FROM AspNetUsers WHERE AppSystemId IS NOT NULL AND AppSystemId > 0");
+            migrationBuilder.Sql("INSERT INTO UserSystems (UserId, AppSystemId, CreatedAt) SELECT Id, AppSystemId, UTC_TIMESTAMP() FROM AspNetUsers WHERE AppSystemId IS NOT NULL AND AppSystemId > 0;");
 
             migrationBuilder.DropIndex(
                 name: "IX_AspNetUsers_AppSystemId",

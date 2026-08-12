@@ -1568,7 +1568,7 @@ CREATE PROCEDURE MigrationsScript()
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM `__EFMigrationsHistory` WHERE `MigrationId` = '20260714173016_AddUserSystemTable') THEN
 
-    INSERT INTO UserSystems (UserId, AppSystemId, CreatedAt) SELECT Id, AppSystemId, UTC_TIMESTAMP() FROM AspNetUsers WHERE AppSystemId IS NOT NULL AND AppSystemId > 0
+    INSERT INTO UserSystems (UserId, AppSystemId, CreatedAt) SELECT Id, AppSystemId, UTC_TIMESTAMP() FROM AspNetUsers WHERE AppSystemId IS NOT NULL AND AppSystemId > 0;
 
     END IF;
 END //
