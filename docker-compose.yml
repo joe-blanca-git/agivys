@@ -26,6 +26,9 @@ services:
       # Sobrescreve o 127.0.0.1 do appsettings apontando pro nome do container (agivys-db)
       - ConnectionStrings__DefaultConnection=Server=agivys-db;Port=3306;Database=agivys_bd;Uid=root;Pwd=${DB_PASSWORD};Charset=utf8;SslMode=none;AllowPublicKeyRetrieval=True;
       - Jwt__Key=${JWT_SECRET_KEY}
+      - EmailSettings__ApiKey=${RESEND_API_KEY}
+      - EmailSettings__SenderName=Theos System
+      - EmailSettings__SenderEmail=contato@joederblanca.com.br
     depends_on:
       - agivys-db
 
