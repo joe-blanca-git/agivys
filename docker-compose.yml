@@ -8,7 +8,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: 'LikeABoss@1970'
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
       MYSQL_DATABASE: 'agivys_bd'
     volumes:
       # Esse volume garante que você não perca os dados do banco se o container for apagado
@@ -24,7 +24,8 @@ services:
       - "5000:5000"
     environment:
       # Sobrescreve o 127.0.0.1 do appsettings apontando pro nome do container (agivys-db)
-      - ConnectionStrings__DefaultConnection=Server=agivys-db;Port=3306;Database=agivys_bd;Uid=root;Pwd=LikeABoss@1970;Charset=utf8;SslMode=none;AllowPublicKeyRetrieval=True;
+      - ConnectionStrings__DefaultConnection=Server=agivys-db;Port=3306;Database=agivys_bd;Uid=root;Pwd=${DB_PASSWORD};Charset=utf8;SslMode=none;AllowPublicKeyRetrieval=True;
+      - Jwt__Key=${JWT_SECRET_KEY}
     depends_on:
       - agivys-db
 
