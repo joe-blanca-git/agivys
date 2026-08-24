@@ -124,8 +124,11 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        
+        // Não usamos FindByEmailAsync aqui: e-mail deixou de ser único globalmente
+        // (o mesmo e-mail pode existir em sistemas diferentes). PrimaryAppSystemId==null
+        // é a conta de plataforma — o comportamento de hoje para 100% das contas existentes.
+        var user = await FindUserByEmailAndSystemAsync(model.Email, model.IdSystem);
+
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
         {
             return Unauthorized(new { message = "E-mail ou senha incorretos." });
@@ -233,43 +236,25 @@ public class AuthenticationController : ControllerBase
         if (system == null)
             return BadRequest(new { message = "Dados inválidos! idSystem não corresponde a um sistema válido." });
 
-        var userExists = await _userManager.FindByEmailAsync(model.Email);
+        var normalizedEmail = _userManager.NormalizeEmail(model.Email);
 
-        // E-mail já tem conta: a mesma pessoa pode ganhar acesso a outro sistema sem
-        // duplicar a conta (o vínculo user<->sistema é N:N). O que continua proibido é
-        // duplicar exatamente o par e-mail + sistema, e por isso exigimos a senha atual
-        // aqui — sem isso, qualquer um poderia "registrar" um e-mail que não é seu só
-        // pra ganhar acesso à conta de outra pessoa num sistema novo.
-        if (userExists != null)
-        {
-            if (!await _userManager.CheckPasswordAsync(userExists, model.Password))
-            {
-                return BadRequest(new
-                {
-                    message = "Este e-mail já possui uma conta. Informe a senha atual para vincular este sistema, ou use \"Esqueci minha senha\"."
-                });
-            }
+        // Sistemas são tenants independentes: o mesmo e-mail pode ter contas totalmente
+        // separadas (senha própria, sem vínculo) em sistemas diferentes. O que não pode
+        // duplicar é o par (e-mail, sistema) — por isso a checagem é escopada por
+        // IdSystem, não mais uma busca de e-mail global.
+        var alreadyRegisteredInThisSystem = await _context.Users
+            .AnyAsync(u => u.NormalizedEmail == normalizedEmail && u.PrimaryAppSystemId == model.IdSystem);
 
-            var alreadyLinkedToThisSystem = await _context.UserSystems
-                .AnyAsync(us => us.UserId == userExists.Id && us.AppSystemId == model.IdSystem);
+        if (alreadyRegisteredInThisSystem)
+            return BadRequest(new { message = "Este e-mail já está cadastrado neste sistema." });
 
-            if (alreadyLinkedToThisSystem)
-                return BadRequest(new { message = "Este e-mail já está cadastrado neste sistema." });
+        // O UserName do Identity precisa ser único globalmente (índice do schema, não uma
+        // configuração) — usamos um valor sintético só quando o e-mail já existir em OUTRO
+        // sistema. No caso comum (e-mail inédito) continua sendo o próprio e-mail, sem
+        // nenhuma mudança de comportamento.
+        var emailUsedElsewhere = await _context.Users.AnyAsync(u => u.NormalizedEmail == normalizedEmail);
+        var userName = emailUsedElsewhere ? $"{model.Email}::sys{model.IdSystem}" : model.Email;
 
-            _context.UserSystems.Add(new UserSystem { UserId = userExists.Id, AppSystemId = model.IdSystem });
-
-            if (!await _userManager.IsInRoleAsync(userExists, "Owner"))
-                await _userManager.AddToRoleAsync(userExists, "Owner");
-
-            await _context.SaveChangesAsync();
-
-            var existingPerson = await _context.People.FindAsync(userExists.PersonId);
-            await SendWelcomeEmailAsync(system, userExists.Email!, existingPerson?.Name ?? model.Name, model.IdSystem);
-
-            return Ok(new { message = "Conta existente vinculada ao novo sistema com sucesso!" });
-        }
-
-        // E-mail novo: fluxo de cadastro normal (Person + User + UserSystem + Role).
         // O documento (CPF) não é mais obrigatório no cadastro — deixamos sem
         // preencher para que seja null.
         var person = new Models.People.Person
@@ -285,8 +270,9 @@ public class AuthenticationController : ControllerBase
 
         var user = new User
         {
-            UserName = model.Email,
+            UserName = userName,
             Email = model.Email,
+            PrimaryAppSystemId = model.IdSystem,
             PersonId = person.Id
         };
 
@@ -312,6 +298,19 @@ public class AuthenticationController : ControllerBase
         await _context.SaveChangesAsync();
 
         return BadRequest(result.Errors);
+    }
+
+    /// <summary>
+    /// Substitui FindByEmailAsync nos endpoints de autenticação: e-mail deixou de ser
+    /// único globalmente, então a busca precisa ser escopada por sistema (idSystem==null
+    /// é a conta de plataforma).
+    /// </summary>
+    private async Task<User?> FindUserByEmailAndSystemAsync(string email, int? idSystem)
+    {
+        var normalizedEmail = _userManager.NormalizeEmail(email);
+
+        return await _context.Users
+            .FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail && u.PrimaryAppSystemId == idSystem);
     }
 
     private async Task SendWelcomeEmailAsync(AppSystem system, string email, string personName, int idSystem)
@@ -359,8 +358,8 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto model)
     {
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null) 
+        var user = await FindUserByEmailAndSystemAsync(model.Email, model.IdSystem);
+        if (user == null)
             return Ok(new { message = "Se o e-mail existir em nossa base, um link de recuperação será enviado." });
 
         // Gera o Token de recuperação (Identity gera um token seguro)
@@ -424,8 +423,8 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
     {
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null) 
+        var user = await FindUserByEmailAndSystemAsync(model.Email, model.IdSystem);
+        if (user == null)
             return BadRequest(new { message = "Dados inválidos." });
 
         // Decodifica o token do formato Base64Url

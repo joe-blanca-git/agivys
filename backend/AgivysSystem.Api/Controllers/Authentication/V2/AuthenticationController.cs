@@ -70,7 +70,12 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
-        var user = await _userManager.FindByEmailAsync(model.Email);
+        // Não usamos FindByEmailAsync: e-mail deixou de ser único globalmente (o mesmo
+        // e-mail pode existir em sistemas diferentes). PrimaryAppSystemId==null é a
+        // conta de plataforma — comportamento idêntico ao de hoje pras contas existentes.
+        var normalizedEmail = _userManager.NormalizeEmail(model.Email);
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail && u.PrimaryAppSystemId == model.IdSystem);
 
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
         {
