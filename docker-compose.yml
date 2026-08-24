@@ -32,5 +32,23 @@ services:
     depends_on:
       - agivys-db
 
+  agivys-landing:
+    build:
+      context: ./frontend/landings/agivys/landing
+      dockerfile: Dockerfile
+    container_name: agivys-landing-container
+    restart: unless-stopped
+    ports:
+      - "4213:80"
+
+  agivys-portal:
+    build:
+      context: ./frontend/system
+      dockerfile: Dockerfile
+    container_name: agivys-portal-container
+    restart: unless-stopped
+    ports:
+      - "4214:80"
+
 volumes:
   agivys-db-data:
