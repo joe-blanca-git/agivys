@@ -6,6 +6,7 @@ using AgiVysSystem.Api.Data;
 using AgiVysSystem.Api.DTOs;
 using AgiVysSystem.Api.Models.User;
 using AgiVysSystem.Api.Models.People;
+using AgiVysSystem.Api.Models.Configuration;
 using AgiVysSystem.Api.Interfaces;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
@@ -228,19 +229,49 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RegisterSystemUser([FromBody] RegisterSystemUserDto model)
     {
-        // 1. Validações de existência
-        var userExists = await _userManager.FindByEmailAsync(model.Email);
-        if (userExists != null)
-            return BadRequest(new { message = "Dados Inválidos! Verifique seu E-mail." });
-
         var system = await _context.AppSystems.FindAsync(model.IdSystem);
         if (system == null)
             return BadRequest(new { message = "Dados inválidos! idSystem não corresponde a um sistema válido." });
 
-        // O documento (CPF) não é mais obrigatório no cadastro
-        // Deixamos sem preencher para que seja null
-        
-        // 2. Criar a Pessoa (People)
+        var userExists = await _userManager.FindByEmailAsync(model.Email);
+
+        // E-mail já tem conta: a mesma pessoa pode ganhar acesso a outro sistema sem
+        // duplicar a conta (o vínculo user<->sistema é N:N). O que continua proibido é
+        // duplicar exatamente o par e-mail + sistema, e por isso exigimos a senha atual
+        // aqui — sem isso, qualquer um poderia "registrar" um e-mail que não é seu só
+        // pra ganhar acesso à conta de outra pessoa num sistema novo.
+        if (userExists != null)
+        {
+            if (!await _userManager.CheckPasswordAsync(userExists, model.Password))
+            {
+                return BadRequest(new
+                {
+                    message = "Este e-mail já possui uma conta. Informe a senha atual para vincular este sistema, ou use \"Esqueci minha senha\"."
+                });
+            }
+
+            var alreadyLinkedToThisSystem = await _context.UserSystems
+                .AnyAsync(us => us.UserId == userExists.Id && us.AppSystemId == model.IdSystem);
+
+            if (alreadyLinkedToThisSystem)
+                return BadRequest(new { message = "Este e-mail já está cadastrado neste sistema." });
+
+            _context.UserSystems.Add(new UserSystem { UserId = userExists.Id, AppSystemId = model.IdSystem });
+
+            if (!await _userManager.IsInRoleAsync(userExists, "Owner"))
+                await _userManager.AddToRoleAsync(userExists, "Owner");
+
+            await _context.SaveChangesAsync();
+
+            var existingPerson = await _context.People.FindAsync(userExists.PersonId);
+            await SendWelcomeEmailAsync(system, userExists.Email!, existingPerson?.Name ?? model.Name, model.IdSystem);
+
+            return Ok(new { message = "Conta existente vinculada ao novo sistema com sucesso!" });
+        }
+
+        // E-mail novo: fluxo de cadastro normal (Person + User + UserSystem + Role).
+        // O documento (CPF) não é mais obrigatório no cadastro — deixamos sem
+        // preencher para que seja null.
         var person = new Models.People.Person
         {
             Name = model.Name,
@@ -252,7 +283,6 @@ public class AuthenticationController : ControllerBase
         _context.People.Add(person);
         await _context.SaveChangesAsync(); // Gerar ID da Person
 
-        // 3. Criar o Usuário vinculado à Pessoa
         var user = new User
         {
             UserName = model.Email,
@@ -264,45 +294,15 @@ public class AuthenticationController : ControllerBase
 
         if (result.Succeeded)
         {
-            // Criar relacionamento N:N
-            var userSystem = new UserSystem
-            {
-                UserId = user.Id,
-                AppSystemId = model.IdSystem
-            };
-            _context.UserSystems.Add(userSystem);
+            _context.UserSystems.Add(new UserSystem { UserId = user.Id, AppSystemId = model.IdSystem });
 
-            // 4. Atribuir a Role "Owner"
             await _userManager.AddToRoleAsync(user, "Owner");
 
             // Atualiza a Person com o UserId gerado
             person.UserId = user.Id;
             await _context.SaveChangesAsync();
 
-            // 5. E-mail de Boas-vindas (Sem dados de endereço)
-            var sysName = system.Name;
-            var sysBgColor = system.BackgroundColor ?? "#1a1a1a";
-            var sysTxtColor = system.TextColor ?? "#ffffff";
-            var sysDomain = system.Domain ?? "agivyssystem.com.br";
-            var sysUrl = $"https://{sysDomain}/portal-pat/auth/login";
-
-            var welcomeMessage = $@"
-            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
-                <div style='background-color: {sysBgColor}; padding: 20px; text-align: center;'>
-                    <h1 style='color: {sysTxtColor}; margin: 0; font-size: 24px;'>{sysName}</h1>
-                </div>
-                <div style='padding: 30px; color: #333; line-height: 1.6;'>
-                    <h2 style='color: #1a1a1a;'>Olá, {model.Name}!</h2>
-                    <p>Seja muito bem-vindo ao <strong>{sysName}</strong>. Seu cadastro foi realizado com sucesso.</p>
-                    <div style='margin: 30px 0; text-align: center;'>
-                        <a href='{sysUrl}' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Acessar Painel</a>
-                    </div>
-                    <hr style='border: 0; border-top: 1px solid #eee;' />
-                    <p style='font-size: 12px; color: #777;'>&copy; {DateTime.Now.Year} {sysName}.</p>
-                </div>
-            </div>";
-
-            await _emailService.SendEmailAsync(model.Email, "Bem-vindo ao AgiVys System", welcomeMessage, model.IdSystem);
+            await SendWelcomeEmailAsync(system, model.Email, model.Name, model.IdSystem);
 
             return Ok(new { message = "Usuário cadastrado com sucesso!" });
         }
@@ -312,6 +312,33 @@ public class AuthenticationController : ControllerBase
         await _context.SaveChangesAsync();
 
         return BadRequest(result.Errors);
+    }
+
+    private async Task SendWelcomeEmailAsync(AppSystem system, string email, string personName, int idSystem)
+    {
+        var sysName = system.Name;
+        var sysBgColor = system.BackgroundColor ?? "#1a1a1a";
+        var sysTxtColor = system.TextColor ?? "#ffffff";
+        var sysDomain = system.Domain ?? "agivyssystem.com.br";
+        var sysUrl = $"https://{sysDomain}/portal-pat/auth/login";
+
+        var welcomeMessage = $@"
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
+            <div style='background-color: {sysBgColor}; padding: 20px; text-align: center;'>
+                <h1 style='color: {sysTxtColor}; margin: 0; font-size: 24px;'>{sysName}</h1>
+            </div>
+            <div style='padding: 30px; color: #333; line-height: 1.6;'>
+                <h2 style='color: #1a1a1a;'>Olá, {personName}!</h2>
+                <p>Seja muito bem-vindo ao <strong>{sysName}</strong>. Seu cadastro foi realizado com sucesso.</p>
+                <div style='margin: 30px 0; text-align: center;'>
+                    <a href='{sysUrl}' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Acessar Painel</a>
+                </div>
+                <hr style='border: 0; border-top: 1px solid #eee;' />
+                <p style='font-size: 12px; color: #777;'>&copy; {DateTime.Now.Year} {sysName}.</p>
+            </div>
+        </div>";
+
+        await _emailService.SendEmailAsync(email, "Bem-vindo ao AgiVys System", welcomeMessage, idSystem);
     }
 
     /// <summary>

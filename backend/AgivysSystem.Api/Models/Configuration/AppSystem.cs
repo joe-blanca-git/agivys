@@ -17,4 +17,15 @@ public class AppSystem {
 
     [MaxLength(100)]
     public string? Domain { get; set; }
+
+    // Dono do sistema (cliente AGIVYS que criou). NULL = sistema legado/criado por staff.
+    public int? OwnerUserId { get; set; }
+
+    [ForeignKey("OwnerUserId")]
+    public AgiVysSystem.Api.Models.User.User? OwnerUser { get; set; }
+
+    public int? CompanyId { get; set; }
+
+    [ForeignKey("CompanyId")]
+    public AgiVysSystem.Api.Models.Company.Company? Company { get; set; }
 }
