@@ -4,7 +4,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
+# --base-href precisa bater com o caminho no nginx (/agivys/portal/)
+RUN npm run build -- --base-href /agivys/portal/
 
 # Estágio 2: Servidor Node (SSR)
 FROM node:20-alpine

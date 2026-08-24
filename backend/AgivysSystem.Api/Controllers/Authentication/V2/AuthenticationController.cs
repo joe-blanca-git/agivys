@@ -111,11 +111,16 @@ public class AuthenticationController : ControllerBase
             SystemNames = user.UserSystems.Select(us => us.AppSystem.Name).ToList()
         };
 
+        // Path explícito é obrigatório aqui: sem ele, o navegador usa como padrão o
+        // "diretório" da própria URL de login (algo como /agivys-api/api/v2/authentication),
+        // e o cookie nunca chegaria em outras rotas da API nem no front, que vive num
+        // caminho totalmente diferente (ex.: /agivys/portal/).
         Response.Cookies.Append(AccessTokenCookie, token, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
+            Path = "/",
             Expires = expiration
         });
 
@@ -126,6 +131,7 @@ public class AuthenticationController : ControllerBase
             HttpOnly = false,
             Secure = true,
             SameSite = SameSiteMode.None,
+            Path = "/",
             Expires = expiration
         });
 
@@ -139,6 +145,7 @@ public class AuthenticationController : ControllerBase
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
+            Path = "/",
             Expires = expiration
         });
 
@@ -217,9 +224,11 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult Logout()
     {
-        Response.Cookies.Delete(AccessTokenCookie, new CookieOptions { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None });
-        Response.Cookies.Delete(CsrfCookie, new CookieOptions { HttpOnly = false, Secure = true, SameSite = SameSiteMode.None });
-        Response.Cookies.Delete(MenuCookie, new CookieOptions { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None });
+        // O Path precisa ser idêntico ao usado no Append (login) — senão o navegador
+        // não reconhece como o mesmo cookie e não apaga nada.
+        Response.Cookies.Delete(AccessTokenCookie, new CookieOptions { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None, Path = "/" });
+        Response.Cookies.Delete(CsrfCookie, new CookieOptions { HttpOnly = false, Secure = true, SameSite = SameSiteMode.None, Path = "/" });
+        Response.Cookies.Delete(MenuCookie, new CookieOptions { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None, Path = "/" });
 
         return Ok(new { message = "Logout realizado com sucesso." });
     }
