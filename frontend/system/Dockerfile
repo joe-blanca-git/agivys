@@ -7,17 +7,8 @@ COPY . .
 # --base-href precisa bater com o caminho no nginx (/agivys/portal/)
 RUN npm run build -- --base-href /agivys/portal/
 
-# Estágio 2: Servidor Node (SSR)
-FROM node:20-alpine
-WORKDIR /app
-
-# Copia os arquivos compilados (tanto o browser quanto o server)
-COPY --from=build /app/dist/bit-admin ./dist/bit-admin
-COPY package.json ./
-
-# Força o Node a rodar na porta 80 para não precisarmos mexer no docker-compose
-ENV PORT=80
-EXPOSE 80
-
-# Inicia o servidor Node configurado no package.json
-CMD ["npm", "run", "serve:ssr:bit-admin"]
+# Estágio 2: Nginx servindo os arquivos estáticos
+# (este app não tem SSR configurado — é um SPA, igual a landing)
+FROM nginx:alpine
+COPY --from=build /app/dist/bit-admin/browser /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
