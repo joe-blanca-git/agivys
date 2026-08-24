@@ -29,19 +29,22 @@ public class AuthenticationController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly IEmailService _emailService;
     private readonly IUserAccessMapService _userAccessMapService;
+    private readonly IJwtTokenService _jwtTokenService;
 
     public AuthenticationController(
-        UserManager<User> userManager, 
-        AppDbContext context, 
-        IConfiguration configuration, 
+        UserManager<User> userManager,
+        AppDbContext context,
+        IConfiguration configuration,
         IEmailService emailService,
-        IUserAccessMapService userAccessMapService)
+        IUserAccessMapService userAccessMapService,
+        IJwtTokenService jwtTokenService)
     {
         _userManager = userManager;
         _context = context;
         _configuration = configuration;
         _emailService = emailService;
         _userAccessMapService = userAccessMapService;
+        _jwtTokenService = jwtTokenService;
     }
 
     /// <summary>
@@ -134,7 +137,7 @@ public class AuthenticationController : ControllerBase
         var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserOwnerId == user.Id);
         var roles = await _userManager.GetRolesAsync(user);
 
-        var token = GenerateJwtToken(user, roles, person?.Name);
+        var token = _jwtTokenService.GenerateToken(user, roles, person?.Name);
 
         var response = new LoginResponseDto
         {
@@ -201,46 +204,6 @@ public class AuthenticationController : ControllerBase
         });
         return Ok(new { message = "Logout realizado com sucesso." });
     }
-
-   private string GenerateJwtToken(AgiVysSystem.Api.Models.User.User user, IEnumerable<string> roles, string? personName)
-{
-    var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email!)
-    };
-
-    if (!string.IsNullOrWhiteSpace(personName))
-    {
-        claims.Add(new Claim("name", personName));
-        claims.Add(new Claim(ClaimTypes.Name, personName));
-    }
-
-    foreach (var us in user.UserSystems)
-    {
-        claims.Add(new Claim("idSystem", us.AppSystemId.ToString()));
-    }
-
-    // Adiciona as roles como claims individuais no token
-    foreach (var role in roles)
-    {
-        claims.Add(new Claim(ClaimTypes.Role, role));
-    }
-
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
-    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-    var expires = DateTime.UtcNow.AddHours(4);
-
-    var token = new JwtSecurityToken(
-        issuer: _configuration["Jwt:Issuer"],
-        audience: _configuration["Jwt:Audience"],
-        claims: claims,
-        expires: expires,
-        signingCredentials: creds
-    );
-
-    return new JwtSecurityTokenHandler().WriteToken(token);
-}
 
     /// <summary>
     /// Registro de Proprietário de Sistema

@@ -176,6 +176,58 @@
             <response code="404">Registro do usuário autenticado não foi encontrado no banco de dados.</response>
             <response code="500">Erro interno do servidor.</response>
         </member>
+        <member name="T:AgiVysSystem.Api.Controllers.Authentication.V2.AuthenticationController">
+            <summary>
+            Autenticação (v2) — o JWT nunca aparece no corpo da resposta nem é lido pelo
+            JavaScript do front: ele viaja num cookie HttpOnly, e um segundo cookie
+            (legível) carrega um valor de CSRF que o front deve ecoar no header
+            <c>X-CSRF-Token</c> em toda requisição que altera dado.
+            </summary>
+            <remarks>
+            Rota isolada da v1 — não altera nem substitui <c>api/v1/authentication</c>.
+            </remarks>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Authentication.V2.AuthenticationController.Login(AgiVysSystem.Api.DTOs.LoginDto)">
+             <summary>
+             Autenticação de Usuário (Login) — v2, baseada em cookie.
+             </summary>
+             <remarks>
+             Mesma validação de credenciais da v1. A diferença é a resposta: o JWT é gravado
+             direto num cookie `HttpOnly` (`agivys_at`), e não aparece em nenhum campo do JSON.
+             Um segundo cookie legível (`agivys_csrf`) precisa ser ecoado pelo front no header
+             `X-CSRF-Token` em toda chamada que não seja GET/HEAD/OPTIONS — é a proteção contra
+             CSRF que a autenticação por header dispensava.
+            
+             Exige HTTPS: o cookie é `Secure`, então só é gravado/enviado em conexões `https://`.
+             </remarks>
+             <param name="model">Credenciais de acesso (E-mail e Senha).</param>
+             <response code="200">Login realizado com sucesso. Cookies gravados; corpo só com dados do usuário.</response>
+             <response code="401">E-mail ou senha incorretos.</response>
+             <response code="500">Erro interno do servidor ao tentar autenticar.</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Authentication.V2.AuthenticationController.Me">
+            <summary>
+            Sessão Atual ("quem sou eu") — v2.
+            </summary>
+            <remarks>
+            Devolve o perfil de quem já está autenticado pelo cookie <c>agivys_at</c> (ou por
+            Bearer, se vier). O front chama essa rota uma vez ao carregar a página pra saber se
+            a sessão ainda vale — sem isso, não haveria como confirmar login num F5 ou aba nova,
+            já que o JWT em si nunca chega no JavaScript.
+            </remarks>
+            <response code="200">Sessão válida — devolve os dados do usuário.</response>
+            <response code="401">Sem sessão válida (sem cookie/token, ou expirado).</response>
+        </member>
+        <member name="M:AgiVysSystem.Api.Controllers.Authentication.V2.AuthenticationController.Logout">
+            <summary>
+            Encerramento de Sessão (Logout) — v2.
+            </summary>
+            <remarks>
+            Como os cookies de sessão são HttpOnly, só a API consegue removê-los —
+            o front não tem como "esquecer" o token sozinho, precisa chamar essa rota.
+            </remarks>
+            <response code="200">Logout realizado com sucesso. Cookies removidos.</response>
+        </member>
         <member name="T:AgiVysSystem.Api.Controllers.Checks.ChecksController">
             <summary>
             Controlador responsável por verificações do sistema (Email, CPF, etc).
@@ -812,6 +864,32 @@
             <response code="200">Árvore de permissões carregada com sucesso da sessão.</response>
             <response code="401">Cookie de sessão ausente, malformado ou corrompido.</response>
             <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="T:AgiVysSystem.Api.DTOs.LoginResponseV2Dto">
+            <summary>
+            Mesmo shape do <see cref="T:AgiVysSystem.Api.DTOs.LoginResponseDto"/> da v1, sem o token — na v2 ele
+            vai só no cookie HttpOnly <c>agivys_at</c>, nunca no corpo da resposta.
+            </summary>
+        </member>
+        <member name="T:AgiVysSystem.Api.Filters.RequireCsrfCookieMatchFilter">
+             <summary>
+             Proteção contra CSRF para a sessão baseada em cookie (auth v2).
+            
+             Dupla submissão: no login, a API grava um cookie legível (<c>agivys_csrf</c>)
+             com um valor aleatório. Um site de fora não consegue ler esse cookie (é de
+             outro domínio) nem adivinhar o valor, então só quem está de fato na página
+             consegue ecoá-lo no header <c>X-CSRF-Token</c>.
+            
+             Só se aplica quando a requisição está autenticada pelo cookie <c>agivys_at</c>
+             (sem header Authorization) — clientes v1 que mandam Bearer no header (portal-pat,
+             outros sistemas) não sofrem CSRF da mesma forma e passam direto, sem essa checagem.
+             </summary>
+        </member>
+        <member name="T:AgiVysSystem.Api.Service.JwtTokenService">
+            <summary>
+            Geração do JWT de sessão. Extraído do AuthenticationController para ser
+            reaproveitado tanto pelo login v1 (token no corpo) quanto pelo v2 (token em cookie).
+            </summary>
         </member>
         <member name="T:AgiVysSystem.Migrations.InitialIdentity">
             <inheritdoc />

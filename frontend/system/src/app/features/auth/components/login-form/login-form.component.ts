@@ -62,7 +62,8 @@ export class LoginFormComponent {
   }
 
   async processSuccess(response: any) {
-    this.authService.LocalStorage.saveLocaleDataUser(response);
+    // authService.login() já guardou o perfil em memória (tap do próprio
+    // Observable) — o token nunca passa por aqui, ele já ficou só no cookie.
     this.router.navigate(['/home']);
     this.isLoading = false;
   }

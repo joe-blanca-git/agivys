@@ -1,4 +1,5 @@
 import {
+  HttpContextToken,
   HttpErrorResponse,
   HttpEvent,
   HttpHandlerFn,
@@ -10,7 +11,14 @@ import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ToastService } from '../services/toast.service';
-import { LocalStorageUtils } from '../utils/localstorage';
+import { AuthService } from '../auth/auth.service';
+
+/**
+ * Pra requisições onde um 401 é um resultado normal (ex.: checar se a sessão
+ * ainda existe no boot do app) — evita o toast de erro e o redirect pro
+ * login que esse interceptor dispara por padrão em qualquer 401.
+ */
+export const SKIP_AUTH_REDIRECT = new HttpContextToken<boolean>(() => false);
 
 export const errorInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,
@@ -18,7 +26,7 @@ export const errorInterceptor: HttpInterceptorFn = (
 ): Observable<HttpEvent<any>> => {
   const router = inject(Router);
   const toastService = inject(ToastService);
-  const localStorageUtil = new LocalStorageUtils();
+  const authService = inject(AuthService);
 
   return next(req).pipe(
     catchError((err: any) => {
@@ -37,9 +45,9 @@ export const errorInterceptor: HttpInterceptorFn = (
         }
 
         //erro de autenticação
-        if (err.status === 401) {
-          toastService.error(err.error.message, 5000);
-          localStorageUtil.clearLocaleUserData();
+        if (err.status === 401 && !req.context.get(SKIP_AUTH_REDIRECT)) {
+          toastService.error(err.error?.message ?? 'Sessão expirada, faça login novamente.', 5000);
+          authService.clearSession();
           router.navigate(['/auth/login']);
         }
 

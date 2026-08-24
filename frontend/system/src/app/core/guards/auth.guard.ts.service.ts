@@ -25,12 +25,9 @@ export class AuthGuardService {
       route.routeConfig?.path || defaultPath
     );
 
-    // //verifica se token é válido
-    if (isLoggedIn && !this.authService.isTokenValid()) {
-      this.authService.logOut();
-      this.router.navigate(['/auth/login']);
-      return false;
-    }
+    // O JWT vive só num cookie HttpOnly — não há como validar a expiração aqui
+    // no cliente. Se o cookie tiver expirado, a próxima chamada à API retorna
+    // 401 e o errorInterceptor cuida de deslogar e redirecionar.
 
     // //se estiver logado e tentar acessar rotas de configuração, retorna para home
     if (isLoggedIn && isAuthForm) {

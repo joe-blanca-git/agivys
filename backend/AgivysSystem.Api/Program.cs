@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AgiVysSystem.Api.Interfaces;
 using AgiVysSystem.Api.Service;
+using AgiVysSystem.Api.Filters;
 using Asp.Versioning;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -21,7 +22,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-builder.Services.AddControllers()
+builder.Services.AddControllers(options =>
+    {
+        // Só age em requisições autenticadas via cookie (auth v2) — clientes v1
+        // (Bearer no header) passam direto, sem quebrar nada que já existe.
+        options.Filters.Add<RequireCsrfCookieMatchFilter>();
+    })
     .ConfigureApiBehaviorOptions(options =>
     {
         options.SuppressMapClientErrors = true;
@@ -31,6 +37,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "AgiVysSystem API", Version = "v1", Description = "API para gestão do ecossistema AgiVysSystem" });
+    c.SwaggerDoc("v2", new OpenApiInfo { Title = "AgiVysSystem API", Version = "v2", Description = "Autenticação por cookie HttpOnly (agivys_at) em vez de token no corpo. Demais recursos continuam servidos pela v1." });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -127,6 +134,18 @@ builder.Services.AddAuthentication(options =>
 
     options.Events = new JwtBearerEvents
     {
+        OnMessageReceived = context =>
+        {
+            // v1 continua mandando o header Authorization — se veio, usa ele e para aqui.
+            if (!string.IsNullOrEmpty(context.Request.Headers["Authorization"]))
+                return Task.CompletedTask;
+
+            // Sem header: tenta o cookie HttpOnly da auth v2.
+            if (context.Request.Cookies.TryGetValue("agivys_at", out var cookieToken))
+                context.Token = cookieToken;
+
+            return Task.CompletedTask;
+        },
         OnTokenValidated = context =>
         {
             var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
@@ -157,6 +176,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserAccessMapService, AgiVysSystem.Api.Services.UserAccessMapService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 {
     options.TokenLifespan = TimeSpan.FromHours(2);
@@ -222,9 +242,10 @@ app.UseSwagger(c =>
     });
 });
 
-app.UseSwaggerUI(c => 
+app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("v1/swagger.json", "AgiVysSystem API v1");
+    c.SwaggerEndpoint("v2/swagger.json", "AgiVysSystem API v2");
 });
 
 app.Urls.Add("http://0.0.0.0:5000");

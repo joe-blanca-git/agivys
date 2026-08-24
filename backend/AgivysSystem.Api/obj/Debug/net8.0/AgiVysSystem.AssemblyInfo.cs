@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AgiVysSystem")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c4b3b14750027f518809b7d88f80fb15d740b7fa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e95913cd5ffa696289696025bed1d8ba1d977252")]
 [assembly: System.Reflection.AssemblyProductAttribute("AgiVysSystem")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AgiVysSystem")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
