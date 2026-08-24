@@ -72,6 +72,14 @@ export class AuthService extends BaseService {
       .pipe(map(this.extractData));
   }
 
+  forgotPassword(email: string): Observable<any> {
+    const url = `${this.UrlServiceLoginV1}forgot-password`;
+
+    return this.http
+      .post(url, { email }, this.GetHeaderJson())
+      .pipe(map(this.extractData));
+  }
+
   isTokenValid(): boolean {
     const token = this.localStorageUtils.getUserToken();
     if (!token) return false;

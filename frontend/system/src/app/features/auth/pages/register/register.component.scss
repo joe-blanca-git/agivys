@@ -1,30 +1,141 @@
 :host {
+  --dark-navy: #0b1121;
+  --darker-navy: #060b14;
+  --card-bg: #111a2f;
+  --neon-green: #00ff88;
+  --neon-green-glow: rgba(0, 255, 136, 0.2);
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.08);
+
+  display: block;
   width: 100%;
   height: 100%;
+  font-family: 'Inter', sans-serif;
 }
 
-.container-fluid {
-  background-image: url("https://materiaisparaprofes.com.br/wp-content/uploads/2022/12/fundo-login-min-1080x720.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+.register-page {
+  position: relative;
   width: 100%;
   min-height: 100vh;
-  padding: 1vw 10vw !important;
+  background-color: var(--dark-navy);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 40px 20px;
 }
 
-.steper-body{
-  min-height: 40vh;
-  max-height: 45vh;
+.register-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.register-glow-1 {
+  top: -10%;
+  right: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.15) 0%, rgba(11, 17, 33, 0) 70%);
+}
+.register-glow-2 {
+  bottom: -15%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, rgba(11, 17, 33, 0) 70%);
 }
 
-.img-logo-header {
-  height: 80px;
-  background-color: rgba(240, 248, 255, 0);
-  border-radius: 6px;
+.register-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.title {
-  color: #fff;
+.register-badge-logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--neon-green);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: -45px;
+  position: relative;
+  z-index: 2;
+  padding: 16px;
+}
+.register-badge-logo .logo {
+  width: 100%;
+  object-fit: contain;
+}
+
+.register-card {
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  padding: 65px 40px 35px;
+  text-align: center;
+}
+
+.badge-neon {
+  display: inline-block;
+  background: rgba(0, 255, 136, 0.1);
+  color: var(--neon-green);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.register-title {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.register-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+}
+
+.register-back-link {
+  margin-top: 20px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.link-neon {
+  color: var(--neon-green);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.register-footer {
+  margin-top: 24px;
+  text-align: center;
+}
+.register-copyright {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
 }

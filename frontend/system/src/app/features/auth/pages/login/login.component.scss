@@ -1,43 +1,144 @@
 :host {
+  --dark-navy: #0b1121;
+  --darker-navy: #060b14;
+  --card-bg: #111a2f;
+  --neon-green: #00ff88;
+  --neon-green-glow: rgba(0, 255, 136, 0.2);
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.08);
+
+  display: block;
   width: 100%;
   height: 100%;
+  font-family: 'Inter', sans-serif;
 }
 
-.container-fluid {
-  background-image: url("https://materiaisparaprofes.com.br/wp-content/uploads/2022/12/fundo-login-min-1080x720.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.login-page {
+  position: relative;
   width: 100%;
   min-height: 100vh;
-
-  .row {
-    height: 100vh;
-    width: 100%;
-
-    :host-context(.screen-small) & {
-      height: 70vh;
-    }
-  }
-}
-
-.icon {
-  position: absolute;
-  top:-4rem;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.logo{
-  width: 8rem;
-}
-
-.links{
+  background-color: var(--dark-navy);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
   display: flex;
-  gap: 10px;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 40px 20px;
+}
+
+.login-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.login-glow-1 {
+  top: -10%;
+  right: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.15) 0%, rgba(11, 17, 33, 0) 70%);
+}
+.login-glow-2 {
+  bottom: -15%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, rgba(11, 17, 33, 0) 70%);
+}
+
+.login-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-badge-logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--neon-green);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: -45px;
+  position: relative;
+  z-index: 2;
+  padding: 16px;
+}
+.login-badge-logo .logo {
+  width: 100%;
+  object-fit: contain;
+}
+
+.login-card {
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  padding: 65px 40px 35px;
+  text-align: center;
+}
+
+.badge-neon {
+  display: inline-block;
+  background: rgba(0, 255, 136, 0.1);
+  color: var(--neon-green);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.login-title {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+}
+
+.login-footer {
+  margin-top: 24px;
+  text-align: center;
+}
+.login-footer-links {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.login-footer-links a {
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.login-footer-links a:hover {
+  text-decoration: underline;
+}
+.text-neon {
+  color: var(--neon-green);
+}
+.login-copyright {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  display: block;
 }

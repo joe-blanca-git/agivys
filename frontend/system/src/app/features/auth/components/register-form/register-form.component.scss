@@ -1,4 +1,126 @@
-:host {
-  width: 100%;
-  height: 100%;
+.register-form {
+  font-family: 'Inter', sans-serif;
+}
+
+.form-label {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.form-control {
+  background-color: var(--darker-navy, #060b14);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary, #ffffff);
+  padding: 12px 16px;
+  border-radius: 8px;
+  height: auto;
+  font-size: 0.95rem;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  &:focus {
+    background-color: var(--darker-navy, #060b14);
+    border-color: var(--neon-green, #00ff88);
+    color: var(--text-primary, #ffffff);
+    box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.15);
+  }
+
+  &.is-invalid {
+    border-color: #ff5c7a;
+    background-image: none;
+  }
+
+  &.is-valid {
+    border-color: var(--neon-green, #00ff88);
+    background-image: none;
+  }
+
+  /* Ajusta o ícone nativo do calendário para o tema escuro */
+  &[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.6;
+    cursor: pointer;
+  }
+}
+
+.row-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.input-group {
+  .form-control {
+    border-right: none;
+  }
+
+  .btn-eye {
+    background-color: var(--darker-navy, #060b14);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: none;
+    color: var(--text-secondary, #94a3b8);
+
+    &:hover,
+    &:focus {
+      color: var(--neon-green, #00ff88);
+    }
+  }
+}
+
+.invalid-feedback {
+  min-height: 20px;
+  color: #ff5c7a;
+  font-size: 0.8rem;
+}
+
+.password-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+
+.check-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-secondary, #94a3b8);
+  transition: color 0.2s ease;
+
+  i {
+    font-size: 0.75rem;
+  }
+
+  &.valid {
+    color: var(--neon-green, #00ff88);
+  }
+}
+
+.btn-neon-submit {
+  background-color: var(--neon-green, #00ff88);
+  color: var(--dark-navy, #0b1121);
+  font-weight: 600;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px var(--neon-green-glow, rgba(0, 255, 136, 0.2));
+
+  &:hover:not(:disabled) {
+    background-color: #00e67a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
 }

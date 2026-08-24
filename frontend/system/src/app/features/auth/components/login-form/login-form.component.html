@@ -1,11 +1,12 @@
   <form
+            class="login-form"
             [formGroup]="formLogin"
             (ngSubmit)="onSubmit()"
             novalidate
           >
 
             <!-- EMAIL -->
-            <div class="mb-4">
+            <div class="mb-4 text-start">
               <label for="email" class="form-label">E-mail</label>
               <input
                 [disabled]="isLoading"
@@ -13,6 +14,7 @@
                 id="email"
                 formControlName="email"
                 class="form-control"
+                placeholder="seu@email.com"
                 [ngClass]="{
                   'is-invalid': (f['email'].touched || submitted) && f['email'].invalid,
                   'is-valid': (f['email'].touched || submitted) && f['email'].valid
@@ -28,7 +30,7 @@
             </div>
 
             <!-- SENHA -->
-            <div class="mb-2">
+            <div class="mb-2 text-start">
               <label for="password" class="form-label">Senha</label>
 
               <div class="input-group">
@@ -38,6 +40,7 @@
                   id="password"
                   formControlName="password"
                   class="form-control"
+                  placeholder="sua senha"
                   [ngClass]="{
                     'is-invalid': (f['password'].touched || submitted) && f['password'].invalid,
                     'is-valid': (f['password'].touched || submitted) && f['password'].valid
@@ -46,7 +49,7 @@
                 />
 
                 <button
-                  class="btn btn-outline-secondary"
+                  class="btn btn-eye"
                   type="button"
                   (click)="hidePassword = !hidePassword"
                   [disabled]="isLoading"
@@ -64,11 +67,11 @@
                 A senha é obrigatória!
               </div>
 
-              <div class="w-100 text-end mt-1">
-                <a href="" class="cursor-pointer text-agivys-secondary">Recuperar Senha</a>
+              <div class="w-100 text-end mt-2">
+                <a class="cursor-pointer link-neon" [routerLink]="['/auth/recovery-password']">Recuperar Senha</a>
               </div>
-               <div class="w-100 text-end mt-3">
-                <a class="cursor-pointer text-agivys-secondary" [routerLink]="['/auth/register']" routerLinkActive="router-link-active" >Criar Nova Conta</a>
+               <div class="w-100 text-end mt-2">
+                <a class="cursor-pointer link-neon" [routerLink]="['/auth/register']" routerLinkActive="router-link-active" >Criar Nova Conta</a>
               </div>
             </div>
 
@@ -77,10 +80,10 @@
               <button
                 [disabled]="isLoading"
                 type="submit"
-                class="btn btn-agivys-secondary px-4 rounded-pill w-75"
+                class="btn btn-neon-submit w-100"
               >
                 <span *ngIf="isLoading">Verificando dados...</span>
-                <span *ngIf="!isLoading">Entrar</span>
+                <span *ngIf="!isLoading">Entrar &rarr;</span>
               </button>
             </div>
 

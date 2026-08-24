@@ -1,254 +1,133 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   AbstractControl,
-  AsyncValidatorFn,
   FormBuilder,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import {
-  map,
-  catchError,
-  debounceTime,
-  switchMap,
-  of,
-  distinctUntilChanged,
-  filter,
-} from 'rxjs';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { Router } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { AddressVerifyService } from '../../../../shared/services/address-verify.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-register-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgxMaskDirective,
-    NgxMaskPipe,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, NgxMaskDirective],
   templateUrl: './register-form.component.html',
   styleUrl: './register-form.component.scss',
   providers: [provideNgxMask()],
 })
-export class RegisterFormComponent implements OnInit {
+export class RegisterFormComponent {
   formRegister: FormGroup;
   submitted = false;
-  isLoadingData = false;
-  states: any[] = [];
-  cities: any[] = [];
+  isLoading = false;
+  hidePassword = true;
+  hidePasswordConfirmation = true;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private addressService: AddressVerifyService,
+    private toastService: ToastService,
+    private router: Router,
   ) {
     this.formRegister = this.fb.group(
       {
         name: ['', [Validators.required]],
-        email: [
-          '',
-          [Validators.required, Validators.email],
-          [this.validateExistingEmail(this.authService)],
-        ],
-        document: [
-          '',
-          [Validators.required],
-          [this.validateExistingDocument(this.authService)],
-        ],
+        email: ['', [Validators.required, Validators.email]],
         phone: ['', [Validators.required]],
-        password: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(8),
-            this.passwordStrengthValidator,
-          ],
-        ],
+        birthDate: ['', [Validators.required]],
+        password: ['', [Validators.required, this.passwordStrengthValidator]],
         passwordConfirmation: ['', [Validators.required]],
-        dtBirth: ['', [Validators.required]],
-        cep: ['', [Validators.required, Validators.minLength(8)]],
-        street: ['', [Validators.required]],
-        number: ['', [Validators.required]],
-        neighborhood: ['', [Validators.required]],
-        complement: [''],
-        idState: ['', [Validators.required]],
-        idCity: [{ value: '', disabled: true }, [Validators.required]],
       },
       { validators: this.passwordMatchValidator },
     );
-  }
-
-  ngOnInit(): void {
-    this.getStates();
-    this.watchStateChanges();
-    this.watchZipCodeChanges();
   }
 
   get f() {
     return this.formRegister.controls;
   }
 
-  getStates() {
-    this.addressService.getState().subscribe((res) => (this.states = res));
+  get passwordValue(): string {
+    return this.formRegister.get('password')?.value || '';
   }
 
-  watchZipCodeChanges() {
-    this.formRegister.get('cep')?.valueChanges.pipe(
-      map(v => v ? v.replace(/\D/g, '') : ''),
-      filter(v => v.length === 8),
-      distinctUntilChanged(),
-      switchMap(cep => {
-        this.isLoadingData = true;
-        return this.addressService.getZipCode(cep).pipe(
-          catchError(() => of({ erro: true }))
-        );
-      })
-    ).subscribe((data: any) => {
-      this.isLoadingData = false;
-
-      if (data && !data.erro) {
-        // Força a atualização dos campos com os dados corretos da API (sigla do estado)
-        // Isso sobrescreve a bagunça que o preenchimento automático do navegador faz
-        this.formRegister.patchValue({
-          street: data.logradouro,
-          neighborhood: data.bairro,
-          idState: data.uf, 
-          complement: data.complemento || ''
-        }, { emitEvent: true }); // Garante que o Angular perceba a mudança
-        
-        this.loadCities(data.uf, data.localidade);
-      } else {
-        // Se o CEP for inválido, apenas limpa a cidade, mas mantém os estados intactos
-        this.formRegister.get('idCity')?.disable();
-        this.formRegister.get('idCity')?.setValue('');
-        this.cities = [];
-      }
-    });
+  hasMinLength(): boolean {
+    return this.passwordValue.length >= 8;
   }
 
-  patchAddressData(data: any) {
-    this.formRegister.patchValue({
-      street: data.logradouro,
-      neighborhood: data.bairro,
-      idState: data.uf,
-    });
-    this.loadCities(data.uf, data.localidade);
+  hasUpperCase(): boolean {
+    return /[A-Z]/.test(this.passwordValue);
   }
 
-  watchStateChanges() {
-    this.formRegister
-      .get('idState')
-      ?.valueChanges.pipe(distinctUntilChanged())
-      .subscribe((sigla) => {
-        if (sigla) {
-          this.formRegister.get('idCity')?.enable();
-          this.loadCities(sigla);
-        } else {
-          this.formRegister.get('idCity')?.disable();
-          this.cities = [];
-        }
-      });
+  hasNumber(): boolean {
+    return /[0-9]/.test(this.passwordValue);
   }
 
-  loadCities(sigla: string, cityToSelect?: string) {
-    this.isLoadingData = true;
-    this.addressService.getCities(sigla).subscribe({
-      next: (res) => {
-        this.cities = res;
-        this.isLoadingData = false;
-        if (cityToSelect) {
-          const found = this.cities.find(
-            (c) => c.nome.toLowerCase() === cityToSelect.toLowerCase(),
-          );
-          if (found)
-            this.formRegister.get('idCity')?.setValue(found.id || found.nome);
-        }
-      },
-      error: () => (this.isLoadingData = false),
-    });
+  hasSpecialChar(): boolean {
+    return /[^A-Za-z0-9]/.test(this.passwordValue);
   }
 
-  public getFormData() {
+  async onSubmit(): Promise<void> {
+    this.submitted = true;
+    this.formRegister.markAllAsTouched();
+
+    if (this.formRegister.invalid) {
+      this.toastService.error('Verifique os campos destacados para continuar.');
+      return;
+    }
+
+    this.isLoading = true;
     const raw = this.formRegister.getRawValue();
-    return {
-      isValid: this.formRegister.valid,
-      userBody: {
-        name: raw.name,
-        document: raw.document.replace(/\D/g, ''),
-        email: raw.email,
-        password: raw.password,
-        birthDate: this.formatISO(raw.dtBirth),
-        AddressDescription: 'Principal',
-        zipCode: raw.cep.replace(/\D/g, ''),
-        street: raw.street,
-        number: raw.number,
-        complement: raw.complement,
-        neighborhood: raw.neighborhood,
-        city: raw.idCity,
-        state: raw.idState,
-      }
+
+    const userBody = {
+      name: raw.name,
+      email: raw.email,
+      password: raw.password,
+      birthDate: new Date(raw.birthDate).toISOString(),
+      phone: raw.phone,
     };
+
+    try {
+      await lastValueFrom(this.authService.register(userBody));
+      this.toastService.success('Conta criada com sucesso! Faça login para continuar.');
+      this.router.navigate(['/auth/login']);
+    } catch (error) {
+      console.error(error);
+      this.toastService.error('Não foi possível concluir seu cadastro. Verifique os dados e tente novamente.');
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-private formatISO(dateStr: string): string {
-    if (!dateStr) return '';
-    
-    // Limpa qualquer coisa que não seja número (tira as barras caso existam)
-    const cleanDate = dateStr.replace(/\D/g, '');
-    
-    // Se não tiver exatamente 8 números (DDMMYYYY), retorna vazio
-    if (cleanDate.length !== 8) return ''; 
+  private passwordStrengthValidator(c: AbstractControl): ValidationErrors | null {
+    const v: string = c.value || '';
+    const isValid =
+      v.length >= 8 && /[A-Z]/.test(v) && /[0-9]/.test(v) && /[^A-Za-z0-9]/.test(v);
 
-    const d = cleanDate.substring(0, 2);
-    const m = cleanDate.substring(2, 4);
-    const y = cleanDate.substring(4, 8);
-    
-    // Retorna exatamente YYYY-MM-DD para o C#
-    return `${y}-${m}-${d}`;
+    return isValid ? null : { passwordStrength: true };
   }
 
-  validateExistingDocument(auth: AuthService): AsyncValidatorFn {
-    return (c: AbstractControl) => {
-      const doc = c.value?.replace(/\D/g, '');
-      if (!doc || doc.length !== 11) return of(null);
-      return auth.verifyExitingDocument(doc).pipe(
-        debounceTime(400),
-        map((res) => (res.exists ? { documentExisting: true } : null)),
-        catchError(() => of(null)),
-      );
-    };
-  }
+  private passwordMatchValidator(g: AbstractControl): ValidationErrors | null {
+    const password = g.get('password');
+    const confirmation = g.get('passwordConfirmation');
 
-  validateExistingEmail(auth: AuthService): AsyncValidatorFn {
-    return (c: AbstractControl) => {
-      if (!c.value) return of(null);
-      return auth.verifyExitingEmail(c.value).pipe(
-        debounceTime(400),
-        map((res) => (res.exists ? { emailExisting: true } : null)),
-        catchError(() => of(null)),
-      );
-    };
-  }
+    if (!password || !confirmation) return null;
 
-  passwordStrengthValidator(c: AbstractControl): ValidationErrors | null {
-    const v = c.value || '';
-    return !/[A-Z]/.test(v) || !/[a-z]/.test(v) || !/[0-9]/.test(v)
-      ? { passwordStrength: true }
-      : null;
-  }
+    if (password.value !== confirmation.value) {
+      confirmation.setErrors({ ...confirmation.errors, passwordMismatch: true });
+      return { passwordMismatch: true };
+    }
 
-  passwordMatchValidator(g: AbstractControl): ValidationErrors | null {
-    const p = g.get('password')?.value;
-    const cp = g.get('passwordConfirmation')?.value;
-    if (p !== cp)
-      g.get('passwordConfirmation')?.setErrors({ passwordMismatch: true });
-    return p !== cp ? { passwordMismatch: true } : null;
+    if (confirmation.hasError('passwordMismatch')) {
+      const { passwordMismatch, ...rest } = confirmation.errors || {};
+      confirmation.setErrors(Object.keys(rest).length ? rest : null);
+    }
+
+    return null;
   }
 }
