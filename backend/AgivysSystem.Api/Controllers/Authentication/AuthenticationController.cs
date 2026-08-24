@@ -6,7 +6,6 @@ using AgiVysSystem.Api.Data;
 using AgiVysSystem.Api.DTOs;
 using AgiVysSystem.Api.Models.User;
 using AgiVysSystem.Api.Models.People;
-using AgiVysSystem.Api.Models.Configuration;
 using AgiVysSystem.Api.Interfaces;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
@@ -124,11 +123,8 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
-        // Não usamos FindByEmailAsync aqui: e-mail deixou de ser único globalmente
-        // (o mesmo e-mail pode existir em sistemas diferentes). PrimaryAppSystemId==null
-        // é a conta de plataforma — o comportamento de hoje para 100% das contas existentes.
-        var user = await FindUserByEmailAndSystemAsync(model.Email, model.IdSystem);
-
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
         {
             return Unauthorized(new { message = "E-mail ou senha incorretos." });
@@ -232,31 +228,19 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RegisterSystemUser([FromBody] RegisterSystemUserDto model)
     {
+        // 1. Validações de existência
+        var userExists = await _userManager.FindByEmailAsync(model.Email);
+        if (userExists != null)
+            return BadRequest(new { message = "Dados Inválidos! Verifique seu E-mail." });
+
         var system = await _context.AppSystems.FindAsync(model.IdSystem);
         if (system == null)
             return BadRequest(new { message = "Dados inválidos! idSystem não corresponde a um sistema válido." });
 
-        var normalizedEmail = _userManager.NormalizeEmail(model.Email);
-
-        // Sistemas são tenants independentes: o mesmo e-mail pode ter contas totalmente
-        // separadas (senha própria, sem vínculo) em sistemas diferentes. O que não pode
-        // duplicar é o par (e-mail, sistema) — por isso a checagem é escopada por
-        // IdSystem, não mais uma busca de e-mail global.
-        var alreadyRegisteredInThisSystem = await _context.Users
-            .AnyAsync(u => u.NormalizedEmail == normalizedEmail && u.PrimaryAppSystemId == model.IdSystem);
-
-        if (alreadyRegisteredInThisSystem)
-            return BadRequest(new { message = "Este e-mail já está cadastrado neste sistema." });
-
-        // O UserName do Identity precisa ser único globalmente (índice do schema, não uma
-        // configuração) — usamos um valor sintético só quando o e-mail já existir em OUTRO
-        // sistema. No caso comum (e-mail inédito) continua sendo o próprio e-mail, sem
-        // nenhuma mudança de comportamento.
-        var emailUsedElsewhere = await _context.Users.AnyAsync(u => u.NormalizedEmail == normalizedEmail);
-        var userName = emailUsedElsewhere ? $"{model.Email}::sys{model.IdSystem}" : model.Email;
-
-        // O documento (CPF) não é mais obrigatório no cadastro — deixamos sem
-        // preencher para que seja null.
+        // O documento (CPF) não é mais obrigatório no cadastro
+        // Deixamos sem preencher para que seja null
+        
+        // 2. Criar a Pessoa (People)
         var person = new Models.People.Person
         {
             Name = model.Name,
@@ -268,11 +252,11 @@ public class AuthenticationController : ControllerBase
         _context.People.Add(person);
         await _context.SaveChangesAsync(); // Gerar ID da Person
 
+        // 3. Criar o Usuário vinculado à Pessoa
         var user = new User
         {
-            UserName = userName,
+            UserName = model.Email,
             Email = model.Email,
-            PrimaryAppSystemId = model.IdSystem,
             PersonId = person.Id
         };
 
@@ -280,15 +264,45 @@ public class AuthenticationController : ControllerBase
 
         if (result.Succeeded)
         {
-            _context.UserSystems.Add(new UserSystem { UserId = user.Id, AppSystemId = model.IdSystem });
+            // Criar relacionamento N:N
+            var userSystem = new UserSystem
+            {
+                UserId = user.Id,
+                AppSystemId = model.IdSystem
+            };
+            _context.UserSystems.Add(userSystem);
 
+            // 4. Atribuir a Role "Owner"
             await _userManager.AddToRoleAsync(user, "Owner");
 
             // Atualiza a Person com o UserId gerado
             person.UserId = user.Id;
             await _context.SaveChangesAsync();
 
-            await SendWelcomeEmailAsync(system, model.Email, model.Name, model.IdSystem);
+            // 5. E-mail de Boas-vindas (Sem dados de endereço)
+            var sysName = system.Name;
+            var sysBgColor = system.BackgroundColor ?? "#1a1a1a";
+            var sysTxtColor = system.TextColor ?? "#ffffff";
+            var sysDomain = system.Domain ?? "agivyssystem.com.br";
+            var sysUrl = $"https://{sysDomain}/portal-pat/auth/login";
+
+            var welcomeMessage = $@"
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
+                <div style='background-color: {sysBgColor}; padding: 20px; text-align: center;'>
+                    <h1 style='color: {sysTxtColor}; margin: 0; font-size: 24px;'>{sysName}</h1>
+                </div>
+                <div style='padding: 30px; color: #333; line-height: 1.6;'>
+                    <h2 style='color: #1a1a1a;'>Olá, {model.Name}!</h2>
+                    <p>Seja muito bem-vindo ao <strong>{sysName}</strong>. Seu cadastro foi realizado com sucesso.</p>
+                    <div style='margin: 30px 0; text-align: center;'>
+                        <a href='{sysUrl}' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Acessar Painel</a>
+                    </div>
+                    <hr style='border: 0; border-top: 1px solid #eee;' />
+                    <p style='font-size: 12px; color: #777;'>&copy; {DateTime.Now.Year} {sysName}.</p>
+                </div>
+            </div>";
+
+            await _emailService.SendEmailAsync(model.Email, "Bem-vindo ao AgiVys System", welcomeMessage, model.IdSystem);
 
             return Ok(new { message = "Usuário cadastrado com sucesso!" });
         }
@@ -298,46 +312,6 @@ public class AuthenticationController : ControllerBase
         await _context.SaveChangesAsync();
 
         return BadRequest(result.Errors);
-    }
-
-    /// <summary>
-    /// Substitui FindByEmailAsync nos endpoints de autenticação: e-mail deixou de ser
-    /// único globalmente, então a busca precisa ser escopada por sistema (idSystem==null
-    /// é a conta de plataforma).
-    /// </summary>
-    private async Task<User?> FindUserByEmailAndSystemAsync(string email, int? idSystem)
-    {
-        var normalizedEmail = _userManager.NormalizeEmail(email);
-
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail && u.PrimaryAppSystemId == idSystem);
-    }
-
-    private async Task SendWelcomeEmailAsync(AppSystem system, string email, string personName, int idSystem)
-    {
-        var sysName = system.Name;
-        var sysBgColor = system.BackgroundColor ?? "#1a1a1a";
-        var sysTxtColor = system.TextColor ?? "#ffffff";
-        var sysDomain = system.Domain ?? "agivyssystem.com.br";
-        var sysUrl = $"https://{sysDomain}/portal-pat/auth/login";
-
-        var welcomeMessage = $@"
-        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;'>
-            <div style='background-color: {sysBgColor}; padding: 20px; text-align: center;'>
-                <h1 style='color: {sysTxtColor}; margin: 0; font-size: 24px;'>{sysName}</h1>
-            </div>
-            <div style='padding: 30px; color: #333; line-height: 1.6;'>
-                <h2 style='color: #1a1a1a;'>Olá, {personName}!</h2>
-                <p>Seja muito bem-vindo ao <strong>{sysName}</strong>. Seu cadastro foi realizado com sucesso.</p>
-                <div style='margin: 30px 0; text-align: center;'>
-                    <a href='{sysUrl}' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Acessar Painel</a>
-                </div>
-                <hr style='border: 0; border-top: 1px solid #eee;' />
-                <p style='font-size: 12px; color: #777;'>&copy; {DateTime.Now.Year} {sysName}.</p>
-            </div>
-        </div>";
-
-        await _emailService.SendEmailAsync(email, "Bem-vindo ao AgiVys System", welcomeMessage, idSystem);
     }
 
     /// <summary>
@@ -358,8 +332,8 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto model)
     {
-        var user = await FindUserByEmailAndSystemAsync(model.Email, model.IdSystem);
-        if (user == null)
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null) 
             return Ok(new { message = "Se o e-mail existir em nossa base, um link de recuperação será enviado." });
 
         // Gera o Token de recuperação (Identity gera um token seguro)
@@ -423,8 +397,8 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
     {
-        var user = await FindUserByEmailAndSystemAsync(model.Email, model.IdSystem);
-        if (user == null)
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null) 
             return BadRequest(new { message = "Dados inválidos." });
 
         // Decodifica o token do formato Base64Url

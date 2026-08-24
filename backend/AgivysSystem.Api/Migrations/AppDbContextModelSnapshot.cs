@@ -123,9 +123,6 @@ namespace AgiVysSystem.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
-                    b.Property<int?>("CompanyId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -138,18 +135,11 @@ namespace AgiVysSystem.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("OwnerUserId")
-                        .HasColumnType("int");
-
                     b.Property<string>("TextColor")
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
-
-                    b.HasIndex("OwnerUserId");
 
                     b.ToTable("AppSystem");
                 });
@@ -518,9 +508,6 @@ namespace AgiVysSystem.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int?>("PrimaryAppSystemId")
-                        .HasColumnType("int");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 
@@ -541,11 +528,6 @@ namespace AgiVysSystem.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.HasIndex("PersonId");
-
-                    b.HasIndex("PrimaryAppSystemId");
-
-                    b.HasIndex("NormalizedEmail", "PrimaryAppSystemId")
-                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -780,23 +762,6 @@ namespace AgiVysSystem.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("AgiVysSystem.Api.Models.Configuration.AppSystem", b =>
-                {
-                    b.HasOne("AgiVysSystem.Api.Models.Company.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("AgiVysSystem.Api.Models.User.User", "OwnerUser")
-                        .WithMany()
-                        .HasForeignKey("OwnerUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Company");
-
-                    b.Navigation("OwnerUser");
-                });
-
             modelBuilder.Entity("AgiVysSystem.Api.Models.Configuration.Integration", b =>
                 {
                     b.HasOne("AgiVysSystem.Api.Models.Configuration.AppSystem", "AppSystem")
@@ -891,13 +856,7 @@ namespace AgiVysSystem.Migrations
                         .WithMany()
                         .HasForeignKey("PersonId");
 
-                    b.HasOne("AgiVysSystem.Api.Models.Configuration.AppSystem", "PrimaryAppSystem")
-                        .WithMany()
-                        .HasForeignKey("PrimaryAppSystemId");
-
                     b.Navigation("Person");
-
-                    b.Navigation("PrimaryAppSystem");
                 });
 
             modelBuilder.Entity("AgiVysSystem.Api.Models.User.UserAccessMap", b =>

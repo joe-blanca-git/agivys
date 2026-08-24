@@ -55,25 +55,6 @@ public class AppDbContext : IdentityDbContext<AgiVysSystem.Api.Models.User.User,
             .HasIndex(p => p.Document)
             .IsUnique();
 
-        // Um usuário final é único por (e-mail, sistema) — não por e-mail isolado.
-        // PrimaryAppSystemId == null (contas de plataforma) não conflita entre si:
-        // MySQL/InnoDB não considera múltiplos NULL como valores duplicados num índice único.
-        builder.Entity<AgiVysSystem.Api.Models.User.User>()
-            .HasIndex(u => new { u.NormalizedEmail, u.PrimaryAppSystemId })
-            .IsUnique();
-
-        builder.Entity<AppSystem>()
-            .HasOne(s => s.OwnerUser)
-            .WithMany()
-            .HasForeignKey(s => s.OwnerUserId)
-            .OnDelete(DeleteBehavior.SetNull);
-
-        builder.Entity<AppSystem>()
-            .HasOne(s => s.Company)
-            .WithMany()
-            .HasForeignKey(s => s.CompanyId)
-            .OnDelete(DeleteBehavior.SetNull);
-
         builder.Entity<Plan>()
             .HasMany(p => p.AllowedMenus)
             .WithMany()
